@@ -2,6 +2,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 :root {
   color-scheme: light;
   font-synthesis: none;
@@ -27,30 +28,39 @@ body {
     height: 100dvh;
   }
 }
+
 @layer components {
   .text-primary {
     @apply text-[13px] font-semibold leading-normal;
   }
+
   .text-secondary {
     @apply font-[500] text-[#777];
   }
+
   .text-title {
     @apply text-2xl text-[18px] font-semibold;
   }
+
   .text-heading {
     @apply text-[16px] text-xl font-semibold;
   }
+
   .button-disabled {
     @apply cursor-not-allowed bg-[#ccc] text-[#666];
   }
+
   .common-border {
     @apply border-[rgba(0,0,0,0.12)];
   }
+
   .common-input-border {
-    @apply border-[1px] border-[rgba(0,0,0,0.23)];
+    @apply border-[1px] border-[rgba(0,0,0,0.23)]
   }
 }
+
 /* Style for rich text editors */
+
 .ql-toolbar,
 .ql-container {
   border: none !important;
@@ -63,17 +73,21 @@ body {
   min-height: 193px;
   padding-left: 20px !important;
   padding-right: 20px !important;
-}
-.ql-container .textarea-emoji-control {
-  display: none;
-}
-
-.create-task .ql-container {
-  min-height: 179px;
+  .textarea-emoji-control {
+    display: none;
+  }
 }
 
-.text-comment-container .ql-container {
-  min-height: 80px !important;
+.create-task {
+  .ql-container {
+    min-height: 179px;
+  }
+}
+
+.text-comment-container {
+  .ql-container {
+    min-height: 80px !important;
+  }
 }
 
 .quill .ql-toolbar.ql-snow {
@@ -97,30 +111,32 @@ body {
   padding-left: 0px !important;
   padding-right: 0px !important;
   outline: none;
-}
-.ql-container .ql-editor p {
-  line-height: 36px;
-}
-.ql-container .ql-editor .ql-emojiblot {
-  margin-top: -6px;
-  vertical-align: unset;
+  p {
+    line-height: 36px;
+  }
+  .ql-emojiblot {
+    margin-top: -6px;
+    vertical-align: unset;
+  }
 }
 
 p {
   line-height: 36px;
 }
-
 .ql-emojiblot {
   margin-top: -6px;
   vertical-align: unset;
 }
 
-.ql-formats button {
-  width: 24px !important;
-  height: 20px !important;
+.ql-formats {
+  button {
+    width: 24px !important;
+    height: 20px !important;
+  }
 }
 
 /* Redefine Quill class */
+
 ul {
   list-style: disc;
   list-style-position: inside;
@@ -147,9 +163,9 @@ blockquote {
   margin-bottom: 5px;
   margin-top: 5px;
   padding-left: 16px;
-}
-blockquote span.ql-emojiblot {
-  vertical-align: baseline;
+  span.ql-emojiblot {
+    vertical-align: baseline;
+  }
 }
 
 .ql-align-center {
@@ -160,52 +176,55 @@ blockquote span.ql-emojiblot {
   text-align: right;
 }
 
-.task-preview h1 {
-  font-size: 2em;
-}
-.task-preview h2 {
-  font-size: 1.5em;
-}
-.task-preview .ql-size-small {
-  font-size: 0.75em;
-}
-.task-preview .ql-size-large {
-  font-size: 1.5em;
-}
-.task-preview .ql-size-huge {
-  font-size: 2.5em;
+.task-preview {
+  h1 {
+    font-size: 2em;
+  }
+  h2 {
+    font-size: 1.5em;
+  }
+  .ql-size-small {
+    font-size: 0.75em;
+  }
+  .ql-size-large {
+    font-size: 1.5em;
+  }
+  .ql-size-huge {
+    font-size: 2.5em;
+  }
 }
 
-.ql-editor .ql-size-small {
-  font-size: 10px !important;
-  line-height: 14px !important;
-}
-.ql-editor .ql-size-normal {
-  font-size: 13px !important;
-  line-height: 20px !important;
-}
-.ql-editor > p {
-  font-size: 13px !important;
-  line-height: 20px !important;
-}
-.ql-editor .ql-size-large {
-  font-size: 16px !important;
-  line-height: 24px !important;
-}
-.ql-editor .ql-size-huge {
-  font-size: 20px !important;
-  line-height: 28px !important;
+.ql-editor {
+  .ql-size-small {
+    font-size: 10px !important;
+    line-height: 14px !important;
+  }
+  .ql-size-normal {
+    font-size: 13px !important;
+    line-height: 20px !important;
+  }
+  & > p {
+    font-size: 13px !important;
+    line-height: 20px !important;
+  }
+  .ql-size-large {
+    font-size: 16px !important;
+    line-height: 24px !important;
+  }
+  .ql-size-huge {
+    font-size: 20px !important;
+    line-height: 28px !important;
+  }
 }
 
 /* Class for carousel slider */
+
 .react-multi-carousel-list {
   position: relative;
 }
 
 .react-multi-carousel-list::before {
   content: "";
-  -webkit-user-select: none;
-  -moz-user-select: none;
   user-select: none;
   pointer-events: none;
   position: absolute;
@@ -215,11 +234,17 @@ blockquote span.ql-emojiblot {
   width: 220px;
   height: 100%;
   background: linear-gradient(to right, transparent, white);
+  // background: linear-gradient(to right, transparent, rgb(248 250 252));
 }
-
-.comment .react-multi-carousel-list::before {
-  background: linear-gradient(to right, transparent, rgb(248, 250, 252));
+.comment {
+  .react-multi-carousel-list::before {
+    background: linear-gradient(to right, transparent, rgb(248 250 252));
+  }
 }
+// .react-multi-carousel-item {
+// 	max-width: 268px;
+// 	min-width: 268px;
+// }
 
 li.react-multi-carousel-item,
 li.emoji-tab {
@@ -231,21 +256,20 @@ li.emoji-tab {
 .react-multiple-carousel__arrow--left {
   background-color: white;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  &::before {
+    color: #333;
+  }
+  &:hover {
+    background-color: white;
+    opacity: 0.6;
+  }
 }
-.react-multiple-carousel__arrow--right::before,
-.react-multiple-carousel__arrow--left::before {
-  color: #333;
-}
-.react-multiple-carousel__arrow--right:hover,
-.react-multiple-carousel__arrow--left:hover {
-  background-color: white;
-  opacity: 0.6;
-}
-
-#emoji-palette .bem {
-  display: inline-block;
-  margin-right: 5px;
-  margin-bottom: 5px;
+#emoji-palette {
+  .bem {
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
 }
 
 .main-content-container::-webkit-scrollbar {
@@ -263,8 +287,10 @@ li.emoji-tab {
   overflow: hidden;
 }
 
-.MuiPagination-root li {
-  padding-left: 0;
+.MuiPagination-root {
+  li {
+    padding-left: 0;
+  }
 }
 
 select[disabled] {
@@ -303,14 +329,15 @@ li.MuiMenuItem-gutters {
 
 .task-preview-container::-webkit-scrollbar-track {
   background: #ccc;
+  // border-radius: 5px;
 }
-
 .task-preview-container::-webkit-scrollbar {
   width: 5px;
 }
-
 .task-preview-container::-webkit-scrollbar-thumb {
   background-color: #0054a6;
+  // border-radius: 14px;
+  // border: 3px solid var(--primary);
 }
 
 .grid-stacking-content {
@@ -326,6 +353,7 @@ li.MuiMenuItem-gutters {
   font-size: 13px !important;
 }
 
+// breath animation
 .breath {
   animation: breath 0.6s linear infinite alternate-reverse;
 }
@@ -334,10 +362,12 @@ li.MuiMenuItem-gutters {
   0% {
     opacity: 80%;
   }
+
   100% {
     opacity: 10%;
   }
 }
+
 .security {
-  -webkit-text-security: disc;
-} /*# sourceMappingURL=index.css.map */
+  -webkit-text-security:disc
+}

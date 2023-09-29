@@ -57,7 +57,6 @@ const SideBar = () => {
   };
 
   const sidebarCommonItems: ISidebarItem[] =
-    // currentPerson.roleType !== Role.CUSTOMER
     1 === 1
       ? [
           {
@@ -105,7 +104,6 @@ const SideBar = () => {
         ];
 
   const sidebarDetailItems: ISidebarItem[] =
-    // currentPerson.roleType === Role.ADMIN
     1 === 1
       ? [
           // {
@@ -140,8 +138,25 @@ const SideBar = () => {
               prefix: `${PathString.REPORT}`
             }
           }
+          // {
+          //   parent: {
+          //     text: "Tài khoản",
+          //     to: `${PathString.TAI_KHOAN}`,
+          //     Icon: <BiUser size={18} />,
+          //     prefix: `${PathString.TAI_KHOAN}`
+          //   }
+          // }
         ]
-      : [];
+      : [
+          // {
+          //   parent: {
+          //     text: "Tài khoản",
+          //     to: `${PathString.TAI_KHOAN}`,
+          //     Icon: <BiUser size={18} />,
+          //     prefix: `${PathString.TAI_KHOAN}`
+          //   }
+          // }
+        ];
 
   const sidebarItems = [
     {

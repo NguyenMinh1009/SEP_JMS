@@ -18,14 +18,16 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<SignInSide />} />
-        </Routes>
-        <Routes>
-          <Route element={<MainContent />}>
-            <Route path="/home" element={<HomeSide />} />
-          </Route>
-        </Routes>
+        <div className={`//max-w-[1700px] relative mx-auto`}>
+          <Routes>
+            <Route path="/login" element={<SignInSide />} />
+          </Routes>
+          <Routes>
+            <Route element={<MainContent />}>
+              <Route path="/home" element={<HomeSide />} />
+            </Route>
+          </Routes>
+        </div>
       </BrowserRouter>
     </>
   );

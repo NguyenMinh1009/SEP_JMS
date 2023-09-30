@@ -7,6 +7,8 @@ import useCurrentEmployee from "../hooks/store/useCurrentEmployee";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 // API
 import CircularProgress from "@mui/material/CircularProgress";
+import APIClientInstance from "../api/AxiosInstance";
+
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -24,7 +26,9 @@ const Login: React.FC = () => {
     event.preventDefault();
     if (!username.trim() || !password.trim()) return;
     setLoading(true);
-    console.log("OnLoginButtonClick")
+    snakeBar.setSnakeBar("OKKK", "info", true);
+    console.log("OnLoginButtonClick");
+    APIClientInstance.get("/get").then(e => console.log(e.data));
   };
 
   return (

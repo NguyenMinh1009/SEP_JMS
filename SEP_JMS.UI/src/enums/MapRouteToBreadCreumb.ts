@@ -5,5 +5,6 @@ export enum PathString {
   USERS = "quan-ly-users",
   PRICES = "quan-ly-gia",
   REPORT = "thong-ke",
-  THONG_BAO = "thong-bao"
+  THONG_BAO = "thong-bao",
+  THEM_MOI = "them-moi"
 }

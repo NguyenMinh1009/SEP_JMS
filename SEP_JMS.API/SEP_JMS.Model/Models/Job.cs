@@ -5,7 +5,8 @@ using SEP_JMS.Model.Enums.System;
 
 namespace SEP_JMS.Model.Models
 {
-    [Index(nameof(CustomerId),
+    [Index(nameof(ParentId),
+        nameof(CustomerId),
         nameof(AccountId),
         nameof(CreatedBy),
         nameof(DesignerId),
@@ -18,6 +19,7 @@ namespace SEP_JMS.Model.Models
         public Guid JobId { get; set; }
 
         public Guid CustomerId { get; set; }
+
         public Guid ParentId { get; set; }
 
         public Guid AccountId { get; set; }

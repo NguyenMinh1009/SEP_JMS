@@ -10,6 +10,8 @@ namespace SEP_JMS.Model.Api.Request.Job
 
         public int Quantity { get; set; }
 
+        public Guid? ParentId { get; set; }
+
         public Guid? AccountId { get; set; }
 
         public Guid? DesignerId { get; set; }

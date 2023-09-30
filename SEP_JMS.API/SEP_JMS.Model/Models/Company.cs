@@ -14,7 +14,7 @@ namespace SEP_JMS.Model.Models
 
         public string? Description { get; set; }
 
-        public int PriceGroupId { get; set; }
+        public Guid PriceGroupId { get; set; }
 
         public Guid AccountId { get; set; }
     }

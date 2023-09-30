@@ -7,10 +7,10 @@ using SEP_JMS.Model.Api.Request.Job;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model.Models.ExtensionModels;
-using SEP_JSM.Repository.IRepositories;
-using System.ComponentModel;
+using SEP_JMS.Repository.IRepositories;
+using System.Data;
 
-namespace SEP_JSM.Repository.Repositories
+namespace SEP_JMS.Repository.Repositories
 {
     public class JobRepository : BaseRepository<Job>, IJobRepository
     {
@@ -18,7 +18,34 @@ namespace SEP_JSM.Repository.Repositories
         {
         }
 
-        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(JobFilterRequest model)
+        public async Task<PagingModel<Job>> GetProjects(ProjectFilterRequest model)
+        {
+            var userId = ApiContext.Current.UserId;
+            var role = ApiContext.Current.Role;
+            var query = from job in Context.Jobs
+                        where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
+                        select job;
+
+            if (!string.IsNullOrEmpty(model.SearchText))
+            {
+                query = query.Where(job => job.Title.ToLower().Contains(model.SearchText.ToLower()));
+            }
+
+            var jobs = await query.Where(job => job.CorrelationType == CorrelationJobType.Project)
+                .OrderByDescending(job => job.CreatedTime)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .AsNoTracking()
+                .ToListAsync();
+            var count = await query.CountAsync();
+            return new PagingModel<Job>
+            {
+                Items = jobs,
+                Count = count
+            };
+        }
+
+        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(JobFilterRequest model)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
@@ -49,9 +76,17 @@ namespace SEP_JSM.Repository.Repositories
                         into companies
                         from company in companies.DefaultIfEmpty()
 
-                        where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
-                        select new { job, createdUser, customer, account, designer, company };
+                        join jobType in Context.TypeOfJobs
+                        on job.JobType equals jobType.TypeId
+                        into jobTypes
+                        from jobType in jobTypes.DefaultIfEmpty()
 
+                        where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
+                        select new { job, createdUser, customer, account, designer, company, jobType };
+            if (model.ParentId != null)
+            {
+                query = query.Where(d => d.job.ParentId == model.ParentId.Value);
+            }
             if (model.CorrelationType != null)
             {
                 query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
@@ -131,18 +166,18 @@ namespace SEP_JSM.Repository.Repositories
             var jobs = await query.OrderByDescending(data => data.job.CreatedTime)
                             .Skip((model.PageIndex - 1) * model.PageSize)
                             .Take(model.PageSize)
-                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company))
+                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company, data.jobType))
                             .AsNoTracking()
                             .ToListAsync();
             var count = await query.CountAsync();
-            return new PagingModel<Tuple<Job, User, User, User, User, Company>>
+            return new PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>
             {
                 Items = jobs,
                 Count = count
             };
         }
 
-        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(InternalJobFilterRequest model)
+        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(InternalJobFilterRequest model)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
@@ -173,8 +208,17 @@ namespace SEP_JSM.Repository.Repositories
                         into companies
                         from company in companies.DefaultIfEmpty()
 
+                        join jobType in Context.TypeOfJobs
+                        on job.JobType equals jobType.TypeId
+                        into jobTypes
+                        from jobType in jobTypes.DefaultIfEmpty()
+
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
-                        select new { job, createdUser, customer, account, designer, company };
+                        select new { job, createdUser, customer, account, designer, company, jobType };
+            if (model.ParentId != null)
+            {
+                query = query.Where(d => d.job.ParentId == model.ParentId.Value);
+            }
             if (model.CorrelationType != null)
             {
                 query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
@@ -255,26 +299,18 @@ namespace SEP_JSM.Repository.Repositories
             var jobs = await query.OrderByDescending(data => data.job.CreatedTime)
                             .Skip((model.PageIndex - 1) * model.PageSize)
                             .Take(model.PageSize)
-                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company))
+                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company, data.jobType))
                             .AsNoTracking()
                             .ToListAsync();
             var count = await query.CountAsync();
-            return new PagingModel<Tuple<Job, User, User, User, User, Company>>
+            return new PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>
             {
                 Items = jobs,
                 Count = count
             };
         }
 
-        public async Task<Guid> CreateJob(Job job)
-        {
-            job.CreatedBy = ApiContext.Current.UserId;
-            await Context.Jobs.AddAsync(job);
-            await Context.SaveChangesAsync();
-            return job.JobId;
-        }
-
-        public async Task<Tuple<Job, User, User, User, User, Company>?> GetJob(Guid jobId)
+        public async Task<Tuple<Job, User, User, User, User, Company, TypeOfJob>?> GetJob(Guid jobId)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
@@ -305,9 +341,14 @@ namespace SEP_JSM.Repository.Repositories
                         into companies
                         from company in companies.DefaultIfEmpty()
 
+                        join jobType in Context.TypeOfJobs
+                       on job.JobType equals jobType.TypeId
+                       into jobTypes
+                        from jobType in jobTypes.DefaultIfEmpty()
+
                         where job.JobId == jobId &&
                         (job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin)
-                        select Tuple.Create(job, createdUser, customer, account, designer, company);
+                        select Tuple.Create(job, createdUser, customer, account, designer, company, jobType);
 
             return await query.AsNoTracking().FirstOrDefaultAsync();
         }
@@ -351,6 +392,9 @@ namespace SEP_JSM.Repository.Repositories
 
         public async Task<Job?> UpdateJob(Guid jobId, UpdateJobRequest model)
         {
+            if (model.CorrelationType == CorrelationJobType.Project && model.ParentId != null)
+                throw new ArgumentException("project can't have parent id");
+
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
             var query = from job in Context.Jobs

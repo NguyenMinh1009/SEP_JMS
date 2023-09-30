@@ -12,7 +12,7 @@ namespace SEP_JMS.Model.Models
 
         public Guid JobTypeId { get; set; }
 
-        public int PriceGroupId { get; set; }
+        public Guid PriceGroupId { get; set; }
 
         public int UnitPrice { get; set; }
 

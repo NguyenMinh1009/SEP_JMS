@@ -7,8 +7,8 @@ namespace SEP_JMS.Model.Models
     [Index(nameof(Name), IsUnique = true)]
     public class PriceGroup
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PriceGroupId { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Guid PriceGroupId { get; set; }
 
         public string Name { get; set; } = null!;
 

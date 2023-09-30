@@ -20,7 +20,7 @@ namespace SEP_JMS.Model.Models
 
         public Guid CustomerId { get; set; }
 
-        public Guid ParentId { get; set; }
+        public Guid? ParentId { get; set; }
 
         public Guid AccountId { get; set; }
 

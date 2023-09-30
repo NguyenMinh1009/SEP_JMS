@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SEP_JMS.Common\SEP_JMS.Common.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Mapper\SEP_JMS.Mapper.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Model\SEP_JMS.Model.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Repository\SEP_JMS.Repository.csproj" />
+  </ItemGroup>
+
+</Project>

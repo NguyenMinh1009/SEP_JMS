@@ -4,17 +4,17 @@ using SEP_JMS.Model.Models.ExtensionModels;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model;
 
-namespace SEP_JSM.Repository.IRepositories
+namespace SEP_JMS.Repository.IRepositories
 {
-    public interface IJobRepository
+    public interface IJobRepository : IBaseRepository<Job>
     {
-        public Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(JobFilterRequest model);
+        public Task<PagingModel<Job>> GetProjects(ProjectFilterRequest model);
 
-        public Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(InternalJobFilterRequest model);
+        public Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(JobFilterRequest model);
 
-        public Task<Guid> CreateJob(Job job);
+        public Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(InternalJobFilterRequest model);
 
-        public Task<Tuple<Job, User, User, User, User, Company>?> GetJob(Guid jobId);
+        public Task<Tuple<Job, User, User, User, User, Company, TypeOfJob>?> GetJob(Guid jobId);
 
         public Task<Job?> GetBasicJob(Guid jobId);
 

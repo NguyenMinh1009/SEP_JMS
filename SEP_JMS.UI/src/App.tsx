@@ -5,6 +5,8 @@ import HomeSide from "./pages/Home";
 import MainContent from "./components/MainContent";
 import { createTheme } from "@mui/material";
 import { viVN } from "@mui/x-date-pickers";
+import FinishedTasks from "./pages/FinishedTask";
+import { PathString } from "./enums/MapRouteToBreadCreumb";
 
 const theme = createTheme(
   {
@@ -25,6 +27,7 @@ function App() {
           <Routes>
             <Route element={<MainContent />}>
               <Route path="/home" element={<HomeSide />} />
+              <Route path={`/${PathString.VIEC_DA_XONG}/*`} element={<FinishedTasks />} />
             </Route>
           </Routes>
         </div>

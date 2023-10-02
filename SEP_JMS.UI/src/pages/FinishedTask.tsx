@@ -1,6 +1,7 @@
 import "react-quill/dist/quill.snow.css";
 import "react-multi-carousel/lib/styles.css";
 import { IoAddCircleOutline } from "react-icons/io5";
+import TaskPreview from "../components/TaskPreview";
 import { CiExport } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { Role } from "../enums/Role";
@@ -10,6 +11,8 @@ import { CircularProgress } from "@mui/material";
 import moment from "moment";
 import { PathString } from "../enums/MapRouteToBreadCreumb";
 import JobFilterSection from "../components/common/JobFilterSection";
+import useFilterInfo from "../hooks/store/useFilterInfo";
+import AlwayxInstance from "../api/AxiosInstance";
 
 interface IFinishedTasks {
   isInternal?: boolean;
@@ -22,35 +25,35 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const navigate = useNavigate();
   const currentPerson = useCurrentPerson();
-  // const filterInfoController = useFilterInfo();
+  const filterInfoController = useFilterInfo();
 
-  // const handleExport = () => {
-  //   setIsExporting(true);
-  //   AlwayxInstance.post(
-  //     "job/export",
-  //     { ...pageInfo, ...filterInfoController.content },
-  //     { responseType: "blob" }
-  //   )
-  //     .then(response => {
-  //       const docFile = new File(
-  //         [response.data],
-  //         "Export " + moment(new Date()).format("DD-MM-YYYY - hhhmm"),
-  //         {
-  //           type: response.data.type
-  //         }
-  //       );
-  //       const fileLink = document.createElement("a");
-  //       fileLink.href = URL.createObjectURL(docFile);
-  //       fileLink.setAttribute(
-  //         "download",
-  //         "Export " + moment(new Date()).format("DD-MM-YYYY - hgmm")
-  //       );
-  //       fileLink.click();
-  //     })
-  //     .finally(() => {
-  //       setIsExporting(false);
-  //     });
-  // };
+  const handleExport = () => {
+    setIsExporting(true);
+    AlwayxInstance.post(
+      "job/export",
+      { ...pageInfo, ...filterInfoController.content },
+      { responseType: "blob" }
+    )
+      .then(response => {
+        const docFile = new File(
+          [response.data],
+          "Export " + moment(new Date()).format("DD-MM-YYYY - hhhmm"),
+          {
+            type: response.data.type
+          }
+        );
+        const fileLink = document.createElement("a");
+        fileLink.href = URL.createObjectURL(docFile);
+        fileLink.setAttribute(
+          "download",
+          "Export " + moment(new Date()).format("DD-MM-YYYY - hgmm")
+        );
+        fileLink.click();
+      })
+      .finally(() => {
+        setIsExporting(false);
+      });
+  };
 
   return (
     <div className="h-full overflow-auto scrollbar-hide">
@@ -67,9 +70,9 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
                 <span className="hidden 3xl:block">Tạo công việc mới</span>
               </div>
             )}
-            {currentPerson.roleType === Role.ADMIN && (
+            {1 === 1 && (
               <div
-                onClick={isExporting ? undefined : () => console.log("")}
+                onClick={isExporting ? undefined : handleExport}
                 className="flex h-10 w-20 cursor-pointer items-center justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
               >
                 {isExporting ? (
@@ -86,7 +89,7 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
       <p className="text-primary mb-6 text-base">Công việc đã hoàn thành</p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
-          {/* <TaskPreview setPageInfo={setPageInfo} finishedOnly /> */}
+          <TaskPreview setPageInfo={setPageInfo} finishedOnly />
         </div>
       </div>
     </div>

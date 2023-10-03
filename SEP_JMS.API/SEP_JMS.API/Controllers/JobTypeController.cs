@@ -33,7 +33,7 @@ namespace SEP_JMS.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("all")]
+        [HttpGet("all")]
         public async Task<ActionResult<List<JobTypeResponse>>> GetAll()
         {
             try

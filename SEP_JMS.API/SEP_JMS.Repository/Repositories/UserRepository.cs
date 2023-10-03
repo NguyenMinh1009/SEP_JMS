@@ -32,5 +32,11 @@ namespace SEP_JMS.Repository.Repositories
                 Count = count
             };
         }
+
+        public async Task<User?> Login(UserLoginRequest model)
+        {
+            return await Context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() ==  model.Username.ToLower()
+                && u.Password == model.Password);
+        }
     }
 }

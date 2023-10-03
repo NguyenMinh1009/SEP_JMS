@@ -7,5 +7,7 @@ namespace SEP_JMS.Service.IServices
     public interface IUserService
     {
         public Task<PagingModel<User>> GetUsers(UserFilterRequest model);
+
+        public Task<User?> Login(UserLoginRequest model);
     }
 }

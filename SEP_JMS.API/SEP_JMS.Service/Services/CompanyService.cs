@@ -1,29 +1,31 @@
-﻿using AutoMapper;
-using SEP_JMS.Common.Logger;
-using SEP_JMS.Model.Api.Request.User;
+﻿using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model;
-using SEP_JMS.Repository.IRepositories;
 using SEP_JMS.Service.IServices;
+using AutoMapper;
+using SEP_JMS.Common.Logger;
+using SEP_JMS.Repository.IRepositories;
 
 namespace SEP_JMS.Service.Services
 {
-    public class UserService : IUserService
+    public class CompanyService : ICompanyService
     {
         private readonly IJobRepository jobRepository;
         private readonly IUserRepository userRepository;
         private readonly IPriceRepository priceRepository;
         private readonly IPriceGroupRepository priceGroupRepository;
         private readonly IJobTypeRepository jobTypeRepository;
+        private readonly ICompanyRepository companyRepository;
 
         private readonly IJMSLogger logger;
         private readonly IMapper mapper;
 
-        public UserService(IJobRepository jobRepository,
+        public CompanyService(IJobRepository jobRepository,
             IUserRepository userRepository,
             IPriceRepository priceRepository,
             IPriceGroupRepository priceGroupRepository,
             IJobTypeRepository typeOfJobRepository,
+            ICompanyRepository companyRepository, 
 
             IMapper mapper,
             IJMSLogger logger)
@@ -33,19 +35,15 @@ namespace SEP_JMS.Service.Services
             this.priceGroupRepository = priceGroupRepository;
             this.priceRepository = priceRepository;
             this.jobTypeRepository = typeOfJobRepository;
+            this.companyRepository = companyRepository;
 
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<PagingModel<User>> GetUsers(UserFilterRequest model)
+        public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model)
         {
-            return await userRepository.GetUsers(model);
-        }
-
-        public async Task<User?> Login(UserLoginRequest model)
-        {
-            return await userRepository.Login(model);
+            return await companyRepository.GetCompanies(model);
         }
     }
 }

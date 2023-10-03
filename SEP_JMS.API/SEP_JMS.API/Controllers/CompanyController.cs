@@ -10,7 +10,7 @@ using SEP_JMS.Service.IServices;
 
 namespace SEP_JMS.API.Controllers
 {
-    [Route("api/compay")]
+    [Route("api/company")]
     [ApiController]
     public class CompanyController : ControllerBase
     {

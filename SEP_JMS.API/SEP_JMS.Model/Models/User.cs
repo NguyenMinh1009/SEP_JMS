@@ -49,5 +49,6 @@ namespace SEP_JMS.Model.Models
         public long CreatedTime { get; set; }
 
         public AccountStatus AccountStatus { get; set; }
+        public string NotificationConfig { get; set; } = string.Empty; 
     }
 }

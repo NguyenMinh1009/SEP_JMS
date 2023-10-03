@@ -15,6 +15,7 @@ namespace SEP_JMS.API.Extensions
                 .UseSqlServer(configuration["DBConnectionString"]))
 
                 .AddScoped<IJobRepository, JobRepository>()
+                .AddScoped<INotificationRepository, NotificationRepository>()
 
                 .AddSingleton<IJMSLogger, JMSLogger>()
                 .AddAutoMapper(Assembly.Load("SEP_JMS.Mapper"));

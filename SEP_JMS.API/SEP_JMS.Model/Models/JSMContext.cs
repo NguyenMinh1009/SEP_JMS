@@ -17,6 +17,7 @@ namespace SEP_JMS.Model.Models
         public DbSet<Price> Prices { get; set; }
         public DbSet<PriceGroup> PriceGroups { get; set; }
         public DbSet<JobType> TypeOfJobs { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,6 +38,7 @@ namespace SEP_JMS.Model.Models
             modelBuilder.Entity<JobType>().ToTable("TypeOfJob");
             modelBuilder.Entity<Price>().ToTable("Price");
             modelBuilder.Entity<PriceGroup>().ToTable("PriceGroup");
+            modelBuilder.Entity<Notification>().ToTable("Notification");
         }
     }
 }

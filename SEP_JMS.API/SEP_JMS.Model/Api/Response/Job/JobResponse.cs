@@ -1,6 +1,8 @@
 ﻿using SEP_JMS.Model.Api.Response.Company;
+using SEP_JMS.Model.Api.Response.JobType;
 using SEP_JMS.Model.Api.Response.User;
 using SEP_JMS.Model.Enums.System;
+using SEP_JMS.Model.Models;
 using SEP_JMS.Model.Models.ExtensionModels;
 
 namespace SEP_JMS.Model.Api.Response.Job
@@ -25,7 +27,7 @@ namespace SEP_JMS.Model.Api.Response.Job
 
         public int Quantity { get; set; }
 
-        public Guid JobType { get; set; }
+        public JobTypeResponse JobType { get; set; } = null!;
 
         public long CreatedTime { get; set; }
 

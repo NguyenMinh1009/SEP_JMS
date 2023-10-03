@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="JobProfiles\" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SEP_JMS.Common\SEP_JMS.Common.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Model\SEP_JMS.Model.csproj" />
   </ItemGroup>
 
 </Project>

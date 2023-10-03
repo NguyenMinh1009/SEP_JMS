@@ -10,11 +10,11 @@ namespace SEP_JMS.Repository.IRepositories
     {
         public Task<PagingModel<Job>> GetProjects(ProjectFilterRequest model);
 
-        public Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(JobFilterRequest model);
+        public Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(JobFilterRequest model);
 
-        public Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(InternalJobFilterRequest model);
+        public Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(InternalJobFilterRequest model);
 
-        public Task<Tuple<Job, User, User, User, User, Company, TypeOfJob>?> GetJob(Guid jobId);
+        public Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetJob(Guid jobId);
 
         public Task<Job?> GetBasicJob(Guid jobId);
 

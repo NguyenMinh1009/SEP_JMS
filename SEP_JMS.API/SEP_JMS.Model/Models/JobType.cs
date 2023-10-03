@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SEP_JMS.Model.Models
 {
-    public class TypeOfJob
+    public class JobType
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid TypeId { get; set; }

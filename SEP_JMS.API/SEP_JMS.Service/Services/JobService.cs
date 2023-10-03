@@ -10,6 +10,7 @@ using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request.Job;
 using SEP_JMS.Model.Api.Response.Company;
 using SEP_JMS.Model.Api.Response.Job;
+using SEP_JMS.Model.Api.Response.JobType;
 using SEP_JMS.Model.Api.Response.User;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model.Models;
@@ -25,7 +26,7 @@ namespace SEP_JMS.Service.Services
         private readonly IUserRepository userRepository;
         private readonly IPriceRepository priceRepository;
         private readonly IPriceGroupRepository priceGroupRepository;
-        private readonly ITypeOfJobRepository typeOfJobRepository;
+        private readonly IJobTypeRepository jobTypeRepository;
 
         private readonly IJMSLogger logger;
         private readonly IMapper mapper;
@@ -34,7 +35,7 @@ namespace SEP_JMS.Service.Services
             IUserRepository userRepository,
             IPriceRepository priceRepository,
             IPriceGroupRepository priceGroupRepository,
-            ITypeOfJobRepository typeOfJobRepository,
+            IJobTypeRepository typeOfJobRepository,
 
             IMapper mapper,
             IJMSLogger logger)
@@ -43,7 +44,7 @@ namespace SEP_JMS.Service.Services
             this.userRepository = userRepository;
             this.priceGroupRepository = priceGroupRepository;
             this.priceRepository = priceRepository;
-            this.typeOfJobRepository = typeOfJobRepository;
+            this.jobTypeRepository = typeOfJobRepository;
 
             this.mapper = mapper;
             this.logger = logger;
@@ -61,6 +62,7 @@ namespace SEP_JMS.Service.Services
                 jobDisplay.Account = mapper.Map<EmployeeResponse>(jobInfo.Item4);
                 jobDisplay.Designer = mapper.Map<EmployeeResponse>(jobInfo.Item5);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(jobInfo.Item6);
+                jobDisplay.JobType = mapper.Map<JobTypeResponse>(jobInfo.Item7);
                 result.Add(jobDisplay);
             }
             return new PagingModel<JobResponse>
@@ -86,6 +88,7 @@ namespace SEP_JMS.Service.Services
                 if (designer == null || customer.RoleType != RoleType.Designer) throw new Exception($"designer {model.DesignerId} not found");
             }
 
+            _ = await jobTypeRepository.Get(model.JobType) ?? throw new Exception($"job type {model.JobType} not found");
             var job = mapper.Map<Job>(model);
             var folderModel = new FolderItem();
             foreach (var file in model.RequirementFiles)
@@ -99,7 +102,7 @@ namespace SEP_JMS.Service.Services
             return createdJob.JobId;
         }
 
-        public async Task<Tuple<Job, User, User, User, User, Company, TypeOfJob>?> GetJob(Guid jobId)
+        public async Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetJob(Guid jobId)
         {
             return await jobRepository.GetJob(jobId);
         }
@@ -118,6 +121,17 @@ namespace SEP_JMS.Service.Services
 
         public async Task<bool> UpdateJob(Guid jobId, UpdateJobRequest model)
         {
+            if (model.DesignerId != null)
+            {
+                var desinger = await userRepository.Get(model.DesignerId.Value);
+                if (desinger == null || desinger.RoleType != RoleType.Designer) return false;
+            }
+            if (model.AccountId != null)
+            {
+                var account = await userRepository.Get(model.AccountId.Value);
+                if (account == null || account.RoleType != RoleType.Account) return false;
+            }
+
             var job = await jobRepository.UpdateJob(jobId, model);
             if (job == null) return false;
             return true;
@@ -147,7 +161,7 @@ namespace SEP_JMS.Service.Services
         public async Task<string> ExportJobs(ExportJobRequest model)
         {
             var jobsAndCompany = await jobRepository.GetAllJobsForExport(model);
-            var jobTypes = await typeOfJobRepository.GetAll(type => true, 0, int.MaxValue);
+            var jobTypes = await jobTypeRepository.GetAll(type => true, 0, int.MaxValue);
 
             if (!jobsAndCompany.Any()) return string.Empty;
             var jobGroups = jobsAndCompany.GroupBy(job => job.Item2.CompanyId);

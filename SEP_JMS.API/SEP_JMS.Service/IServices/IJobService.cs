@@ -12,7 +12,7 @@ namespace SEP_JMS.Service.IServices
 
         public Task<Guid?> CreateJob(CreateJobRequest model);
 
-        public Task<Tuple<Job, User, User, User, User, Company, TypeOfJob>?> GetJob(Guid jobId);
+        public Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetJob(Guid jobId);
 
         public Task<Job?> GetBasicJob(Guid jobId);
 

@@ -2,7 +2,7 @@
 
 namespace SEP_JMS.Repository.IRepositories
 {
-    public interface ITypeOfJobRepository : IBaseRepository<TypeOfJob>
+    public interface IJobTypeRepository : IBaseRepository<JobType>
     {
     }
 }

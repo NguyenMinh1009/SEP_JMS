@@ -16,7 +16,7 @@ namespace SEP_JMS.Model.Models
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Price> Prices { get; set; }
         public DbSet<PriceGroup> PriceGroups { get; set; }
-        public DbSet<TypeOfJob> TypeOfJobs { get; set; }
+        public DbSet<JobType> TypeOfJobs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,7 +34,7 @@ namespace SEP_JMS.Model.Models
             modelBuilder.Entity<Company>().ToTable("Company");
             modelBuilder.Entity<User>().ToTable("User");
             modelBuilder.Entity<Job>().ToTable("Job");
-            modelBuilder.Entity<TypeOfJob>().ToTable("TypeOfJob");
+            modelBuilder.Entity<JobType>().ToTable("TypeOfJob");
             modelBuilder.Entity<Price>().ToTable("Price");
             modelBuilder.Entity<PriceGroup>().ToTable("PriceGroup");
         }

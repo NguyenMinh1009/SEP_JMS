@@ -45,7 +45,7 @@ namespace SEP_JMS.Repository.Repositories
             };
         }
 
-        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(JobFilterRequest model)
+        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(JobFilterRequest model)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
@@ -170,14 +170,14 @@ namespace SEP_JMS.Repository.Repositories
                             .AsNoTracking()
                             .ToListAsync();
             var count = await query.CountAsync();
-            return new PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>
+            return new PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>
             {
                 Items = jobs,
                 Count = count
             };
         }
 
-        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>> GetAllJobs(InternalJobFilterRequest model)
+        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(InternalJobFilterRequest model)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
@@ -303,14 +303,14 @@ namespace SEP_JMS.Repository.Repositories
                             .AsNoTracking()
                             .ToListAsync();
             var count = await query.CountAsync();
-            return new PagingModel<Tuple<Job, User, User, User, User, Company, TypeOfJob>>
+            return new PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>
             {
                 Items = jobs,
                 Count = count
             };
         }
 
-        public async Task<Tuple<Job, User, User, User, User, Company, TypeOfJob>?> GetJob(Guid jobId)
+        public async Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetJob(Guid jobId)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;

@@ -1,10 +1,10 @@
 ﻿using SEP_JMS.Model.Api.Request.User;
-using SEP_JMS.Model;
 using SEP_JMS.Model.Models;
+using SEP_JMS.Model;
 
-namespace SEP_JMS.Repository.IRepositories
+namespace SEP_JMS.Service.IServices
 {
-    public interface IUserRepository : IBaseRepository<User>
+    public interface IUserService
     {
         public Task<PagingModel<User>> GetUsers(UserFilterRequest model);
     }

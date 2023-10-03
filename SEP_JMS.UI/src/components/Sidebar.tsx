@@ -12,7 +12,7 @@ import ListItemText from "@mui/material/ListItemText";
 import useSideBarPanel from "../hooks/store/useSideBarPanel";
 import { useLocation, useNavigate } from "react-router-dom";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
-import { BiListUl, BiLockAlt } from "react-icons/bi";
+import { BiListUl, BiLockAlt, BiBell } from "react-icons/bi";
 import { TbReport } from "react-icons/tb";
 import { PiUsersThreeLight } from "react-icons/pi";
 import { IoPricetagsOutline } from "react-icons/io5";
@@ -106,14 +106,14 @@ const SideBar = () => {
   const sidebarDetailItems: ISidebarItem[] =
     1 === 1
       ? [
-          // {
-          //   parent: {
-          //     text: "Thông báo",
-          //     to: `${PathString.THONG_BAO}`,
-          //     Icon: <BiBell size={18} />,
-          //     prefix: `${PathString.THONG_BAO}`
-          //   }
-          // },
+          {
+            parent: {
+              text: "Thông báo",
+              to: `${PathString.THONG_BAO}`,
+              Icon: <BiBell size={18} />,
+              prefix: `${PathString.THONG_BAO}`
+            }
+          },
           {
             parent: {
               text: "Quản lý users",

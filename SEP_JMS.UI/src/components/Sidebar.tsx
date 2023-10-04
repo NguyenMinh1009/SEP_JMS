@@ -18,8 +18,8 @@ import { PiUsersThreeLight } from "react-icons/pi";
 import { IoPricetagsOutline } from "react-icons/io5";
 import { BsCheckAll } from "react-icons/bs";
 import Images from "../img";
-import { Role } from "../enums/Role";
-import { PathString } from "../enums/MapRouteToBreadCreumb";
+import { Role } from "../enums/role";
+import { PathString } from "../enums/MapRouteToBreadCrumb";
 interface ISidebarItem {
   parent: {
     text: string;

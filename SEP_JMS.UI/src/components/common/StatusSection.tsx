@@ -4,7 +4,7 @@ import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useState } from "react";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
-import { Role } from "../../enums/Role";
+import { Role } from "../../enums/role";
 import { VisibleType } from "../../enums/visibleType";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { getStatusBgColor } from "../../utils/Status";

@@ -15,6 +15,7 @@ import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
 import useFilterInfo from "../hooks/store/useFilterInfo";
 import { useIsFirstRender } from "../hooks/useIsFirstRender";
 import { JobStatusType } from "../enums/jobStatusType";
+import fakeDatas from "../FakeData.json";
 
 interface ITaskPreview {
   sidebar?: boolean;
@@ -35,17 +36,18 @@ const TaskPreview = ({ finishedOnly, setPageInfo }: ITaskPreview) => {
 
   const getJobs = async () => {
     // setLoading(true);
-    await AlwayxInstance.post("job/all", {
-      pageIndex: page,
-      pageSize: pageSize,
-      searchText: "",
-      ...filterInfoController.content,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
-    }).then(res => {
-      setLoading(false);
-      setJobs(res.data.items);
-      setPageCount(Math.ceil(res.data.count / pageSize));
-    });
+    // await AlwayxInstance.post("job/all", {
+    //   pageIndex: page,
+    //   pageSize: pageSize,
+    //   searchText: "",
+    //   ...filterInfoController.content,
+    //   jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
+    // }).then(res => {
+    //   setLoading(false);
+    //   setJobs(res.data.items);
+    //   setPageCount(Math.ceil(res.data.count / pageSize));
+    // });
+    await setJobs(fakeDatas.items);
   };
 
   const removeTaskPreview = (taskId: string) => {

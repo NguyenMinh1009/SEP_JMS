@@ -12,11 +12,11 @@ import { VisibleType } from "../../enums/visibleType";
 import { useNavigate } from "react-router-dom";
 import { convertVND } from "../../utils/VNDConvert";
 import { getTextColorFromPriority } from "../../utils/Priority";
-import { PathString } from "../../enums/MapRouteToBreadCreumb";
+import { PathString } from "../../enums/MapRouteToBreadCrumb";
 import { IoCreateOutline } from "react-icons/io5";
 import { HiOutlineEye } from "react-icons/hi";
 import { BiTrashAlt } from "react-icons/bi";
-import { Role } from "../../enums/Role";
+import { Role } from "../../enums/role";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import { JobStatusType } from "../../enums/jobStatusType";
 import CustomDialog from "./CustomDialog";
@@ -265,7 +265,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
                 <HiOutlineEye size={18} color="#666" />
                 <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
               </span>
-              {!isDisableWhenComplete() && (
+              {isDisableWhenComplete() && (
                 <>
                   <span
                     onClick={() => {

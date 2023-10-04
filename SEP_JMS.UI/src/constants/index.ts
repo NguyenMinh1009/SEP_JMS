@@ -2,7 +2,7 @@ import { AccountStatusType } from "../enums/accountStatusType";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { CreateRole } from "../enums/createRole";
 import { GenderType } from "../enums/genderType";
-import { Role } from "../enums/Role";
+import { Role } from "../enums/role";
 
 export const allowFileTypes: string = `image/*, 
 application/pdf, 

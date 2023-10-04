@@ -10,7 +10,7 @@ import { allKey, correlationJobOptions, defaultCompany } from "../../constants";
 import { CorrelationJobType } from "../../enums/correlationJobType";
 // import AlwayxInstance from "../../api/AxiosInstance";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
-import { Role } from "../../enums/Role";
+import { Role } from "../../enums/role";
 import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 import useFilterInfo from "../../hooks/store/useFilterInfo";
 import CustomButton from "./CustomButton";

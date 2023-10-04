@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Role } from "../../enums/Role";
+import { Role } from "../../enums/role";
 import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
 const defaultCustomer: ICustomer = {
   userId: "",

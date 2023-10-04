@@ -27,6 +27,7 @@ namespace SEP_JMS.API.Extensions
                 .AddScoped<IJobService, JobService>()
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IJobTypeService, JobTypeService>()
+                .AddScoped<INotificationRepository, NotificationRepository>()
 
                 .AddSingleton<IJMSLogger, JMSLogger>()
                 .AddAutoMapper(Assembly.Load("SEP_JMS.Mapper"));

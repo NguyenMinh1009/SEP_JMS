@@ -8,6 +8,7 @@ import { viVN } from "@mui/x-date-pickers";
 import FinishedTasks from "./pages/FinishedTask";
 import { PathString } from "./enums/MapRouteToBreadCrumb";
 import TasksDetail from "./components/TaskDetail";
+import Notifications from "./pages/Notifications";
 
 const theme = createTheme(
   {
@@ -28,6 +29,7 @@ function App() {
           <Routes>
             <Route element={<MainContent />}>
               <Route path="/home" element={<HomeSide />} />
+              <Route path={`/${PathString.THONG_BAO}`} element={<Notifications />} />
               <Route path={`/${PathString.VIEC_DA_XONG}/*`}>
                 <Route index element={<FinishedTasks />} />
                 <Route path=":taskId" element={<TasksDetail finishOnly />} />

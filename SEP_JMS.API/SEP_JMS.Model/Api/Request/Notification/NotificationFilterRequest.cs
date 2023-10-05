@@ -2,6 +2,7 @@
 {
     public class NotificationFilterRequest : BaseFilterRequest
     {
-        public bool Unread { get; set; }
+        public bool Read { get; set; }
+        public bool Archived { get; set; }
     }
 }

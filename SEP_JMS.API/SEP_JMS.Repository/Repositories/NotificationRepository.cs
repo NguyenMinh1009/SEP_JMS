@@ -17,13 +17,15 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task UpdateArchivedTime(Guid notificationId)
         {
+            var archivedTime = DateTime.Now.Ticks;
             await Context.Notifications.Where(job => job.NotificationId == notificationId)
                 .ExecuteUpdateAsync(notis => notis
-                .SetProperty(noti => noti.ArchivedAt, noti => DateTime.Now.Ticks));
+                .SetProperty(noti => noti.ArchivedAt, noti => archivedTime));
         }
 
         public async Task UpdateReadTime(Guid notificationId, bool readAll = false)
         {
+            var readTime = DateTime.Now.Ticks;
             var query = from notis in Context.Notifications
                         select notis;
             if(!readAll)
@@ -31,7 +33,7 @@ namespace SEP_JMS.Repository.Repositories
                 query = query.Where(job => job.NotificationId == notificationId);
             }
             await query.ExecuteUpdateAsync(notis => notis
-                .SetProperty(noti => noti.ReadAt, noti => DateTime.Now.Ticks));
+                .SetProperty(noti => noti.ReadAt, noti => readTime));
         }
 
         public async Task DeleteNotification(Guid notificationId, bool deleteAll)
@@ -51,23 +53,32 @@ namespace SEP_JMS.Repository.Repositories
             await Context.SaveChangesAsync();
         }
 
-        public async Task<PagingModel<Notification>> GetNotifications(NotificationFilterRequest model)
+        public async Task<Tuple<int, PagingModel<Notification>>> GetNotifications(NotificationFilterRequest model)
         {
             var userId = ApiContext.Current.UserId;
             var query = from noti in Context.Notifications
-                        where model.Unread == (noti.ReadAt <=0)
+                        where noti.Receiver.Contains(userId.ToString())
                         select noti;
+            if (model.Archived)
+            {
+                query = query.Where(x=>x.ArchivedAt > 0);
+            }
+            else
+            {
+                query = query.Where(x => (x.ReadAt > 0) == model.Read);
+            }
             var notifications = await query.OrderByDescending(job => job.CreatedTime)
                 .Skip((model.PageIndex - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .AsNoTracking()
                 .ToListAsync();
             var count = await query.CountAsync();
-            return new PagingModel<Notification>
+            var readNotificationCount = await query.AsNoTracking().CountAsync(x => x.ReadAt > 0);
+            return new Tuple<int, PagingModel<Notification>>(readNotificationCount, new PagingModel<Notification>
             {
                 Items = notifications,
                 Count = count
-            };
+            });
         }
     }
 }

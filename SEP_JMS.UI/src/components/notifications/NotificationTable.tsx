@@ -23,7 +23,7 @@ interface INotifyPreview {
 
 const pageSize = 10;
 
-const NotifyPreView: React.FC<INotifyPreview> = ({ searchValue }) => {
+const NotificationTable: React.FC<INotifyPreview> = ({ searchValue }) => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = React.useState<number>(0);
@@ -32,16 +32,28 @@ const NotifyPreView: React.FC<INotifyPreview> = ({ searchValue }) => {
   const isFirstRender = useIsFirstRender();
 
   const getUsers = async () => {
+    let testData: Array<any> = [
+      {
+        entityName: "Job",
+        title: "Bạn có một công việc mới!!!",
+        message: "[ThaiNv] vừa assign cho bạn một công việc",
+        createdTime: 1696500452908,
+        readAt: null,
+      },
+      {
+        entityName: "Comment",
+        title: "Bạn có một công việc mới!!!",
+        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
+        createdTime: 1696500452908,
+        readAt: null,
+      }
+    ]
     setLoading(true);
-    await AlwayxInstance.post("admin/users/all", {
-      pageIndex: page,
-      pageSize: pageSize,
-      searchText: searchValue,
-    }).then(res => {
+    setTimeout(()=>{
       setLoading(false);
-      setNotifications(res.data.items);
-      setPageCount(Math.ceil(res.data.count / pageSize));
-    });
+      setNotifications(testData);
+      setPageCount(Math.ceil(testData.length / pageSize));
+    }, 2000);
   };
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -67,7 +79,7 @@ const NotifyPreView: React.FC<INotifyPreview> = ({ searchValue }) => {
           >
             <TableContainer>
               <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                <NotifcationTableHead status={1} />
+                {/* <NotifcationTableHead status={1} /> */}
                 <TableBody>
                   {notifications?.map((row: any, index: number) => {
                     return (
@@ -98,4 +110,4 @@ const NotifyPreView: React.FC<INotifyPreview> = ({ searchValue }) => {
   );
 };
 
-export default React.memo(NotifyPreView);
+export default React.memo(NotificationTable);

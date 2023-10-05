@@ -16,46 +16,19 @@ interface NotifyHeadCell {
 }
 
 const notifyHeadCells: readonly NotifyHeadCell[] = [
-  {
-    id: "stt",
-    disablePadding: false,
-    label: "STT"
-  },
-  {
-    id: "EntityName",
-    disablePadding: false,
-    label: "Loại"
-  },
-  {
-    id: "title",
-    disablePadding: false,
-    label: "Tiêu đề"
-  },
+  
   {
     id: "message",
     disablePadding: false,
     label: "Nội dung"
   },
   {
-    id: "createdDate",
+    id: "createdTime",
     disablePadding: false,
-    label: "Ngày tạo"
+    label: "Thời gian"
   },
-  {
-    id: "triggerBy",
-    disablePadding: false,
-    label: "TriggerBy"
-  },
-  {
-    id: "priority",
-    disablePadding: false,
-    label: "Ưu tiên"
-  },
-  {
-    id: "status",
-    disablePadding: false,
-    label: "Trạng thái"
-  },
+
+  
   {
     id: "action",
     disablePadding: false,

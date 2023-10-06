@@ -17,13 +17,15 @@ import { useIsFirstRender } from "../../hooks/useIsFirstRender";
 import { JobStatusType } from "../../enums/jobStatusType";
 import NotifcationTableHead from "./NotificationTableHead";
 import NotificationTableRow from "./NotificationTableRow";
+import { NotificationStatus } from "../../enums/NotificationStatus";
 interface INotifyPreview {
+  status: NotificationStatus;
   searchValue: string;
 }
 
 const pageSize = 10;
 
-const NotificationTable: React.FC<INotifyPreview> = ({ searchValue }) => {
+const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue }) => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = React.useState<number>(0);
@@ -36,6 +38,7 @@ const NotificationTable: React.FC<INotifyPreview> = ({ searchValue }) => {
     await AlwayxInstance.post("notification", {
       pageIndex: page,
       pageSize: pageSize,
+      status: NotificationStatus[status].toLocaleLowerCase()
     }).then(res => {
       setLoading(false);
       setNotifications(res.data.item2.items);
@@ -54,7 +57,7 @@ const NotificationTable: React.FC<INotifyPreview> = ({ searchValue }) => {
   useEffect(() => {
     if (page === 1) getNotifications();
     else setPage(1);
-  }, [searchValue]);
+  }, [status, searchValue]);
 
   return !isLoading ? (
     <div>

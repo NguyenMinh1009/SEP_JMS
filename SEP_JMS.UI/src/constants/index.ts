@@ -1,3 +1,4 @@
+import { NotificationStatus } from "../enums/NotificationStatus";
 import { AccountStatusType } from "../enums/accountStatusType";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { CreateRole } from "../enums/createRole";
@@ -129,6 +130,22 @@ export const correlationJobOptions = [
 //     text: "Dự án"
 //   }
 // ];
+
+export const notificationStatusOptions = [
+  {
+    key: NotificationStatus.ALL,
+    text: "Tất cả"
+  },
+  {
+    key: NotificationStatus.UNREAD,
+    text: "Chưa đọc"
+  },
+  {
+    key: NotificationStatus.ARCHIVED,
+    text: "Lưu trữ"
+  }
+];
+
 export const commonRegex = {
   email: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
   phone: /^(0|\+84)\d{9,10}$/,

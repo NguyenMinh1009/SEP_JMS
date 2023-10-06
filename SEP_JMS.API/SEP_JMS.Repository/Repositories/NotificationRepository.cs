@@ -53,10 +53,10 @@ namespace SEP_JMS.Repository.Repositories
             var query = from noti in Context.Notifications
                         where noti.Receiver.Contains(userId.ToString())
                         select noti;
-            model.Status ??= "All";
-            if (model.Status.Equals("Unread"))
+            model.Status ??= "all";
+            if (model.Status.Equals("unread"))
                 query = query.Where(e => e.ReadAt == null || e.ReadAt == 0);
-            if (model.Status.Equals("Archived"))
+            if (model.Status.Equals("archived"))
                 query = query.Where(e => e.ArchivedAt > 0);
 
             var notifications = await query.OrderByDescending(job => job.CreatedTime)

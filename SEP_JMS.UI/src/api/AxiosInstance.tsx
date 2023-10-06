@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const APIClientInstance = axios.create({
-  baseURL: "http://httpbin.org/",
+  baseURL: "http://localhost:5206/api/",
   headers: {
     Accept: "application/json"
     // Authorization: `Bearer ${currentCustomer.token}`,

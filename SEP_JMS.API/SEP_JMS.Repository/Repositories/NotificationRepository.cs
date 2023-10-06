@@ -37,13 +37,7 @@ namespace SEP_JMS.Repository.Repositories
         }
 
         public async Task DeleteNotification(Guid notificationId, bool deleteAll)
-        {
-            var query = from notis in Context.Notifications
-                        select notis;
-            if (!deleteAll)
-            {
-                query = query.Where(job => job.NotificationId == notificationId);
-            }
+        { 
             await Context.Notifications.Where(noti=>noti.NotificationId == notificationId).ExecuteDeleteAsync();
         }
 

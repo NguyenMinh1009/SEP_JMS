@@ -61,13 +61,13 @@ namespace SEP_JMS.API.Controllers
             }
         }
 
-        [HttpDelete("{jobId}")]
-        public async Task<IActionResult> DeleteNotification(Guid id)
+        [HttpDelete("{notificationId}")]
+        public async Task<IActionResult> DeleteNotification(Guid notificationId)
         {
             try
             {
-                logger.Info($"{logPrefix} Start to delete notification {id} for user {ApiContext.Current.UserId}.");
-                await notificationService.DeleteNotification(id);
+                logger.Info($"{logPrefix} Start to delete notification {notificationId} for user {ApiContext.Current.UserId}.");
+                await notificationService.DeleteNotification(notificationId);
                 return NoContent();
             }
             catch (Exception ex)

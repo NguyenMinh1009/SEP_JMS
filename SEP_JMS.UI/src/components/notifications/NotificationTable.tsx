@@ -32,90 +32,15 @@ const NotificationTable: React.FC<INotifyPreview> = ({ searchValue }) => {
   const isFirstRender = useIsFirstRender();
 
   const getUsers = async () => {
-    let testData: Array<any> = [
-      {
-        entityName: "Job",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa assign cho bạn một công việc",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[TuanTX] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[MinhNN] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[PhuongNT] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },{
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      },
-      {
-        entityName: "Comment",
-        title: "Bạn có một công việc mới!!!",
-        message: "[ThaiNv] vừa comment vào công việc [AJTLLL]",
-        createdTime: 1696500452908,
-        readAt: null,
-      }
-    ]
     setLoading(true);
-    setTimeout(()=>{
+    await AlwayxInstance.post("notification", {
+      pageIndex: page,
+      pageSize: pageSize,
+    }).then(res => {
       setLoading(false);
-      setNotifications(testData);
-      setPageCount(Math.ceil(testData.length / pageSize));
-    }, 2000);
+      setNotifications(res.data.item2.items);
+      setPageCount(Math.ceil(res.data.item2.count / pageSize));
+    });
   };
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {

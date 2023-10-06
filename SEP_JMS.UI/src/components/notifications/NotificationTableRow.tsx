@@ -73,7 +73,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
           >
             <FaPhoenixFramework color="green" size={18} />
             <div style={{ color: 'blue' }}>
-            {"[" + moment(row.createdTime).fromNow() + "]"}
+            {"[" + moment(ticksToDate(row.createdTime)).fromNow() + "]"}
             </div>
           {row.message ?? "..."}
           </div>

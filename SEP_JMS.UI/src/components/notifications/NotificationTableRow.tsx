@@ -11,7 +11,7 @@ import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import CustomDialog from "../common/CustomDialog";
 import AlwayxInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
-import { FaPhoenixFramework } from "react-icons/fa";
+import { GoDotFill } from "react-icons/go";
 import { RiArchiveDrawerFill } from "react-icons/ri";
 import { TiDelete } from "react-icons/ti";
 import { AccountStatusType } from "../../enums/accountStatusType";
@@ -40,9 +40,30 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
 
   const handleClickNoti = () => {
         // get job status then navigate from UI
-        navigate(
-          `/${PathString.VIEC_DA_XONG}/${row.entityIdentifier}`
-        );
+        // mark as read
+        AlwayxInstance.post(
+          `/notification/read/${row.notificationId}`
+        )
+        .then(() => {
+          setNotifications((prev: any) => {
+            let clone = recursiveStructuredClone(prev);
+            const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
+              if (index > -1) {
+                clone[index].readAt =
+                  row.readAt === 0 || row.readAt === null
+                    ? 1
+                    : 0;
+              }
+            return clone;
+          });
+          navigate(
+            `/${PathString.VIEC_DA_XONG}/${row.entityIdentifier}`
+          );
+        })
+        .catch(err => {
+          console.log(err);
+          snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+        });
         
   };
 
@@ -116,7 +137,12 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
           <div className="mx-auto flex gap-1"
           onClick={()=>{handleClickNoti();}}
           >
-            <FaPhoenixFramework color="green" size={18} />
+            {row.readAt == null || row.readAt == 0 ? (
+              <GoDotFill color="green" size={18} />
+            ) : (
+              <GoDotFill color="gray" size={18} />
+            )}
+            
             <div style={{ color: 'blue' }}>
             {"[" + moment(ticksToDate(row.createdTime)).fromNow() + "]"}
             </div>

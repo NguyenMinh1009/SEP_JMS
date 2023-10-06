@@ -22,6 +22,7 @@ import { FileResponse } from "../interface/fileResponse";
 import CustomDialog from "./common/CustomDialog";
 import CommentSection from "../components/CommentSection";
 import { IComments } from "../interface/comment";
+import SubTasksSection from "./SubTasks/SubTasksSection";
 
 interface ITaskDetail {
   finishOnly?: boolean;
@@ -235,12 +236,19 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly }) => {
                 docFiles={docFiles}
                 imgFiles={imgFiles}
               />
+              {/*SubtasksSection */}
+              <div className="mb-6 mt-10 flex items-center">
+                <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
+                  Sub công việc
+                </p>
+              </div>
+              <SubTasksSection />
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
                 <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
                   Comments công việc
                 </p>
-                {/* <p className="text-primary mr-4 w-fit pr-4 text-base font-[400] leading-5">
+                {/* <p className="text-primary mr-4 w-fit  pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
                 </p> */}
               </div>

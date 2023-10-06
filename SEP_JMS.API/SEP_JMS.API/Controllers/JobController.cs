@@ -18,6 +18,7 @@ using SEP_JMS.Model.Api.Response.User;
 using SEP_JMS.Model.Api.Response.Company;
 using SEP_JMS.Model.Api.Response.JobType;
 using SEP_JMS.Model.Api.Request.File;
+using SEP_JMS.Model.Api.Request;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -28,16 +29,19 @@ namespace SEP_JMS.API.Controllers
         private readonly string logPrefix = "[JobController]";
 
         private readonly IJobService jobService;
+        private readonly INotificationService notificationService;
         private readonly IMapper mapper;
         private readonly IJMSLogger logger;
 
         public JobController(IJobService jobService,
+            INotificationService notificationService,
             IMapper mapper,
             IJMSLogger logger)
         {
             this.jobService = jobService;
             this.mapper = mapper;
             this.logger = logger;
+            this.notificationService = notificationService;
         }
 
         [Authorize]
@@ -65,12 +69,24 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to create a new job for customer {model.CustomerId} account {model.AccountId}");
+                var receivers = new List<Guid>();
+                receivers.Add(ApiContext.Current.UserId);
+                receivers.Add(model.AccountId);
                 if (ApiContext.Current.UserId != model.CustomerId && ApiContext.Current.Role == RoleType.Customer)
                     return StatusCode((int)HttpStatusCode.Forbidden);
 
                 if (ApiContext.Current.Role == RoleType.Customer) model.DesignerId = null;
+                if(model.DesignerId != null) receivers.Add((Guid)model.DesignerId);
                 var jobId = await jobService.CreateJob(model);
                 if (jobId == null) return StatusCode((int)HttpStatusCode.InternalServerError);
+                var notiCreationRequest = new NotiCreationRequest()
+                {
+                    EntityIdentifier = (Guid)jobId,
+                    EntityName = "CreateJob",
+                    NotiType = NotiType.FromJob,
+                    Receivers = receivers,
+                };
+                await notificationService.CreateNotification(notiCreationRequest, NotiAction.CreateJob);
                 return new CreateJobResponse { JobId = jobId.Value };
             }
             catch (Exception ex)

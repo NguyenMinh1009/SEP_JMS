@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request.User;
 using SEP_JMS.Model.Enums.System;
@@ -11,6 +12,14 @@ namespace SEP_JMS.Repository.Repositories
     {
         public UserRepository(JSMContext context) : base(context)
         {
+        }
+
+        public async Task UpdateNotiConfiguration(Guid userId, List<NotiType> notiConfiguration)
+        {
+            var config = JsonConvert.SerializeObject(notiConfiguration);
+            await Context.Users.Where(job => job.UserId == userId)
+                .ExecuteUpdateAsync(users => users
+                .SetProperty(user => user.NotificationConfig, user => config));
         }
 
         public async Task<PagingModel<User>> GetUsers(UserFilterRequest model)

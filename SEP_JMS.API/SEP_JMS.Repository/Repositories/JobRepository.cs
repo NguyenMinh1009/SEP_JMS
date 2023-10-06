@@ -426,7 +426,7 @@ namespace SEP_JMS.Repository.Repositories
             await Context.SaveChangesAsync();
             Context.Entry(currentJob).State = EntityState.Detached;
             return currentJob;
-        }
+        }   
 
         public async Task UpdateFinalProductsToLocal(Guid jobId, FolderItem finalFolder)
         {

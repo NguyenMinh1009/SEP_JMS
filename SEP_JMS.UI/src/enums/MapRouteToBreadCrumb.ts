@@ -6,7 +6,7 @@ export enum PathString {
   VIEC_HANG_NGAY = "viec-hang-ngay",
   VIEC_DA_XONG = "viec-da-xong",
   THEM_MOI = "them-moi",
-  THONG_BAO = "thong-bao",
+  THONG_BAO = "notifications",
   TAI_KHOAN = "tai-khoan",
   CHINH_SUA = "chinh-sua",
   USERS = "quan-ly-users",

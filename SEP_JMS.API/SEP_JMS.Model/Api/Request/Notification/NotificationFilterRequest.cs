@@ -2,6 +2,6 @@
 {
     public class NotificationFilterRequest : BaseFilterRequest
     {
-        public bool Unread { get; set; }
+        public string? Status { get; set; } = null!;
     }
 }

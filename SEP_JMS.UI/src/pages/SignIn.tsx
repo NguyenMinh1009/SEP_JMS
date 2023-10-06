@@ -7,7 +7,7 @@ import useCurrentEmployee from "../hooks/store/useCurrentEmployee";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 // API
 import CircularProgress from "@mui/material/CircularProgress";
-import APIClientInstance from "../api/AxiosInstance";
+import { commonLogin, customerLogin, employeeLogin } from "../api/Auth";
 
 
 const Login: React.FC = () => {
@@ -26,9 +26,20 @@ const Login: React.FC = () => {
     event.preventDefault();
     if (!username.trim() || !password.trim()) return;
     setLoading(true);
-    snakeBar.setSnakeBar("OKKK", "info", true);
-    console.log("OnLoginButtonClick");
-    APIClientInstance.get("/get").then(e => console.log(e.data));
+    commonLogin(username, password)
+      .then(data => {
+        currentCustomer.setCurrentCustomer?.(data);
+        currentEmployee.setCurrentEmployee?.(data);
+        currentPerson.setCurrentPerson?.(data);
+        localStorage.setItem("user", JSON.stringify(data));
+        window.dispatchEvent(new Event("storage"));
+      })
+      .catch(_e => {
+        snakeBar.setSnakeBar("Đăng nhập thất bại", "error", true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

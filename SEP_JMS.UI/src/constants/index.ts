@@ -118,6 +118,17 @@ export const correlationJobOptions = [
     text: "Dự án"
   }
 ];
+
+// export const taskPropertiesLabelOptions = [
+//   {
+//     key: taskPropertiesLabelOptions.StatusTask,
+//     text: "Hàng ngày"
+//   },
+//   {
+//     key: CorrelationJobType.Project,
+//     text: "Dự án"
+//   }
+// ];
 export const commonRegex = {
   email: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
   phone: /^(0|\+84)\d{9,10}$/,

@@ -72,7 +72,7 @@ namespace SEP_JMS.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.Error($"{logPrefix} Got exception when deleting notification {id} for user {ApiContext.Current.UserId}. Error: {ex}");
+                logger.Error($"{logPrefix} Got exception when deleting notification {notificationId} for user {ApiContext.Current.UserId}. Error: {ex}");
                 return StatusCode(500);
             }
         }
@@ -98,6 +98,21 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to update notification archive time {id} for user {ApiContext.Current.UserId}.");
                 await notificationService.ArchiveNotification(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when updating notification archive time {id} for user {ApiContext.Current.UserId}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [HttpPost("unarchive/{id}")]
+        public async Task<IActionResult> UnArchiveNotification(Guid id)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update notification archive time {id} for user {ApiContext.Current.UserId}.");
+                await notificationService.UnArchiveNotification(id);
                 return Ok();
             }
             catch (Exception ex)

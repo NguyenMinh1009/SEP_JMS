@@ -16,6 +16,7 @@ import { RiArchiveDrawerFill } from "react-icons/ri";
 import { TiDelete } from "react-icons/ti";
 import { AccountStatusType } from "../../enums/accountStatusType";
 import { accountStatusOptions, genderOptions, roleOptions } from "../../constants";
+import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
 type IRowProps = {
   row: any;
   index: number;
@@ -37,11 +38,47 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
     setOpenConfirmDialog(false);
   };
 
-  const handleEditUser = () => {
-    
+  const handleArchiveNoti = () => {
+    AlwayxInstance.post(
+      (row.archivedAt == null || row.archivedAt == 0) ?
+      `/notification/archive/${row.notificationId}` : `/notification/unarchive/${row.notificationId}`
+    )
+    .then(() => {
+      snakeBar.setSnakeBar((row.archivedAt == null || row.archivedAt == 0) ? "Lưu thông báo thành công" : "Huỷ lưu thông báo thành công", "success", true);
+      setNotifications((prev: any) => {
+        let clone = recursiveStructuredClone(prev);
+        const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
+          if (index > -1) {
+            clone[index].archivedAt =
+              row.archivedAt === 0 || row.archivedAt === null
+                ? 1
+                : 0;
+          }
+        return clone;
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+    });
   };
 
-  const handleActiveUser = () => {
+  const handleDeleteNoti = () => {
+    AlwayxInstance.delete(
+      `/notification/${row.notificationId}`
+    )
+    .then(() => {
+      snakeBar.setSnakeBar("Xoá thành công", "success", true);
+      setNotifications((prev: any) => {
+        let clone = recursiveStructuredClone(prev);
+        clone = clone.filter((e: any) => e.notificationId !== row.notificationId);
+        return clone;
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+    });
     
   };
 
@@ -57,7 +94,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
         primaryBtnText="Quay trở lại"
         secondaryBtnText="Tiếp tục"
         primaryBtnCallback={handleClose}
-        secondaryBtnCallback={handleActiveUser}
+        secondaryBtnCallback={handleDeleteNoti}
       />
       <TableRow hover role="checkbox" tabIndex={-1} key={JSON.stringify(row)}>
         
@@ -81,8 +118,42 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
 
         
         
-        
-        
+        {/* Actions */}
+        <TableCell
+          padding="none"
+          className="h-full min-w-[100px] justify-center p-2 align-top text-[13px] font-[400] first-letter:items-center"
+          align="center"
+        >
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="mx-auto flex gap-1">
+              <>
+                {/* Archive notification  */}
+                <span
+                  onClick={handleArchiveNoti}
+                  className={`group relative cursor-pointer border-r-[1px] border-[#999] px-1 pr-2 hover:scale-105`}
+                >
+                  {row.archivedAt === 0 || row.archivedAt === null ?
+                    (<RiArchiveDrawerFill size={18} />)
+                    : (
+                      <RiArchiveDrawerFill size={18} color="red" />
+                    )
+                  }
+                  
+                  <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
+                </span>
+
+                {/* Delete notification */}
+                <span
+                  onClick={() => setOpenConfirmDialog(true)}
+                  className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
+                >
+                  <TiDelete size={18} color="#666" />
+                  <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
+                </span>
+              </>
+            </div>
+          </div>
+        </TableCell>
         
       </TableRow>
     </>

@@ -72,7 +72,7 @@ namespace SEP_JMS.Service.Services
         }
         public async Task ArchiveNotification(Guid id)
         {
-            await notificationRepository.UpdateArchivedTime(id);
+            await notificationRepository.UpdateArchivedTime(id, false);
         }
         public async Task ReadAllNotification()
         {
@@ -92,7 +92,12 @@ namespace SEP_JMS.Service.Services
                 default:
                     break;
             }
-            return null;
+            return null!;
+        }
+
+        public async Task UnArchiveNotification(Guid id)
+        {
+            await notificationRepository.UpdateArchivedTime(id, true);
         }
     }
 }

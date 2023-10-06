@@ -13,6 +13,7 @@ namespace SEP_JMS.Service.IServices
         public Task ConfigureNotification(List<NotiType> types);
         public Task ReadNotification(Guid id);
         public Task ArchiveNotification(Guid id);
+        public Task UnArchiveNotification(Guid id);
         public Task ReadAllNotification();
     }
 }

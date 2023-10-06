@@ -15,9 +15,9 @@ namespace SEP_JMS.Repository.Repositories
         {
         }
 
-        public async Task UpdateArchivedTime(Guid notificationId)
+        public async Task UpdateArchivedTime(Guid notificationId, bool isNull)
         {
-            var archivedTime = DateTime.Now.Ticks;
+            var archivedTime = isNull ? 0 : DateTime.Now.Ticks;
             await Context.Notifications.Where(job => job.NotificationId == notificationId)
                 .ExecuteUpdateAsync(notis => notis
                 .SetProperty(noti => noti.ArchivedAt, noti => archivedTime));
@@ -38,7 +38,7 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task DeleteNotification(Guid notificationId, bool deleteAll)
         { 
-            await Context.Notifications.Where(noti=>noti.NotificationId == notificationId).ExecuteDeleteAsync();
+            var count = await Context.Notifications.Where(noti=>noti.NotificationId == notificationId).ExecuteDeleteAsync();
         }
 
         public async Task CreateNotification(Notification notification)

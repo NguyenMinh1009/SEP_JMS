@@ -31,7 +31,7 @@ const NotificationTable: React.FC<INotifyPreview> = ({ searchValue }) => {
 
   const isFirstRender = useIsFirstRender();
 
-  const getUsers = async () => {
+  const getNotifications = async () => {
     setLoading(true);
     await AlwayxInstance.post("notification", {
       pageIndex: page,
@@ -48,11 +48,11 @@ const NotificationTable: React.FC<INotifyPreview> = ({ searchValue }) => {
   };
 
   useEffect(() => {
-    if (!isFirstRender) getUsers();
+    if (!isFirstRender) getNotifications();
   }, [page]);
 
   useEffect(() => {
-    if (page === 1) getUsers();
+    if (page === 1) getNotifications();
     else setPage(1);
   }, [searchValue]);
 

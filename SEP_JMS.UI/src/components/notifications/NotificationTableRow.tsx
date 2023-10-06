@@ -38,6 +38,14 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
     setOpenConfirmDialog(false);
   };
 
+  const handleClickNoti = () => {
+        // get job status then navigate from UI
+        navigate(
+          `/${PathString.VIEC_DA_XONG}/${row.entityIdentifier}`
+        );
+        
+  };
+
   const handleArchiveNoti = () => {
     AlwayxInstance.post(
       (row.archivedAt == null || row.archivedAt == 0) ?
@@ -106,7 +114,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
           align="left"
         >
           <div className="mx-auto flex gap-1"
-          onClick={()=>{alert("View")}}
+          onClick={()=>{handleClickNoti();}}
           >
             <FaPhoenixFramework color="green" size={18} />
             <div style={{ color: 'blue' }}>

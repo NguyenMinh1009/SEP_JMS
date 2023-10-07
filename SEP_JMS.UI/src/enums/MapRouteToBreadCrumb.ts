@@ -17,5 +17,7 @@ export enum PathString {
   CREATE_COMPANY = "them-moi-company",
   CREATE_CUSTOMER = "them-moi-khach-hang",
   CREATE_EMPLOYEE = "them-moi-nhan-vien",
-  REPORT = "thong-ke"
+  REPORT = "thong-ke",
+  PROJECT = "du-an",
+  JOB = "cong-viec"
 }

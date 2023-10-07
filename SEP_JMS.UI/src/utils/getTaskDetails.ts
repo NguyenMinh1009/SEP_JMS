@@ -5,7 +5,6 @@ import { ITitle } from "../hooks/store/useCurrentTitle";
 import { FileResponse } from "../interface/fileResponse";
 import { JobStatusType } from "../enums/jobStatusType";
 import { InternalJobStatusType } from "../enums/internalJobStatusType";
-import FakeData from "../FakeData.json";
 
 export const getTaskDetails = async (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -19,36 +18,18 @@ export const getTaskDetails = async (
   imgEndPoint: string
 ) => {
   setLoading(true);
-  let res: any;
-  const datas = FakeData.items;
-  datas.forEach(task => {
-    let checkEndPoint = endPoint.substring(4);
-    if (task.jobId === checkEndPoint) {
-      res = task;
-      return;
-    }
-  });
-  setTaskDetail(res);
-  // setLoading(false);
-  // if (
-  //   (res.data.jobStatus === JobStatusType.Completed ||
-  //     res.data.internalJobStatus === InternalJobStatusType.Completed) &&
-  //   (!res.data.previewProducts || res.data?.previewProducts?.files?.length === 0)
-  // ) {
-  //   setOpenDialog(true);
-  // }
-  // breadCrumbTitle.setContent(res.data?.title);
-  // const requirementList: FileResponse[] = res.data?.requirements?.files;
+  const res = await AlwayxInstance.get(endPoint);
+  setTaskDetail(res.data);
   setLoading(false);
   if (
-    (res.jobStatus === JobStatusType.Completed ||
-      res.internalJobStatus === InternalJobStatusType.Completed) &&
-    (!res.previewProducts || res.previewProducts?.files?.length === 0)
+    (res.data.jobStatus === JobStatusType.Completed ||
+      res.data.internalJobStatus === InternalJobStatusType.Completed) &&
+    (!res.data.previewProducts || res.data?.previewProducts?.files?.length === 0)
   ) {
     setOpenDialog(true);
   }
-  breadCrumbTitle.setContent(res.title);
-  const requirementList: FileResponse[] = res.requirements?.files;
+  breadCrumbTitle.setContent(res.data?.title);
+  const requirementList: FileResponse[] = res.data?.requirements?.files;
 
   if (requirementList && requirementList.length > 0) {
     const docList = requirementList.filter(list => !mime.getType(list.fileName)?.includes("image"));
@@ -67,7 +48,6 @@ export const getTaskDetails = async (
         },
         { responseType: "blob" }
       );
-      // const newImg = new File([response.data], img.originalName, { type: response.data.type });
       const newImg = new File([response.data], img.originalName, { type: response.data.type });
       setImgFiles(prev => [newImg, ...prev]);
     }

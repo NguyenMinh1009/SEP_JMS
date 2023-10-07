@@ -35,19 +35,18 @@ const TaskPreview = ({ finishedOnly, setPageInfo }: ITaskPreview) => {
   const filterInfoController = useFilterInfo();
 
   const getJobs = async () => {
-    // setLoading(true);
-    // await AlwayxInstance.post("job/all", {
-    //   pageIndex: page,
-    //   pageSize: pageSize,
-    //   searchText: "",
-    //   ...filterInfoController.content,
-    //   jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
-    // }).then(res => {
-    //   setLoading(false);
-    //   setJobs(res.data.items);
-    //   setPageCount(Math.ceil(res.data.count / pageSize));
-    // });
-    await setJobs(fakeDatas.items);
+    setLoading(true);
+    await AlwayxInstance.post("job/all", {
+      pageIndex: page,
+      pageSize: pageSize,
+      searchText: "",
+      ...filterInfoController.content,
+      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
+    }).then(res => {
+      setLoading(false);
+      setJobs(res.data.items);
+      setPageCount(Math.ceil(res.data.count / pageSize));
+    });
   };
 
   const removeTaskPreview = (taskId: string) => {

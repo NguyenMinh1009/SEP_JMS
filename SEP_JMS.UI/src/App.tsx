@@ -19,6 +19,7 @@ import { PathString } from "./enums/MapRouteToBreadCrumb";
 import TasksDetail from "./components/TaskDetail";
 import Notifications from "./pages/Notifications";
 import { recursiveStructuredClone } from "./utils/recursiveStructuredClone";
+import FinishedProjects from "./pages/FinishedProject";
 
 const theme = createTheme(
   {
@@ -60,7 +61,8 @@ function App() {
   useEffect(() => {
     if (localStorageUser) {
       currentPerson.setCurrentPerson?.(JSON.parse(localStorageUser));
-      APIClientInstance.defaults.headers.common["Authorization"] = JSON.parse(localStorageUser).token
+      APIClientInstance.defaults.headers.common["Authorization"] = JSON.parse(localStorageUser)
+        .token
         ? "Bearer " + JSON.parse(localStorageUser).token
         : "";
     } else {
@@ -115,7 +117,7 @@ function App() {
       </Snackbar>
       <BrowserRouter>
         <ThemeProvider theme={theme}>
-        {!localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired() ? (
+          {!localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired() ? (
             <Routes>
               <Route path={`/${PathString.DANG_NHAP}`} element={<SignInSide />} />
               <Route path="*" element={<Navigate to={`/${PathString.DANG_NHAP}`} />} />
@@ -126,11 +128,14 @@ function App() {
                 <Route element={<MainContent />}>
                   <Route path="/home" element={<HomeSide />} />
                   <Route path={`/${PathString.THONG_BAO}`} element={<Notifications />} />
-                  <Route path={`/${PathString.VIEC_DA_XONG}/*`}>
+                  <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.JOB}*`}>
                     <Route index element={<FinishedTasks />} />
                     <Route path=":taskId" element={<TasksDetail finishOnly />} />
                   </Route>
-
+                  <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.PROJECT}*`}>
+                    <Route index element={<FinishedProjects />} />
+                    {/* <Route path=":taskId" element={<ProjectDetail finishOnly />} /> */}
+                  </Route>
                   <Route
                     path="*"
                     element={
@@ -147,9 +152,7 @@ function App() {
               </Routes>
             </div>
           )}
-          
         </ThemeProvider>
-        
       </BrowserRouter>
     </>
   );

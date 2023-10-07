@@ -8,13 +8,13 @@ import { internalStatusOptions, statusOptions } from "./StatusSection";
 import { JobStatusType } from "../../enums/jobStatusType";
 import { allKey, correlationJobOptions, defaultCompany } from "../../constants";
 import { CorrelationJobType } from "../../enums/correlationJobType";
-// import AlwayxInstance from "../../api/AxiosInstance";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import { Role } from "../../enums/role";
 import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 import useFilterInfo from "../../hooks/store/useFilterInfo";
 import CustomButton from "./CustomButton";
 import { useLocation } from "react-router-dom";
+import AlwayxInstance from "../../api/AxiosInstance";
 
 interface JobFilterSectionProps {
   isInternal?: boolean;
@@ -52,72 +52,75 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const location = useLocation();
 
   useEffect(() => {
-    // getCompanyList();
-    // getDesignerList();
-    // getAccountList();
+    getCompanyList();
+    getDesignerList();
+    getAccountList();
   }, [currentPerson.roleType]);
 
   useEffect(() => {
     setSelectedCustomer(null);
-    // getCustomerListForStaff();
+    getCustomerListForStaff();
   }, [selectedCompany, currentPerson.roleType]);
 
-  // const getCompanyList = () => {
-  //   if (currentPerson.roleType) {
-  //     AlwayxInstance.post(
-  //       currentPerson.roleType === Role.ADMIN ? "company/all" : "company/related",
-  //       {
-  //         pageIndex: 1,
-  //         pageSize: 2147483647
-  //       }
-  //     )
-  //       .then(res => setCompanies(res.data.items))
-  //       .catch(err => console.error(err));
-  //   }
-  // };
+  const getCompanyList = () => {
+    if (currentPerson.roleType) {
+      AlwayxInstance.post(
+        currentPerson.roleType === Role.ADMIN ? "company/search" : "company/search",
+        {
+          pageIndex: 1,
+          pageSize: 2147483647,
+          searchText: null
+        }
+      )
+        .then(res => setCompanies(res.data.items))
+        .catch(err => console.error(err));
+    }
+  };
+  const getDesignerList = () => {
+    if (currentPerson.roleType) {
+      AlwayxInstance.post("user/search", {
+        pageIndex: 1,
+        pageSize: 2147483647,
+        searchText: null,
+        role: Role.DESIGNER
+      })
+        .then(res => setDesigners(res.data.items))
+        .catch(err => console.error(err));
+    }
+  };
 
-  // const getCustomerListForStaff = () => {
-  //   if (currentPerson.roleType) {
-  //     AlwayxInstance.post(
-  //       currentPerson.roleType === Role.ADMIN ? "customer/find" : "customer/related",
-  //       {
-  //         pageIndex: 1,
-  //         pageSize: 2147483647,
-  //         companyId: selectedCompany?.companyId ?? undefined
-  //       }
-  //     )
-  //       .then(res => setCustomers(res.data.items))
-  //       .catch(err => console.error(err));
-  //   }
-  // };
+  const getAccountList = () => {
+    if (
+      !currentPerson.roleType ||
+      currentPerson.roleType === Role.ACCOUNT ||
+      currentPerson.roleType === Role.DESIGNER
+    )
+      return;
+    AlwayxInstance.post("user/search", {
+      pageIndex: 1,
+      pageSize: 2147483647,
+      searchText: null,
+      role: Role.ACCOUNT
+    })
+      .then(res => setAccounts(res.data.items))
+      .catch(err => console.error(err));
+  };
 
-  // const getDesignerList = () => {
-  //   if (currentPerson.roleType) {
-  //     AlwayxInstance.post("employee/designer/all", {
-  //       pageIndex: 1,
-  //       pageSize: 2147483647,
-  //       searchText: null
-  //     })
-  //       .then(res => setDesigners(res.data.items))
-  //       .catch(err => console.error(err));
-  //   }
-  // };
-
-  // const getAccountList = () => {
-  //   if (
-  //     !currentPerson.roleType ||
-  //     currentPerson.roleType === Role.ACCOUNT ||
-  //     currentPerson.roleType === Role.DESIGNER
-  //   )
-  //     return;
-  //   AlwayxInstance.post("employee/account/all", {
-  //     pageIndex: 1,
-  //     pageSize: 2147483647,
-  //     searchText: null
-  //   })
-  //     .then(res => setAccounts(res.data.items))
-  //     .catch(err => console.error(err));
-  // };
+  const getCustomerListForStaff = () => {
+    if (currentPerson.roleType) {
+      AlwayxInstance.post(
+        currentPerson.roleType === Role.ADMIN ? "user/search" : "customer/related",
+        {
+          pageIndex: 1,
+          pageSize: 2147483647,
+          companyId: selectedCompany?.companyId ?? undefined,
+          role: Role.CUSTOMER
+        }
+      )
+        .then(res => setCustomers(res.data.items))
+        .catch(err => console.error(err));
+    }
+  };
 
   const handleApply = () => {
     filterInfoController.setContent?.({

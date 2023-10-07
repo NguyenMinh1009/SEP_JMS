@@ -23,7 +23,7 @@ interface INotifyPreview {
   searchValue: string;
 }
 
-const pageSize = 10;
+const pageSize = 2;
 
 const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue }) => {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -58,6 +58,11 @@ const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue }) =>
     if (page === 1) getNotifications();
     else setPage(1);
   }, [status, searchValue]);
+
+  // refresh records when zero length
+  useEffect(() => {
+    if (notifications.length <= 0) setPage(1);
+  }, [notifications]);
 
   return !isLoading ? (
     <div>

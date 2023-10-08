@@ -1,34 +1,34 @@
-import { useState, useEffect, useRef } from "react";
-import { MdOutlineExpandCircleDown } from "react-icons/md";
-import { CorrelationJobType } from "../enums/correlationJobType";
-import { useNavigate, useParams } from "react-router-dom";
-import AlwayxInstance from "../api/AxiosInstance";
 import CircularProgress from "@mui/material/CircularProgress";
-import "react-quill/dist/quill.snow.css";
-import "react-multi-carousel/lib/styles.css";
-import { VisibleType } from "../enums/visibleType";
-import { Role } from "../enums/role";
-import useCurrentPerson from "../hooks/store/useCurrentPerson";
-import useTitle from "../hooks/store/useCurrentTitle";
-import BasicDetailsSection from "./BasicDetailsSection";
-import { getTaskDetails } from "../utils/getTaskDetails";
+import { useEffect, useRef, useState } from "react";
+import { MdOutlineExpandCircleDown } from "react-icons/md";
 import { useInView } from "react-intersection-observer";
-import TaskDetailsDescription from "./TaskDetailsDescription";
-import useSnakeBar from "../hooks/store/useSnakeBar";
-import { PathString } from "../enums/MapRouteToBreadCrumb";
-import { cn } from "../utils/className";
-import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
-import { FileResponse } from "../interface/fileResponse";
-import CustomDialog from "./common/CustomDialog";
-import CommentSection from "../components/CommentSection";
-import { IComments } from "../interface/comment";
-import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
+import "react-multi-carousel/lib/styles.css";
+import "react-quill/dist/quill.snow.css";
+import { useNavigate, useParams } from "react-router-dom";
+import AlwayxInstance from "../../api/AxiosInstance";
+import CommentSection from "../../components/CommentSection";
+import { PathString } from "../../enums/MapRouteToBreadCrumb";
+import { CorrelationJobType } from "../../enums/correlationJobType";
+import { Role } from "../../enums/role";
+import { VisibleType } from "../../enums/visibleType";
+import useCurrentPerson from "../../hooks/store/useCurrentPerson";
+import useTitle from "../../hooks/store/useCurrentTitle";
+import useSnakeBar from "../../hooks/store/useSnakeBar";
+import { IComments } from "../../interface/comment";
+import { FileResponse } from "../../interface/fileResponse";
+import { cn } from "../../utils/className";
+import { getTaskDetails } from "../../utils/getTaskDetails";
+import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
+import BasicDetailsSection from "./../BasicDetailsSection";
+import SubTasksSection from "./../ProjectManagement/SubTasks/SubTasksSection";
+import TaskDetailsDescription from "./../TaskDetailsDescription";
+import CustomDialog from "./../common/CustomDialog";
 
-interface ITaskDetail {
+interface IProjectDetail {
   finishOnly?: boolean;
 }
 
-const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly }) => {
+const ProjectDetail: React.FC<IProjectDetail> = ({ finishOnly }) => {
   const [jobDetail, setJobDetail] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isOpenDialog, setOpenDialog] = useState<boolean>(false);
@@ -293,4 +293,4 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly }) => {
   );
 };
 
-export default TasksDetail;
+export default ProjectDetail;

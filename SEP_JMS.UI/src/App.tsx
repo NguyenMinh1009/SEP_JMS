@@ -17,6 +17,7 @@ import { viVN } from "@mui/x-date-pickers";
 import FinishedTasks from "./pages/FinishedTask";
 import { PathString } from "./enums/MapRouteToBreadCrumb";
 import TasksDetail from "./components/TaskDetail";
+import ProjectDetail from "./components/ProjectManagement/ProjectDetail";
 import Notifications from "./pages/Notifications";
 import { recursiveStructuredClone } from "./utils/recursiveStructuredClone";
 import FinishedProjects from "./pages/FinishedProject";
@@ -128,13 +129,13 @@ function App() {
                 <Route element={<MainContent />}>
                   <Route path="/home" element={<HomeSide />} />
                   <Route path={`/${PathString.THONG_BAO}`} element={<Notifications />} />
-                  <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.JOB}*`}>
+                  <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}*`}>
                     <Route index element={<FinishedTasks />} />
                     <Route path=":taskId" element={<TasksDetail finishOnly />} />
                   </Route>
-                  <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.PROJECT}*`}>
+                  <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}*`}>
                     <Route index element={<FinishedProjects />} />
-                    {/* <Route path=":taskId" element={<ProjectDetail finishOnly />} /> */}
+                    <Route path=":projectId" element={<ProjectDetail finishOnly />} />
                   </Route>
                   <Route
                     path="*"

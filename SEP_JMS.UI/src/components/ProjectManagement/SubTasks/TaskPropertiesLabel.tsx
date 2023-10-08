@@ -1,6 +1,6 @@
 import React from "react";
 import { MdOutlineClose, MdOutlineDone, MdOutlineHourglassFull } from "react-icons/md";
-import { ITaskPropertiesLabel } from "../../interface/ITaskPropertiesLabel";
+import { ITaskPropertiesLabel } from "../../../interface/ITaskPropertiesLabel";
 const TaskPropertiesLabel: React.FC<ITaskPropertiesLabel> = ({ type, statusType }) => {
   const getInfoLabel = () => {
     if (type === "statusTask") {

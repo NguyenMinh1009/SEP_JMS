@@ -254,7 +254,7 @@ const SideBar = () => {
   }, []);
 
   React.useEffect(() => {
-    //if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
+    if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
   }, [screenWidth]);
 
   React.useEffect(() => {

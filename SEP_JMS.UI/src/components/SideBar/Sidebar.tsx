@@ -20,12 +20,22 @@ import { BsCheckAll } from "react-icons/bs";
 import Images from "../../img";
 import { Role } from "../../enums/role";
 import { PathString } from "../../enums/MapRouteToBreadCrumb";
+
+//-------------
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import StarBorder from '@mui/icons-material/StarBorder';
+import { AiOutlineArrowRight } from "react-icons/ai";
+import { TiThMenuOutline } from "react-icons/ti";
+//-------------
 interface ISidebarItem {
   parent: {
     text: string;
     to: string;
     Icon: React.ReactElement<any, any>;
     prefix: string;
+    items?: ISidebarItem[];
   };
   children?: {
     text: string;
@@ -51,6 +61,30 @@ const SideBar = () => {
 
   const currentPerson = useCurrentPerson();
   const sidebar = useSideBarPanel();
+
+  const [nestedOpen, setNestedOpen] = React.useState(false);
+  const nestedItems = [
+        {
+          parent: {
+            text: "Item 1",
+            to: `#none`,
+            Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+            prefix: `#none`,
+          }
+        },
+        {
+          parent: {
+            text: "Item 2",
+            to: `#none`,
+            Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+            prefix: `#none`,
+          }
+        }
+      ];
+
+  const handleNestedClick = (content: ISidebarItem) => {
+    setNestedOpen(!nestedOpen);
+  };
 
   const handleOpenDrawer = () => {
     sidebar.setExpand(!sidebar.isExpand);
@@ -138,6 +172,16 @@ const SideBar = () => {
               prefix: `${PathString.REPORT}`
             }
           }
+          ,
+          // Add Nested Menu
+          {
+            parent: {
+              text: "Nested Menu",
+              to: `#nested`,
+              Icon: <TiThMenuOutline size={18} className="opacity-90" />,
+              prefix: `#nested`,
+            }
+          }
           // {
           //   parent: {
           //     text: "Tài khoản",
@@ -210,7 +254,7 @@ const SideBar = () => {
   }, []);
 
   React.useEffect(() => {
-    if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
+    //if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
   }, [screenWidth]);
 
   React.useEffect(() => {
@@ -268,12 +312,12 @@ const SideBar = () => {
         </DrawerHeader>
 
         {/* navigation tabs */}
-        {sidebarItems.map(item => {
+        {sidebarItems.map((item, pIdx) => {
           return (
             <div key={item.title}>
               {renderSideBarTitle(item.title)}
               <List className="mb-6">
-                {item.content.map((contentItem, _index) => (
+                {item.content.map((contentItem, _index) => (contentItem.parent.to !== "#nested")  ? (
                   <ListItem
                     className={`group relative py-0 ${
                       sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
@@ -315,11 +359,100 @@ const SideBar = () => {
                       </div>
                     )}
                   </ListItem>
+                ) : (
+                  <ListItem
+                    className={`group relative py-0 ${
+                      sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
+                    }`}
+                    key={contentItem.parent.text}
+                  >
+                    <ListItemButton
+                      onClick={() => handleNestedClick(contentItem)}
+                      // title={contentItem.parent.text}
+                      className={`relative w-full items-center overflow-hidden rounded-md ${
+                        sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
+                      } ${getSelectedBackgroundColor(contentItem.parent.text)}`}
+                    >
+                      <ListItemIcon
+                        className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
+                          sidebar.isExpand ? "mr-4" : "auto"
+                        } text-[#334155]`}
+                      >
+                        <div className="relative flex items-center justify-center">
+                          {contentItem.parent.Icon}
+                        </div>
+                      </ListItemIcon>
+                      <ListItemText
+                        className={`${
+                          sidebar.isExpand ? "" : "hidden"
+                        } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                        primary={contentItem.parent.text}
+                      />
+                      {nestedOpen ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    {getSelectedBorderStyle(contentItem.parent.text)}
+                    {!sidebar.isExpand && (
+                      <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
+                        {contentItem.parent.text}
+                      </div>
+                    )}
+                  </ListItem>
                 ))}
+                {/* nested menu items */}
+                {pIdx === 1 && (
+                  <Collapse 
+                  in={nestedOpen} timeout="auto" unmountOnExit>
+                  <List component="div">
+                  {nestedItems.map((subItem, _index) => (
+                    <ListItem
+                      className={`group relative py-0 ${
+                        sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
+                      }`}
+                      key={subItem.parent.text}
+                    >
+                      <ListItemButton
+                        onClick={() => handleClickListItem(subItem)}
+                        // title={contentItem.parent.text}
+                        className={`relative w-full items-center overflow-hidden rounded-md ${
+                          sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
+                        } ${getSelectedBackgroundColor(subItem.parent.text)}`}
+                      >
+                        <ListItemIcon
+                          className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
+                            sidebar.isExpand ? "mr-4" : "auto"
+                          } text-[#334155]`}
+                        >
+                          <div className="relative flex items-center justify-center">
+                            {subItem.parent.Icon}
+                            {subItem.parent.to === `${PathString.THONG_BAO}` && (
+                              <div
+                                className={`absolute right-0 top-0 flex -translate-y-[2px] items-center justify-center rounded-full bg-accent  p-1 text-xs font-semibold text-white`}
+                              />
+                            )}
+                          </div>
+                        </ListItemIcon>
+                        <ListItemText
+                          className={`${
+                            sidebar.isExpand ? "" : "hidden"
+                          } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                          primary={subItem.parent.text}
+                        />
+                      </ListItemButton>
+                      {getSelectedBorderStyle(subItem.parent.text)}
+                      {!sidebar.isExpand && (
+                        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
+                          {subItem.parent.text}
+                        </div>
+                      )}
+                    </ListItem>))}
+                  </List>
+                </Collapse>
+                )}
+                
               </List>
             </div>
           );
-        })}
+        })}  
       </Box>
     </div>
   );

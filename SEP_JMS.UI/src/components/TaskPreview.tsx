@@ -15,17 +15,17 @@ import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
 import useFilterInfo from "../hooks/store/useFilterInfo";
 import { useIsFirstRender } from "../hooks/useIsFirstRender";
 import { JobStatusType } from "../enums/jobStatusType";
-import fakeDatas from "../FakeData.json";
 
 interface ITaskPreview {
   sidebar?: boolean;
   finishedOnly?: boolean;
   setPageInfo?: (pageInfo: any) => void;
+  isCorrelationJobType: number;
 }
 
 const pageSize = 10;
 
-const TaskPreview = ({ finishedOnly, setPageInfo }: ITaskPreview) => {
+const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskPreview) => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = React.useState<number>(0);
@@ -41,7 +41,8 @@ const TaskPreview = ({ finishedOnly, setPageInfo }: ITaskPreview) => {
       pageSize: pageSize,
       searchText: "",
       ...filterInfoController.content,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
+      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus,
+      correlationType: isCorrelationJobType
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -85,26 +86,52 @@ const TaskPreview = ({ finishedOnly, setPageInfo }: ITaskPreview) => {
             className="task-preview-container max-h-[calc(100vh-360px)] overflow-y-auto rounded-sm shadow-md "
           >
             <TableContainer>
-              <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                <EnhancedTableHead correlationJobType={CorrelationJobType.Job} />
-                <TableBody>
-                  {jobs?.map((row: any, index: number) => {
-                    return (
-                      <TaskPreviewTableRow
-                        finishOnly={finishedOnly}
-                        index={index}
-                        visibleType={VisibleType.Public}
-                        correlationJobType={CorrelationJobType.Job}
-                        key={JSON.stringify(row)}
-                        row={row}
-                        page={page}
-                        pageSize={pageSize}
-                        removeTaskPreview={removeTaskPreview}
-                      />
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              {/* ---JOB--- */}
+              {isCorrelationJobType === CorrelationJobType.Job && (
+                <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                  <EnhancedTableHead correlationJobType={CorrelationJobType.Job} />
+                  <TableBody>
+                    {jobs?.map((row: any, index: number) => {
+                      return (
+                        <TaskPreviewTableRow
+                          finishOnly={finishedOnly}
+                          index={index}
+                          visibleType={VisibleType.Public}
+                          correlationJobType={CorrelationJobType.Job}
+                          key={JSON.stringify(row)}
+                          row={row}
+                          page={page}
+                          pageSize={pageSize}
+                          removeTaskPreview={removeTaskPreview}
+                        />
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+              {/* ---PROJECT--- */}
+              {isCorrelationJobType === CorrelationJobType.Project && (
+                <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                  <EnhancedTableHead correlationJobType={CorrelationJobType.Project} />
+                  <TableBody>
+                    {jobs?.map((row: any, index: number) => {
+                      return (
+                        <TaskPreviewTableRow
+                          finishOnly={finishedOnly}
+                          index={index}
+                          visibleType={VisibleType.Public}
+                          correlationJobType={CorrelationJobType.Project}
+                          key={JSON.stringify(row)}
+                          row={row}
+                          page={page}
+                          pageSize={pageSize}
+                          removeTaskPreview={removeTaskPreview}
+                        />
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
             </TableContainer>
           </Box>
           <div className="mx-auto mt-8 flex items-center justify-center">

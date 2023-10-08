@@ -13,6 +13,7 @@ import { PathString } from "../enums/MapRouteToBreadCrumb";
 import JobFilterSection from "../components/common/JobFilterSection";
 import useFilterInfo from "../hooks/store/useFilterInfo";
 import AlwayxInstance from "../api/AxiosInstance";
+import { CorrelationJobType } from "../enums/correlationJobType";
 
 interface IFinishedTasks {
   isInternal?: boolean;
@@ -89,7 +90,11 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
       <p className="text-primary mb-6 text-base">Công việc đã hoàn thành</p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
-          <TaskPreview setPageInfo={setPageInfo} finishedOnly />
+          <TaskPreview
+            setPageInfo={setPageInfo}
+            finishedOnly
+            isCorrelationJobType={CorrelationJobType.Job}
+          />
         </div>
       </div>
     </div>

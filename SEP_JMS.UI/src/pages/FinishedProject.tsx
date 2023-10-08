@@ -4,16 +4,22 @@ import TaskPreview from "../components/TaskPreview";
 import CustomTab from "../components/common/CustomTab";
 import { IoCreateOutline, IoAddCircleOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import ProjectPreview from "../components/ProjectPreview";
+// import ProjectPreview from "../components/ProjectManagement/ProjectPreview";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import { Role } from "../enums/role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import JobFilterSection from "../components/common/JobFilterSection";
+import { useState } from "react";
+import { CorrelationJobType } from "../enums/correlationJobType";
 
 interface IFinishedProjects {
   isInternal?: boolean;
 }
 const FinishedProjects: React.FC<IFinishedProjects> = ({ isInternal }) => {
+  const [pageInfo, setPageInfo] = useState<{ page: number; pageSize: number }>({
+    page: 1,
+    pageSize: 10
+  });
   const navigate = useNavigate();
   const currentPerson = useCurrentPerson();
   return (
@@ -36,7 +42,11 @@ const FinishedProjects: React.FC<IFinishedProjects> = ({ isInternal }) => {
         <p className="text-primary mb-6 text-base">Dự án đã hoàn thành</p>
         <div className="grid grid-cols-20 items-start gap-2">
           <div className="col-span-full overflow-hidden p-1 pb-20 ">
-            <ProjectPreview finishedOnly />
+            <TaskPreview
+              setPageInfo={setPageInfo}
+              finishedOnly
+              isCorrelationJobType={CorrelationJobType.Project}
+            />
           </div>
         </div>
       </div>

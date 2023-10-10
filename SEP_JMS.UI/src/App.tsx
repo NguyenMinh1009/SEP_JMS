@@ -17,10 +17,13 @@ import { viVN } from "@mui/x-date-pickers";
 import FinishedTasks from "./pages/FinishedTask";
 import { PathString } from "./enums/MapRouteToBreadCrumb";
 import TasksDetail from "./components/TaskDetail";
-import ProjectDetail from "./components/ProjectManagement/ProjectDetail";
 import Notifications from "./pages/Notifications";
 import { recursiveStructuredClone } from "./utils/recursiveStructuredClone";
 import FinishedProjects from "./pages/FinishedProject";
+import Jobs from "./pages/Jobs";
+import { CorrelationJobType } from "./enums/correlationJobType";
+import EditTask from "./pages/EditTask";
+import Home from "./pages/Home";
 
 const theme = createTheme(
   {
@@ -128,14 +131,61 @@ function App() {
               <Routes>
                 <Route element={<MainContent />}>
                   <Route path="/home" element={<HomeSide />} />
+                  <Route
+                    path={`/${PathString.CONG_KHAI}/${PathString.THEM_MOI}`}
+                    element={<Home />}
+                  />
+                  <Route
+                    path={`/${PathString.VIEC_DA_XONG}/${PathString.THEM_MOI}`}
+                    element={<Home />}
+                  />
+                  {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
+                    <>
+                      <Route
+                        path={`/${PathString.NOI_BO}/${PathString.THEM_MOI}`}
+                        element={<Home isInternal />}
+                      />
+                    </>
+                  )}
                   <Route path={`/${PathString.THONG_BAO}`} element={<Notifications />} />
+                  <Route path={`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}*`}>
+                    <Route index element={<Jobs isCorrelationJobType={CorrelationJobType.Job} />} />
+                    <Route
+                      path=":taskId"
+                      element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
+                    />
+                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
+                  </Route>
+                  <Route path={`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}*`}>
+                    <Route
+                      index
+                      element={<Jobs isCorrelationJobType={CorrelationJobType.Project} />}
+                    />
+                    <Route
+                      path=":taskId"
+                      element={<TasksDetail isCorrelationJobType={CorrelationJobType.Project} />}
+                    />
+                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
+                  </Route>
                   <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}*`}>
                     <Route index element={<FinishedTasks />} />
-                    <Route path=":taskId" element={<TasksDetail finishOnly />} />
+                    <Route
+                      path=":taskId"
+                      element={
+                        <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Job} />
+                      }
+                    />
+                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
                   </Route>
                   <Route path={`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}*`}>
                     <Route index element={<FinishedProjects />} />
-                    <Route path=":projectId" element={<ProjectDetail finishOnly />} />
+                    <Route
+                      path=":taskId"
+                      element={
+                        <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Project} />
+                      }
+                    />
+                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
                   </Route>
                   <Route
                     path="*"

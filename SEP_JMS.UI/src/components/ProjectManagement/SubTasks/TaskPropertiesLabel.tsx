@@ -1,25 +1,41 @@
 import React from "react";
 import { MdOutlineClose, MdOutlineDone, MdOutlineHourglassFull } from "react-icons/md";
 import { ITaskPropertiesLabel } from "../../../interface/ITaskPropertiesLabel";
-const TaskPropertiesLabel: React.FC<ITaskPropertiesLabel> = ({ type, statusType }) => {
+import { Priority } from "../../../enums/priority";
+import { JobStatusType } from "../../../enums/jobStatusType";
+const TaskPropertiesLabel: React.FC<ITaskPropertiesLabel> = ({ type, info }) => {
   const getInfoLabel = () => {
     if (type === "statusTask") {
-      switch (statusType) {
-        case "Done":
+      switch (info) {
+        case JobStatusType.Completed:
           return (
             <div className="flex items-center gap-2">
               <MdOutlineDone style={{ fill: "green", fontSize: "15px" }} />
-              <span className="truncate">Done</span>
+              <span className="truncate text-green-500">Done</span>
             </div>
           );
-        case "Pending":
+        case JobStatusType.Pending:
           return (
             <div className="flex items-center gap-2">
               <MdOutlineHourglassFull style={{ fill: "orange", fontSize: "15px" }} />
               <span className="truncate">Pending</span>
             </div>
           );
-        case "Close":
+        case JobStatusType.CustomerReview:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
+              <span className="truncate">Close</span>
+            </div>
+          );
+        case JobStatusType.Doing:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
+              <span className="truncate">Close</span>
+            </div>
+          );
+        case JobStatusType.NotDo:
           return (
             <div className="flex items-center gap-2">
               <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
@@ -31,22 +47,29 @@ const TaskPropertiesLabel: React.FC<ITaskPropertiesLabel> = ({ type, statusType 
       }
     }
     if (type === "prioritizeTask") {
-      switch (statusType) {
-        case "High":
+      switch (info) {
+        case Priority.HIGH:
           return (
             <div className="gap-2">
               <span className="truncate text-red-500">High</span>
             </div>
           );
-        case "Low":
+        case Priority.MEDIUM:
           return (
             <div className="gap-2">
-              <span className="truncate text-yellow-500">Low</span>
+              <span className="truncate text-yellow-500">Medium</span>
             </div>
           );
         default:
           return null;
       }
+    }
+    if (type === "assignedPerson") {
+      return (
+        <div className="gap-2">
+          <span className="text-black-500 truncate">{info}</span>
+        </div>
+      );
     }
   };
   return (

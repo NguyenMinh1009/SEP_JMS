@@ -23,12 +23,14 @@ import CustomDialog from "./common/CustomDialog";
 import CommentSection from "../components/CommentSection";
 import { IComments } from "../interface/comment";
 import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
+import { RiAddCircleLine } from "react-icons/ri";
 
 interface ITaskDetail {
   finishOnly?: boolean;
+  isCorrelationJobType: number;
 }
 
-const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly }) => {
+const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }) => {
   const [jobDetail, setJobDetail] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isOpenDialog, setOpenDialog] = useState<boolean>(false);
@@ -237,12 +239,24 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly }) => {
                 imgFiles={imgFiles}
               />
               {/*SubtasksSection */}
-              <div className="mb-6 mt-10 flex items-center">
-                <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
-                  Sub công việc
-                </p>
-              </div>
-              <SubTasksSection />
+
+              {isCorrelationJobType === CorrelationJobType.Project && (
+                <div>
+                  <div className="mb-6 mt-10 flex items-center">
+                    <p className="text-primary //border-r-2 mr-3 w-fit pr-4 text-base leading-5">
+                      Sub công việc
+                    </p>
+                    <button className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 ">
+                      <RiAddCircleLine size={16} color="#0655a7" />
+                      <p>
+                        <i className="text-[13px] font-[500]"> Thêm công việc</i>
+                      </p>
+                    </button>
+                  </div>
+                  <SubTasksSection parentId={taskId} finishedOnly />
+                </div>
+              )}
+
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
                 <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">

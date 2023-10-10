@@ -66,7 +66,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
   const getLinkForViewJob = (taskId: string): string => {
     switch (correlationJobType) {
       case CorrelationJobType.Job:
-        if (finishOnly) return `/${PathString.VIEC_DA_XONG}/${taskId}`;
+        if (finishOnly) return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`;
         if (visibleType === VisibleType.Public) return `/${PathString.CONG_KHAI}/${taskId}`;
         return `/${PathString.NOI_BO}/${taskId}`;
       case CorrelationJobType.Project:
@@ -96,8 +96,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
   const handleClickDeleteTask = () => setOpenConfirmDialog(true);
 
   const handleDeleteTask = () => {
-    const deleteUrl =
-      (correlationJobType === CorrelationJobType.Job ? "job/" : "project/") + taskId;
+    const deleteUrl = "job/" + taskId;
     AlwayxInstance.delete(deleteUrl)
       .then(() => {
         removeTaskPreview(taskId);
@@ -265,7 +264,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
                 <HiOutlineEye size={18} color="#666" />
                 <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
               </span>
-              {isDisableWhenComplete() && (
+              {!isDisableWhenComplete() && (
                 <>
                   <span
                     onClick={() => {

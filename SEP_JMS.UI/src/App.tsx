@@ -130,20 +130,34 @@ function App() {
             <div className={`//max-w-[1700px] relative mx-auto`}>
               <Routes>
                 <Route element={<MainContent />}>
-                  <Route path="/home" element={<HomeSide />} />
+                  {/* route create task */}
                   <Route
-                    path={`/${PathString.CONG_KHAI}/${PathString.THEM_MOI}`}
-                    element={<Home />}
+                    path={`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`}
+                    element={<Home isCorrelationJobType={CorrelationJobType.Project} />}
                   />
                   <Route
-                    path={`/${PathString.VIEC_DA_XONG}/${PathString.THEM_MOI}`}
-                    element={<Home />}
+                    path={`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`}
+                    element={<Home isCorrelationJobType={CorrelationJobType.Job} />}
+                  />
+                  <Route
+                    path={`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`}
+                    element={<Home isCorrelationJobType={CorrelationJobType.Project} />}
+                  />
+                  <Route
+                    path={`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`}
+                    element={<Home isCorrelationJobType={CorrelationJobType.Job} />}
                   />
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
                     <>
                       <Route
-                        path={`/${PathString.NOI_BO}/${PathString.THEM_MOI}`}
-                        element={<Home isInternal />}
+                        path={`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`}
+                        element={
+                          <Home isInternal isCorrelationJobType={CorrelationJobType.Project} />
+                        }
+                      />
+                      <Route
+                        path={`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`}
+                        element={<Home isInternal isCorrelationJobType={CorrelationJobType.Job} />}
                       />
                     </>
                   )}
@@ -154,6 +168,11 @@ function App() {
                       path=":taskId"
                       element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
                     />
+                    {/* route create task
+                    <Route
+                      path={`/${PathString.THEM_MOI}`}
+                      element={<Home isCorrelationJobType={CorrelationJobType.Project} />}
+                    /> */}
                     <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
                   </Route>
                   <Route path={`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}*`}>

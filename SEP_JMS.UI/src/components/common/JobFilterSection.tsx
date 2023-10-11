@@ -46,6 +46,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const [customers, setCustomers] = useState<any[]>([]);
   const [designers, setDesigners] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
+  const [jobtypes, setJobtypes] = useState<any[]>([]);
 
   const currentPerson = useCurrentPerson();
   const filterInfoController = useFilterInfo();
@@ -55,6 +56,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
     getCompanyList();
     getDesignerList();
     getAccountList();
+    getJobTypeList();
   }, [currentPerson.roleType]);
 
   useEffect(() => {
@@ -120,6 +122,12 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
         .then(res => setCustomers(res.data.items))
         .catch(err => console.error(err));
     }
+  };
+
+  const getJobTypeList = () => {
+    AlwayxInstance.get("jobtype/all")
+      .then(res => setJobtypes(res.data))
+      .catch(err => console.error(err));
   };
 
   const handleApply = () => {
@@ -209,9 +217,9 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
               onChange={(_, newValue) => {
                 setSelectedJobType(newValue);
               }}
-              getOptionLabel={option => option.text}
+              getOptionLabel={option => option.typeName}
               size="small"
-              options={jobOptions}
+              options={jobtypes}
               fullWidth
               // disabled
               renderInput={params => (

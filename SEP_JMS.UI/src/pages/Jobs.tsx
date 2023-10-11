@@ -18,7 +18,6 @@ interface IJobs {
 const Jobs: React.FC<IJobs> = ({ isInternal, isCorrelationJobType }) => {
   const navigate = useNavigate();
   const currentPerson = useCurrentPerson();
-
   return (
     <div className="h-full overflow-auto scrollbar-hide">
       <div className="mb-10">
@@ -26,13 +25,35 @@ const Jobs: React.FC<IJobs> = ({ isInternal, isCorrelationJobType }) => {
           <JobFilterSection isInternal={isInternal} />
           {currentPerson.roleType !== Role.DESIGNER && (
             <div
-              onClick={() =>
-                navigate(
-                  isInternal
-                    ? `/${PathString.NOI_BO}/${PathString.THEM_MOI}`
-                    : `/${PathString.CONG_KHAI}/${PathString.THEM_MOI}`
-                )
-              }
+              onClick={() => {
+                switch (isInternal || false) {
+                  case true:
+                    {
+                      isCorrelationJobType === CorrelationJobType.Project
+                        ? navigate(
+                            `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`
+                          )
+                        : navigate(
+                            `/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`
+                          );
+                    }
+                    break;
+                  case false:
+                    {
+                      isCorrelationJobType === CorrelationJobType.Project
+                        ? navigate(
+                            `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`
+                          )
+                        : navigate(
+                            `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`
+                          );
+                    }
+                    break;
+
+                  default:
+                    break;
+                }
+              }}
               className="flex h-10 w-20 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75 3xl:w-auto"
             >
               <IoAddCircleOutline size={20} className="text-white" />

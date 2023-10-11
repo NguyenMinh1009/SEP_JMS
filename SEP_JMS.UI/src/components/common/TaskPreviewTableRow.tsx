@@ -67,7 +67,8 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
     switch (correlationJobType) {
       case CorrelationJobType.Job:
         if (finishOnly) return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`;
-        if (visibleType === VisibleType.Public) return `/${PathString.CONG_KHAI}/${taskId}`;
+        if (visibleType === VisibleType.Public)
+          return `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`;
         return `/${PathString.NOI_BO}/${taskId}`;
       case CorrelationJobType.Project:
         if (finishOnly) return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`;

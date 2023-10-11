@@ -178,6 +178,18 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
     }
   }, [isObserverVisible]);
 
+  const handleCreateTask = () => {
+    // switch (isCorrelationJobType) {
+    //   case CorrelationJobType.Job:
+    navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`);
+    // break;
+    // case CorrelationJobType.Project:
+    //   navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`);
+    //   break;
+    // default:
+    //   break;
+    // }
+  };
   return (
     <>
       <CustomDialog
@@ -191,7 +203,12 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
         secondaryBtnCallback={handleCloseDialog}
       />
       <div className="flex items-center justify-between">
-        <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
+        {isCorrelationJobType === CorrelationJobType.Project ? (
+          <p className="text-primary mb-6 text-base">Chi tiết dự án</p>
+        ) : (
+          <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
+        )}
+
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
             onClick={() => navigate(`/${PathString.NOI_BO}/${taskId}`)}
@@ -246,7 +263,10 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                     <p className="text-primary //border-r-2 mr-3 w-fit pr-4 text-base leading-5">
                       Sub công việc
                     </p>
-                    <button className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 ">
+                    <button
+                      onClick={handleCreateTask}
+                      className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 "
+                    >
                       <RiAddCircleLine size={16} color="#0655a7" />
                       <p>
                         <i className="text-[13px] font-[500]"> Thêm công việc</i>
@@ -296,7 +316,11 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                 setOpenDialog={setOpenDialog}
                 taskDetail={jobDetail}
                 visibleType={VisibleType.Public}
-                correlationJobType={CorrelationJobType.Job}
+                correlationJobType={
+                  isCorrelationJobType === CorrelationJobType.Job
+                    ? CorrelationJobType.Job
+                    : CorrelationJobType.Project
+                }
                 handleClickEdit={handleEdit}
               />
             </div>

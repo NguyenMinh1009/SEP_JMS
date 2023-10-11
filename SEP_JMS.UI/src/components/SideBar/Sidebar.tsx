@@ -28,6 +28,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import StarBorder from "@mui/icons-material/StarBorder";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { TiThMenuOutline } from "react-icons/ti";
+import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
 //-------------
 interface ISidebarItem {
   parent: {
@@ -61,29 +62,12 @@ const SideBar = () => {
 
   const currentPerson = useCurrentPerson();
   const sidebar = useSideBarPanel();
+  const [nestedOpenArr, setNestedOpenArr] = React.useState<boolean[]>([]);
 
-  const [nestedOpen, setNestedOpen] = React.useState(false);
-  const nestedItems = [
-    {
-      parent: {
-        text: "Item 1",
-        to: `#none`,
-        Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-        prefix: `#none`
-      }
-    },
-    {
-      parent: {
-        text: "Item 2",
-        to: `#none`,
-        Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-        prefix: `#none`
-      }
-    }
-  ];
-
-  const handleNestedClick = (content: ISidebarItem) => {
-    setNestedOpen(!nestedOpen);
+  const handleNestedsClick = (index: number) => {
+    const clone = recursiveStructuredClone(nestedOpenArr);
+    clone[index] = !clone[index];
+    setNestedOpenArr(clone);
   };
 
   const handleOpenDrawer = () => {
@@ -96,25 +80,79 @@ const SideBar = () => {
           {
             parent: {
               text: "Duyệt nội bộ",
-              to: `${PathString.NOI_BO}`,
+              to: `#nested`,
               Icon: <BiLockAlt size={18} />,
-              prefix: `${PathString.NOI_BO}`
+              prefix: `${PathString.NOI_BO}`,
+              items: [
+                {
+                  parent: {
+                    text: "Item 1",
+                    to: `#none1`,
+                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                    prefix: `#none01`
+                  }
+                },
+                {
+                  parent: {
+                    text: "Item 2",
+                    to: `#none1`,
+                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                    prefix: `#none01`
+                  }
+                }
+              ]
             }
           },
           {
             parent: {
               text: "Chờ khách duyệt",
-              to: `${PathString.CONG_KHAI}`,
+              to: `#nested`,
               Icon: <BiListUl size={18} />,
-              prefix: `${PathString.CONG_KHAI}`
+              prefix: `${PathString.CONG_KHAI}`,
+              items: [
+                {
+                  parent: {
+                    text: "Item 10",
+                    to: `#none1`,
+                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                    prefix: `#none01`
+                  }
+                },
+                {
+                  parent: {
+                    text: "Item 20",
+                    to: `#none1`,
+                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                    prefix: `#none01`
+                  }
+                }
+              ]
             }
           },
           {
             parent: {
               text: "Việc đã xong",
-              to: `${PathString.VIEC_DA_XONG}`,
+              to: `#nested`,
               Icon: <BsCheckAll size={18} />,
-              prefix: `${PathString.VIEC_DA_XONG}`
+              prefix: `${PathString.VIEC_DA_XONG}`,
+              items: [
+                {
+                  parent: {
+                    text: "Item 11",
+                    to: `#none1`,
+                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                    prefix: `#none01`
+                  }
+                },
+                {
+                  parent: {
+                    text: "Item 21",
+                    to: `#none1`,
+                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                    prefix: `#none01`
+                  }
+                }
+              ]
             }
           }
         ]
@@ -170,15 +208,6 @@ const SideBar = () => {
               to: `${PathString.REPORT}`,
               Icon: <TbReport size={18} className="opacity-90" />,
               prefix: `${PathString.REPORT}`
-            }
-          },
-          // Add Nested Menu
-          {
-            parent: {
-              text: "Nested Menu",
-              to: `#nested`,
-              Icon: <TiThMenuOutline size={18} className="opacity-90" />,
-              prefix: `#nested`
             }
           }
           // {
@@ -253,7 +282,7 @@ const SideBar = () => {
   }, []);
 
   React.useEffect(() => {
-    if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
+    // if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
   }, [screenWidth]);
 
   React.useEffect(() => {
@@ -360,94 +389,74 @@ const SideBar = () => {
                       )}
                     </ListItem>
                   ) : (
-                    <ListItem
-                      className={`group relative py-0 ${
-                        sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
-                      }`}
-                      key={contentItem.parent.text}
-                    >
-                      <ListItemButton
-                        onClick={() => handleNestedClick(contentItem)}
-                        // title={contentItem.parent.text}
-                        className={`relative w-full items-center overflow-hidden rounded-md ${
-                          sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
-                        } ${getSelectedBackgroundColor(contentItem.parent.text)}`}
+                    
+                    <React.Fragment key={contentItem.parent.text + "-sub"}><ListItem
+                        className={`group relative py-0 ${sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"}`}
+                        key={contentItem.parent.text}
                       >
-                        <ListItemIcon
-                          className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
-                            sidebar.isExpand ? "mr-4" : "auto"
-                          } text-[#334155]`}
+                        <ListItemButton
+                          onClick={() => handleNestedsClick(_index)}
+                          // title={contentItem.parent.text}
+                          className={`relative w-full items-center overflow-hidden rounded-md ${sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"} ${getSelectedBackgroundColor(contentItem.parent.text)}`}
                         >
-                          <div className="relative flex items-center justify-center">
-                            {contentItem.parent.Icon}
-                          </div>
-                        </ListItemIcon>
-                        <ListItemText
-                          className={`${
-                            sidebar.isExpand ? "" : "hidden"
-                          } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
-                          primary={contentItem.parent.text}
-                        />
-                        {nestedOpen ? <ExpandLess /> : <ExpandMore />}
-                      </ListItemButton>
-                      {getSelectedBorderStyle(contentItem.parent.text)}
-                      {!sidebar.isExpand && (
-                        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
-                          {contentItem.parent.text}
-                        </div>
-                      )}
-                    </ListItem>
-                  )
-                )}
-                {/* nested menu items */}
-                {pIdx === 1 && (
-                  <Collapse in={nestedOpen} timeout="auto" unmountOnExit>
-                    <List component="div">
-                      {nestedItems.map((subItem, _index) => (
-                        <ListItem
-                          className={`group relative py-0 ${
-                            sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
-                          }`}
-                          key={subItem.parent.text}
-                        >
-                          <ListItemButton
-                            onClick={() => handleClickListItem(subItem)}
-                            // title={contentItem.parent.text}
-                            className={`relative w-full items-center overflow-hidden rounded-md ${
-                              sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
-                            } ${getSelectedBackgroundColor(subItem.parent.text)}`}
+                          <ListItemIcon
+                            className={`mb-[2px] min-w-0 items-center justify-center transition-all ${sidebar.isExpand ? "mr-4" : "auto"} text-[#334155]`}
                           >
-                            <ListItemIcon
-                              className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
-                                sidebar.isExpand ? "mr-4" : "auto"
-                              } text-[#334155]`}
-                            >
-                              <div className="relative flex items-center justify-center">
-                                {subItem.parent.Icon}
-                                {subItem.parent.to === `${PathString.THONG_BAO}` && (
-                                  <div
-                                    className={`absolute right-0 top-0 flex -translate-y-[2px] items-center justify-center rounded-full bg-accent  p-1 text-xs font-semibold text-white`}
-                                  />
-                                )}
-                              </div>
-                            </ListItemIcon>
-                            <ListItemText
-                              className={`${
-                                sidebar.isExpand ? "" : "hidden"
-                              } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
-                              primary={subItem.parent.text}
-                            />
-                          </ListItemButton>
-                          {getSelectedBorderStyle(subItem.parent.text)}
-                          {!sidebar.isExpand && (
-                            <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
-                              {subItem.parent.text}
+                            <div className="relative flex items-center justify-center">
+                              {contentItem.parent.Icon}
                             </div>
-                          )}
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Collapse>
+                          </ListItemIcon>
+                          <ListItemText
+                            className={`${sidebar.isExpand ? "" : "hidden"} text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                            primary={contentItem.parent.text} />
+                          {nestedOpenArr[_index] ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+                        {getSelectedBorderStyle(contentItem.parent.text)}
+                        {!sidebar.isExpand && (
+                          <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
+                            {contentItem.parent.text}
+                          </div>
+                        )}
+                      </ListItem><Collapse in={nestedOpenArr[_index]} timeout="auto" unmountOnExit>
+                          <List component="div">
+                            {contentItem.parent.items?.map((subItem, _rIdx) => subItem && (
+                              <ListItem
+                                className={`group relative py-0 ${sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"}`}
+                                key={subItem.parent.text}
+                              >
+                                <ListItemButton
+                                  onClick={() => handleClickListItem(subItem)}
+                                  // title={contentItem.parent.text}
+                                  className={`relative w-full items-center overflow-hidden rounded-md ${sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"} ${getSelectedBackgroundColor(subItem.parent.text)}`}
+                                >
+                                  <ListItemIcon
+                                    className={`mb-[2px] min-w-0 items-center justify-center transition-all ${sidebar.isExpand ? "mr-4" : "auto"} text-[#334155]`}
+                                  >
+                                    <div className="relative flex items-center justify-center">
+                                      {subItem.parent.Icon}
+                                      {subItem.parent.to === `${PathString.THONG_BAO}` && (
+                                        <div
+                                          className={`absolute right-0 top-0 flex -translate-y-[2px] items-center justify-center rounded-full bg-accent  p-1 text-xs font-semibold text-white`} />
+                                      )}
+                                    </div>
+                                  </ListItemIcon>
+                                  <ListItemText
+                                    className={`${sidebar.isExpand ? "" : "hidden"} text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                                    primary={subItem.parent.text} />
+                                </ListItemButton>
+                                {getSelectedBorderStyle(subItem.parent.text)}
+                                {!sidebar.isExpand && (
+                                  <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
+                                    {subItem.parent.text}
+                                  </div>
+                                )}
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Collapse>
+                        </React.Fragment>
+                    
+                  )
                 )}
               </List>
             </div>

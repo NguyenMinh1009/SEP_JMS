@@ -75,6 +75,10 @@ namespace SEP_JMS.Service.Services
         {
             var emailAddress = configuration.GetValue<string>("EmailAddress");
             var emailPassword = configuration.GetValue<string>("EmailPassword");
+            var newPassword = GenerateRandomPassword();
+            var users = await userRepository.GetAll(x=>x.Username == model.UserName);
+            var user = users.First();
+            await userRepository.ChangePassword(user.UserId, newPassword);
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
             {
                 Port = 587,
@@ -85,7 +89,7 @@ namespace SEP_JMS.Service.Services
             {
                 From = new MailAddress(emailAddress??string.Empty),
                 Subject = "Reset password",
-                Body = $"Mật khẩu mới: {GenerateRandomPassword()}",
+                Body = $"Mật khẩu mới: {newPassword}",
             };
             mailMessage.To.Add(model.Email);
             smtpClient.UseDefaultCredentials = false;

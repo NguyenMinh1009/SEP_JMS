@@ -85,7 +85,7 @@ namespace SEP_JMS.Service.Services
             if (model.DesignerId != null)
             {
                 var designer = await userRepository.Get(model.DesignerId.Value);
-                if (designer == null || customer.RoleType != RoleType.Designer) throw new Exception($"designer {model.DesignerId} not found");
+                if (designer == null || designer.RoleType != RoleType.Designer) throw new Exception($"designer {model.DesignerId} not found");
             }
 
             _ = await jobTypeRepository.Get(model.JobType) ?? throw new Exception($"job type {model.JobType} not found");

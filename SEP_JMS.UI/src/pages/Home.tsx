@@ -5,15 +5,20 @@ import CreateTask from "../components/common/CreateTask";
 
 interface ICreatePageProps {
   isInternal?: boolean;
+  isCorrelationJobType: number;
 }
 
-const Home: React.FC<ICreatePageProps> = ({ isInternal }) => {
+const Home: React.FC<ICreatePageProps> = ({ isInternal, isCorrelationJobType }) => {
   return (
     <>
-      <p className="text-primary mb-6 text-base">Tạo mới công việc</p>
+      {isCorrelationJobType === CorrelationJobType.Project ? (
+        <p className="text-primary mb-6 text-base">Tạo mới dự án</p>
+      ) : (
+        <p className="text-primary mb-6 text-base">Tạo mới công việc</p>
+      )}
       <CreateTask
         visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
-        correlationJobType={CorrelationJobType.Job}
+        correlationJobType={isCorrelationJobType}
         label="Tạo việc mới"
       />
     </>

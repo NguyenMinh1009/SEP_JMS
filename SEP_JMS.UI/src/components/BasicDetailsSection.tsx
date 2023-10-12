@@ -32,10 +32,10 @@ import { correlationJobOptions } from "../constants";
 
 interface IBasicDetailsSectionProps {
   taskDetail: any;
-  correlationJobType: CorrelationJobType;
+  correlationJobType: number;
   visibleType: VisibleType;
   handleClickEdit: () => void;
-  setOpenDialog: (open: boolean) => void
+  setOpenDialog: (open: boolean) => void;
 }
 
 const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
@@ -65,8 +65,8 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
     )
       .then(() => {
         setSelectedStatus(status);
-        if(status === InternalJobStatusType.Completed) {
-          setOpenDialog(true)
+        if (status === InternalJobStatusType.Completed) {
+          setOpenDialog(true);
         }
         snakeBar.setSnakeBar("Cập nhật trạng thái thành công", "success", true);
       })
@@ -82,17 +82,8 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
           detail={jobDetail?.quantity}
         />
       );
-    } else {
-      if (!currentPerson.hiddenPrice)
-        return (
-          <BasicTaskInfo
-            Icon={<HiOutlineCircleStack size={15} color="#555" />}
-            title="Giá:"
-            detail={convertVND(jobDetail?.price)}
-          />
-        );
-      return <></>;
     }
+    return <></>;
   };
   return (
     <>
@@ -209,19 +200,19 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         <BasicTaskInfo
           Icon={<MdOutlineTypeSpecimen size={15} color="#555" />}
           title="Loại thiết kế:"
-          detail={jobOptions.find(option => option.key === jobDetail?.jobType)?.text ?? "..."}
+          detail={jobDetail?.jobType.typeName ?? "..."}
         />
 
         {renderCorrelationJobType()}
 
-        <BasicTaskInfo
+        {/* <BasicTaskInfo
           Icon={<BsWindowStack size={15} color="#555" />}
           title="Loại công việc:"
           detail={
             correlationJobOptions.find(item => item.key === jobDetail?.correlationType)?.text ?? ""
           }
-        />
-        <BasicTaskInfo Icon={<></>} title="" detail="" />
+        /> */}
+        {/* <BasicTaskInfo Icon={<></>} title="" detail="" /> */}
       </div>
 
       <div className="flex flex-1 items-center justify-center">

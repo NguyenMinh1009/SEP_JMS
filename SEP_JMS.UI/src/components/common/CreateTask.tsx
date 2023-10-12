@@ -71,9 +71,10 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
   const [value, setValue] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState<string>("");
-  const [selectedJobType, setSelectedJobType] = useState<{ key: JobType; text: string } | null>(
-    null
-  );
+  const [selectedJobType, setSelectedJobType] = useState<{
+    typeId: any;
+    typeName: string;
+  } | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
 
   const [selectedDesigner, setSelectedDesigner] = useState<any | null>(null);
@@ -84,17 +85,17 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
 
   const [deadline, setDeadline] = useState<moment.Moment | null>(moment(getDefaultDeadline()));
   const [quantity, setQuantity] = useState<number>(1);
-  const [price, setPrice] = useState<number | undefined>();
+  // const [price, setPrice] = useState<number | undefined>();
   const [selectedPriority, setSelectedPriority] = useState<Priority>(Priority.MEDIUM);
   const [selectedStatus, setSelectedStatus] = useState<JobStatusType>(JobStatusType.NotDo);
-  const [selectedCorrelationJobType, setSelectedCorrelationJobType] = useState<CorrelationJobType>(
-    CorrelationJobType.Job
-  );
+  // const [selectedCorrelationJobType, setSelectedCorrelationJobType] =
+  // useState<CorrelationJobType>(correlationJobType);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [customers, setCustomers] = useState<any[]>([]);
   const [designers, setDesigners] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [companies, setCompanies] = useState<any[]>([]);
+  const [jobtypes, setJobtypes] = useState<any[]>([]);
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -147,14 +148,15 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
   };
 
   const getCustomerListForStaff = () => {
-    AlwayxInstance.post("customer/find", {
+    AlwayxInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: null,
       companyId:
         currentPerson.roleType === Role.ADMIN
           ? selectedCompany?.companyId ?? defaultCompany.companyId
-          : undefined
+          : undefined,
+      role: Role.CUSTOMER
     })
       .then(res => setCustomers(res.data.items))
       .catch(err => {
@@ -163,10 +165,12 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
   };
 
   const getDesignerList = () => {
-    AlwayxInstance.post("employee/designer/all", {
+    AlwayxInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
-      searchText: null
+      getOrderList,
+      searchText: null,
+      role: Role.DESIGNER
     })
       .then(res => setDesigners(res.data.items))
       .catch(err => console.error(err));
@@ -174,22 +178,29 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
 
   const getAccountList = () => {
     if (!currentPerson.roleType || currentPerson.roleType === Role.DESIGNER) return;
-    AlwayxInstance.post("employee/account/all", {
+    AlwayxInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
-      searchText: null
+      searchText: null,
+      role: Role.ACCOUNT
     })
       .then(res => setAccounts(res.data.items))
       .catch(err => console.error(err));
   };
 
   const getOrderList = () => {
-    AlwayxInstance.post("company/all", {
+    AlwayxInstance.post("company/search", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: ""
     })
       .then(res => setCompanies(res.data.items))
+      .catch(err => console.error(err));
+  };
+
+  const getJobTypeList = () => {
+    AlwayxInstance.get("jobtype/all")
+      .then(res => setJobtypes(res.data))
       .catch(err => console.error(err));
   };
 
@@ -211,22 +222,17 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
           </>
         );
       case CorrelationJobType.Project:
-        if (currentPerson.roleType === Role.ADMIN)
-          return (
-            <>
-              <label htmlFor="" className="text-primary col-span-2">
-                Giá (VND)
-              </label>
-              <input
-                type="number"
-                value={price}
-                min={0}
-                onChange={e => setPrice(Number(e.target.value))}
-                className="h-10 w-full rounded-[4px] border-[1px] border-[rgba(0,0,0,0.23)] p-2 leading-5 shadow-sm"
-              />
-            </>
-          );
-        return <></>;
+        return (
+          <>
+            {/* <input
+              type="hidden"
+              value={1}
+              min={0}
+              onChange={e => setQuantity(Number(e.target.value))}
+              className="h-10 w-full rounded-[4px] border-[1px] border-[rgba(0,0,0,0.23)] p-2 leading-5 shadow-sm"
+            /> */}
+          </>
+        );
     }
   };
 
@@ -255,13 +261,12 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
       title: title,
       description: getSanitizeText(value),
       designerId: selectedDesigner?.userId ?? "",
-      quantity: correlationJobType === CorrelationJobType.Job ? quantity : "",
-      price: correlationJobType === CorrelationJobType.Project ? price : "",
-      jobType: selectedJobType?.key,
+      quantity: correlationJobType === CorrelationJobType.Job ? quantity : 1,
+      jobType: selectedJobType?.typeId,
       jobStatus: selectedStatus,
       deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
       priority: selectedPriority,
-      correlationType: selectedCorrelationJobType
+      correlationType: correlationJobType
     };
     // append files and data to formData
     files.forEach(item => formData.append("requirementFiles", item));
@@ -274,10 +279,22 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
         const jobDetail = res.data;
         switch (visibleType) {
           case VisibleType.Public:
-            navigate(`/${PathString.CONG_KHAI}/${jobDetail.jobId}`);
+            {
+              correlationJobType === CorrelationJobType.Job
+                ? navigate(
+                    `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${jobDetail.jobId}`
+                  )
+                : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${jobDetail.jobId}`);
+            }
+
             break;
           case VisibleType.Internal:
-            navigate(`/${PathString.NOI_BO}/${jobDetail.jobId}`);
+            {
+              correlationJobType === CorrelationJobType.Job
+                ? navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}${jobDetail.jobId}`)
+                : navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}${jobDetail.jobId}`);
+            }
+
             break;
           default:
             return;
@@ -319,6 +336,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
       getDesignerList();
       getOrderList();
       getAccountList();
+      getJobTypeList();
     }
   }, [currentPerson.roleType]);
 
@@ -607,14 +625,14 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
                 Loại thiết kế
               </label>
               <Autocomplete
-                id="types"
+                id="jobtypes"
                 value={selectedJobType}
                 onChange={(_, newValue) => {
                   if (newValue) setSelectedJobType(newValue);
                 }}
-                getOptionLabel={option => option.text}
+                getOptionLabel={option => option.typeName}
                 size="small"
-                options={jobOptions}
+                options={jobtypes}
                 fullWidth
                 // disabled
                 renderInput={params => (
@@ -713,7 +731,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
                 ))}
               </Select>
             </div>
-            <div className="flex flex-col items-start gap-3">
+            {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại công việc
               </label>
@@ -735,7 +753,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
                   </MenuItem>
                 ))}
               </Select>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex flex-1 items-center justify-center">

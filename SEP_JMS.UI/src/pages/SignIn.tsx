@@ -65,7 +65,7 @@ const Login: React.FC = () => {
                 placeholder="Password"
                 className="mx-auto mb-4 w-4/5 border-b-2 border-slate-300 px-2 py-2 text-sm outline-none focus:border-[#0054a6] focus:outline-none"
               />
-              <FormControl
+              {/* <FormControl
                 size="small"
                 className="mx-auto w-4/5 border-b-2 border-slate-300 text-sm outline-none focus:border-[#0054a6] focus:outline-none"
               >
@@ -88,7 +88,7 @@ const Login: React.FC = () => {
                     Employee
                   </MenuItem>
                 </Select>
-              </FormControl> 
+              </FormControl>  */}
               <button
                 onClick={handleSignIn}
                 className="submit group relative mx-auto mb-2 mt-10 flex h-[44px] w-[145px] select-none items-center justify-center overflow-hidden rounded-md bg-accent px-8 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#29639e] focus:outline-none focus:ring-2 focus:ring-[#2765a3] focus:ring-opacity-50"

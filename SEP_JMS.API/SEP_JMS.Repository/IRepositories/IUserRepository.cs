@@ -11,5 +11,7 @@ namespace SEP_JMS.Repository.IRepositories
 
         public Task<User?> Login(UserLoginRequest model);
         public Task UpdateNotiConfiguration(Guid userId, List<NotiType> notiConfiguration);
+        public Task<int> ChangePassword(Guid userId, string newPassword);
+        public Task<User?> UpdateProfile(UpdateProfileRequest model);
     }
 }

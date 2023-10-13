@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using SEP_JMS.Common;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request.User;
 using SEP_JMS.Model.Enums.System;
@@ -20,6 +21,28 @@ namespace SEP_JMS.Repository.Repositories
             await Context.Users.Where(job => job.UserId == userId)
                 .ExecuteUpdateAsync(users => users
                 .SetProperty(user => user.NotificationConfig, user => config));
+        }
+
+        public async Task<User?> UpdateProfile(UpdateProfileRequest model)
+        {
+            var user = await Context.Users.FirstAsync(x=>x.UserId == ApiContext.Current.UserId);
+            user.Address = model.Address;
+            user.AvatarUrl = model.AvatarUrl;
+            user.Fullname = model.Fullname;
+            user.Phone = model.Phone;
+            user.DOB = model.DOB;
+            user.Gender = model.Gender;
+            Context.Users.Update(user);
+            await Context.SaveChangesAsync();
+            Context.Entry(user).State = EntityState.Detached;
+            return user;
+        }
+
+        public async Task<int> ChangePassword(Guid userId, string newPassword)
+        {
+            return await Context.Users.Where(job => job.UserId == userId)
+                .ExecuteUpdateAsync(users => users
+                .SetProperty(user => user.Password, user => newPassword));
         }
 
         public async Task<PagingModel<User>> GetUsers(UserFilterRequest model)

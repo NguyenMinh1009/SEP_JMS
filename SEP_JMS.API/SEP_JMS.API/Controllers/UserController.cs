@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using SEP_JMS.Common;
+using SEP_JMS.Model.Api.Request;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -94,6 +95,61 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when searching users. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to change password for user {model.UserName}.");
+                var rs = await userService.ChangePassword(model);
+                if(rs>0)
+                {
+                    return StatusCode(200);
+                }
+                return Content("Người dùng không tồn tại!");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception while processing change password for user {model.UserName}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("UpdateProfile")]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileRequest model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update profile for user {ApiContext.Current.UserId}.");
+                var rs = await userService.UpdateProfile(model);
+                return rs == null ? BadRequest() : Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception while processing update profile for user {ApiContext.Current.UserId}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to send new password to user {ApiContext.Current.UserId}.");
+                await userService.ForgotPassword(model);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception while processing send new password to user {ApiContext.Current.UserId}. Error: {ex}");
                 return StatusCode(500);
             }
         }

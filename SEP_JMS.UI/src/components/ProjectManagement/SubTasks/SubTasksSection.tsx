@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
-import SubTasks from "./SubTasksProps";
+import SubTasksProps from "./SubTasksProps";
 import { Button } from "@mui/material";
 import AlwayxInstance from "../../../api/AxiosInstance";
 import useFilterInfo from "../../../hooks/store/useFilterInfo";
 import { JobStatusType } from "../../../enums/jobStatusType";
 import { isAny } from "tailwind-merge/dist/lib/validators";
 import { useIsFirstRender } from "../../../hooks/useIsFirstRender";
+import { VisibleType } from "../../../enums/visibleType";
 
 interface ISubTasksSection {
-  sidebar?: boolean;
   finishedOnly?: boolean;
   setPageInfo?: (pageInfo: any) => void;
   parentId: any;
+  visibleType: VisibleType;
 }
 
 const pageSize = 5;
 
-const SubTasksSection = ({ finishedOnly, setPageInfo, parentId }: ISubTasksSection) => {
+const SubTasksSection = ({
+  finishedOnly,
+  setPageInfo,
+  parentId,
+  visibleType
+}: //
+ISubTasksSection) => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = React.useState<number>(0);
@@ -51,7 +58,7 @@ const SubTasksSection = ({ finishedOnly, setPageInfo, parentId }: ISubTasksSecti
     }
   }, []);
 
-  return <div>{!isLoading && <SubTasks tasks={jobs} />}</div>;
+  return <div>{!isLoading && <SubTasksProps tasks={jobs} visibleType={visibleType} />}</div>;
 };
 
 export default SubTasksSection;

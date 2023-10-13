@@ -181,7 +181,9 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   const handleCreateTask = () => {
     // switch (isCorrelationJobType) {
     //   case CorrelationJobType.Job:
-    navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`);
+    navigate(
+      `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
+    );
     // break;
     // case CorrelationJobType.Project:
     //   navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`);
@@ -273,7 +275,11 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                       </p>
                     </button>
                   </div>
-                  <SubTasksSection parentId={taskId} finishedOnly />
+                  <SubTasksSection
+                    parentId={taskId}
+                    finishedOnly
+                    visibleType={VisibleType.Public}
+                  />
                 </div>
               )}
 

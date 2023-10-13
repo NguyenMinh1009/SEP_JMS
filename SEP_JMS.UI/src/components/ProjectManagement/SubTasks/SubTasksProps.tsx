@@ -3,12 +3,16 @@ import React from "react";
 import { AiOutlineEllipsis } from "react-icons/ai";
 import TaskPropertiesLabel from "./TaskPropertiesLabel";
 import DropdownAction from "./DropdownAction";
+import { VisibleType } from "../../../enums/visibleType";
 
 interface SubTasksProps {
   tasks: any[];
+  // parentId: string;
+  visibleType: VisibleType;
+  // finishedOnly?: boolean;
 }
 
-const SubTasks: React.FC<SubTasksProps> = ({ tasks }) => {
+const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType }) => {
   return (
     <div>
       {tasks.length !== 0 ? (
@@ -35,7 +39,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ tasks }) => {
                     </div>
                   </div>
                   {/*actions */}
-                  <DropdownAction />
+                  <DropdownAction visibleType={visibleType} finishOnly subTaskId={task.jobId} />
                   {/* ---------- */}
                 </div>
               </div>
@@ -49,4 +53,4 @@ const SubTasks: React.FC<SubTasksProps> = ({ tasks }) => {
   );
 };
 
-export default SubTasks;
+export default SubTasksProps;

@@ -1,9 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import { AiOutlineEllipsis } from "react-icons/ai";
+import { CorrelationJobType } from "../../../enums/correlationJobType";
+import { VisibleType } from "../../../enums/visibleType";
+import { PathString } from "../../../enums/MapRouteToBreadCrumb";
+import { useNavigate, useParams } from "react-router-dom";
 
-const DropdownMenu: React.FC = () => {
+interface IDropdownAction {
+  // correlationJobType: CorrelationJobType;
+  visibleType: VisibleType;
+  finishOnly?: boolean;
+  // taskId: any;
+  subTaskId: any;
+}
+
+const DropdownAction: React.FC<IDropdownAction> = ({
+  visibleType,
+  finishOnly,
+  // taskId,
+  subTaskId
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const { taskId } = useParams();
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -25,20 +44,29 @@ const DropdownMenu: React.FC = () => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
+  const getLinkForViewJob = (): string => {
+    if (finishOnly)
+      return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.VIEC_CUA_DU_AN}/${subTaskId}`;
+    if (visibleType === VisibleType.Public)
+      return `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.VIEC_CUA_DU_AN}/${subTaskId}`;
+    return `/${PathString.NOI_BO}/${taskId}/${PathString.VIEC_CUA_DU_AN}/${subTaskId}`;
+  };
 
+  const getLinkForEditJob = () => {
+    return getLinkForViewJob() + `/${PathString.CHINH_SUA}`;
+  };
   const handleViewClick = () => {
-    console.log("View action");
-    setIsOpen(false);
+    navigate(getLinkForViewJob());
   };
 
   const handleUpdateClick = () => {
     console.log("Update action");
-    setIsOpen(false);
+    // setIsOpen(false);
   };
 
   const handleDeleteClick = () => {
     console.log("Delete action");
-    setIsOpen(false);
+    // setIsOpen(false);
   };
 
   return (
@@ -84,4 +112,4 @@ const DropdownMenu: React.FC = () => {
   );
 };
 
-export default DropdownMenu;
+export default DropdownAction;

@@ -55,7 +55,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   const currentPerson = useCurrentPerson();
   const breadCrumbTitle = useTitle();
   const navigate = useNavigate();
-  const { taskId } = useParams();
+  const { taskId, subTaskId } = useParams();
 
   const getComments = () => {
     setCommentLoading(true);
@@ -63,7 +63,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
     AlwayxInstance.post("comment/all", {
       pageIndex: 1,
       pageSize: 5,
-      jobId: taskId,
+      jobId: subTaskId !== undefined ? subTaskId : taskId,
       from: null,
       to: to,
       correlationJobType: CorrelationJobType.Job,
@@ -156,21 +156,54 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
       });
   };
 
-  useEffect(() => {
-    getTaskDetails(
-      setLoading,
-      setImagesLoading,
-      setJobDetail,
-      breadCrumbTitle,
-      setDocFiles,
-      setImgFiles,
-      setOpenDialog,
-      `job/${taskId}`,
-      `file/job/${taskId}`
-    )
-      .then()
-      .catch(err => err);
-  }, [taskId]);
+  {
+    subTaskId === undefined
+      ? useEffect(() => {
+          getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `job/${taskId}`,
+            `file/job/${taskId}`
+          )
+            .then()
+            .catch(err => err);
+        }, [taskId])
+      : useEffect(() => {
+          getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `job/${subTaskId}`,
+            `file/job/${subTaskId}`
+          )
+            .then()
+            .catch(err => err);
+        }, [subTaskId]);
+  }
+  // useEffect(() => {
+  //   getTaskDetails(
+  //     setLoading,
+  //     setImagesLoading,
+  //     setJobDetail,
+  //     breadCrumbTitle,
+  //     setDocFiles,
+  //     setImgFiles,
+  //     setOpenDialog,
+  //     `job/${taskId}`,
+  //     `file/job/${taskId}`
+  //   )
+  //     .then()
+  //     .catch(err => err);
+  // }, [taskId]);
 
   useEffect(() => {
     if (isObserverVisible && hasOlderComment) {

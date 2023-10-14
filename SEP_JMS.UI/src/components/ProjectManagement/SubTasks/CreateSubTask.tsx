@@ -31,7 +31,6 @@ import FileSection from "../../FileSection";
 import ImageSection from "../../../components/common/ImageSection";
 import RequireText from "../../../components/common/RequireText";
 import { statusOptions } from "../../../components/common/StatusSection";
-import ProjectParentSection from "./ProjectParentSection";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons

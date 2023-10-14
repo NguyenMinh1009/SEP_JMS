@@ -24,8 +24,6 @@ import Jobs from "./pages/Jobs";
 import { CorrelationJobType } from "./enums/correlationJobType";
 import EditTask from "./pages/EditTask";
 import Home from "./pages/Home";
-import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
-import SubTaskDetail from "./pages/SubTaskDetail";
 
 const theme = createTheme(
   {
@@ -215,12 +213,12 @@ function App() {
                         <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Project} />
                       }
                     />
+                    <Route
+                      path=":taskId/:subTaskId"
+                      element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
+                    />
                     <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
 
-                    <Route
-                      path={`:taskId/${PathString.VIEC_CUA_DU_AN}/:subTaskId`}
-                      element={<SubTaskDetail />}
-                    />
                     <Route
                       path={`:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`}
                       element={<Home isCorrelationJobType={CorrelationJobType.Job} isParentId />}

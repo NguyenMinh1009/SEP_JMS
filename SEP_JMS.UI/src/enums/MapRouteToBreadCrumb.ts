@@ -1,5 +1,6 @@
 export enum PathString {
   DANG_NHAP = "dang-nhap",
+  QUEN_MAT_KHAU = "quen-mat-khau",
   CONG_KHAI = "viec-dang-lam",
   NOI_BO = "duyet-noi-bo",
   VIEC_DU_AN = "du-an",

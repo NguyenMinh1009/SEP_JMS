@@ -26,6 +26,7 @@ import EditTask from "./pages/EditTask";
 import Home from "./pages/Home";
 import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
 import SubTaskDetail from "./pages/SubTaskDetail";
+import Profile from "./pages/profile";
 
 const theme = createTheme(
   {
@@ -226,6 +227,7 @@ function App() {
                       element={<Home isCorrelationJobType={CorrelationJobType.Job} isParentId />}
                     />
                   </Route>
+                  <Route path={`/${PathString.TAI_KHOAN}`} element={<Profile />} />
                   <Route
                     path="*"
                     element={

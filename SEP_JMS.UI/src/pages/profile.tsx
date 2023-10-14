@@ -1,0 +1,368 @@
+import { Role } from "../enums/role";
+import useCurrentPerson from "../hooks/store/useCurrentPerson";
+import { AiFillStar, AiFillEye } from "react-icons/ai";
+import { MdTextsms, MdPhotoCamera } from "react-icons/md";
+import { BsCheck } from "react-icons/bs";
+import { FaUser, FaLock } from "react-icons/fa";
+import TaskPreview from "../components/TaskPreview";
+import { useEffect, useState } from "react";
+import moment from "moment";
+import { ticksToDate } from "../utils/Datetime";
+import Images from "../img";
+import RequireText from "../components/common/RequireText";
+import { CircularProgress, Tooltip } from "@mui/material";
+import { HiOutlineEye } from "react-icons/hi";
+import { cn } from "../utils/className";
+import { commonRegex } from "../constants";
+import CustomButton from "../components/common/CustomButton";
+import useSnakeBar from "../hooks/store/useSnakeBar";
+import APIClientInstance from "../api/AxiosInstance"; "../api/AxiosInstance";
+
+const Profile = () => {
+  const [selectedTab, setSelectedTab] = useState<string>("Thông tin");
+  const [oldPassword, setOldPassword] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [rePassword, setRePassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [focusPassword, setFocusPassword] = useState<boolean>(false);
+  const [focusRePassword, setFocusRePassword] = useState<boolean>(false);
+  const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
+  const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const currentPerson = useCurrentPerson();
+  const snakeBar = useSnakeBar();
+
+  useEffect(() => {
+    if (focusPassword && !commonRegex.password.test(password)) setOpenPassTooltip(true);
+    else setOpenPassTooltip(false);
+  }, [focusPassword, password]);
+
+  useEffect(() => {
+    if (focusRePassword && password !== rePassword) setOpenRePassTooltip(true);
+    else setOpenRePassTooltip(false);
+  }, [focusRePassword, rePassword, password]);
+
+  const getRoleText = (role?: Role) => {
+    switch (role) {
+      case Role.ACCOUNT:
+        return "Account";
+      case Role.CUSTOMER:
+        return "Khách hàng";
+      case Role.ADMIN:
+        return "Admin";
+      case Role.DESIGNER:
+        return "Thiết kế";
+    }
+  };
+
+  const tabs = [
+    
+    {
+      text: "Thông tin",
+      icon: <FaUser size={14} />
+      //element: <TaskPreview />
+    },
+    {
+      text: "Đổi mật khẩu",
+      icon: <FaLock size={14} />
+      //element: <TaskPreview />
+    },
+    {
+        text: "Thông báo",
+        icon: <AiFillEye size={14} />,
+        // element: <TaskPreview />
+      }
+  ];
+
+  const handleChangePassword = () => {
+    if (!oldPassword.trim()) {
+      snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
+      return;
+    }
+    setIsLoading(true);
+    APIClientInstance.post("user/ChangePassword", {
+      oldPassword: oldPassword.trim(),
+      newPassword: password.trim(),
+      userName: currentPerson.username
+    })
+      .then(() => {
+        snakeBar.setSnakeBar("Đổi mật khẩu thành công!", "success", true);
+      })
+      .catch(() => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  return (
+    <div className="flex h-full gap-12">
+      <div className="flex w-1/4 max-w-[300px] flex-col items-start">
+        <div className="group relative mb-9 aspect-square w-full cursor-pointer overflow-hidden rounded-md bg-slate-500">
+          <img
+            src={currentPerson.avatarUrl ?? Images.avtPlaceHolder}
+            alt=""
+            className="w-full object-cover"
+          />
+          <div className="absolute left-0 top-full flex h-2/5 w-full flex-col items-center justify-center gap-2 bg-black bg-opacity-30 transition-all group-hover:top-[60%]">
+            <MdPhotoCamera size={26} className="text-white" />
+            <p className="font-semibold text-white">Thay ảnh đại diện</p>
+          </div>
+        </div>
+        <div className="w-full">
+          <div className="mb-4">
+            <div className="mb-2 flex gap-1">
+              <p className="text-sm text-[#999]">Ngày tạo</p>
+              <div className="mb-[2px] flex-1 border-b-2" />
+            </div>
+            <p className="font-semibold text-accent">
+              {moment(ticksToDate(currentPerson.createdTime)).format("DD-MM-YYYY") || "..."}
+            </p>
+          </div>
+          {currentPerson.roleType !== Role.CUSTOMER && (
+            <>
+              <div className="mb-4">
+                <div className="mb-2 flex gap-1">
+                  <p className="text-sm text-[#999]">Ngày tham gia</p>
+                  <div className="mb-[2px] flex-1 border-b-2" />
+                </div>
+                <p className="font-semibold text-accent">
+                  {moment(ticksToDate(currentPerson.onboardTime)).format("DD-MM-YYYY") || "..."}
+                </p>
+              </div>
+              <div className="">
+                <div className="mb-2 flex gap-1">
+                  <p className="text-sm text-[#999]">Ngày nghỉ</p>
+                  <div className="mb-[2px] flex-1 border-b-2" />
+                </div>
+                <p className="font-semibold text-accent">
+                  {currentPerson.offboardTime
+                    ? moment(ticksToDate(currentPerson.offboardTime)).format("DD-MM-YYYY")
+                    : "Chưa có thông tin"}
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="vertical-grid-container col-span-15">
+        <div>
+          <p className="text-primary text-2xl font-bold">{currentPerson.fullname}</p>
+          <p className="text-secondary mb-4 font-semibold text-accent">
+            {getRoleText(currentPerson.roleType)}
+          </p>
+          <div className="flex w-fit items-end gap-6 border-b-2">
+            {tabs.map(tab => (
+              <div
+                onClick={() => setSelectedTab(tab.text)}
+                className={`-mb-[2px] flex cursor-pointer items-center gap-2 pb-2 hover:opacity-80 ${
+                  selectedTab === tab.text
+                    ? "border-b-[3px] border-accent text-[#222]"
+                    : "text-[#999]"
+                }`}
+                key={tab.text}
+              >
+                {tab.icon}
+                <p className="font-semibold">{tab.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        {selectedTab === "Hoạt động" && (
+          <div className="max-h-full overflow-y-auto pb-10 pt-5 scrollbar-hide">
+            <p>Hoạt động gần đây</p>
+          </div>
+        )}
+        {selectedTab === "Thông tin" && (
+          <div>
+            <p className="mt-6 opacity-60">Thông tin cơ bản</p>
+            <div className="flex flex-col gap-4 pt-6">
+              <div className="flex items-center">
+                <p className="w-[134px] font-semibold">Điện thoại</p>
+                <p className="font-semibold text-accent">{currentPerson.phone}</p>
+              </div>
+              <div className="flex items-center">
+                <p className="w-[134px] font-semibold">Địa chỉ</p>
+                <p className="font-semibold text-accent">{currentPerson.address}</p>
+              </div>
+              <div className="flex items-center">
+                <p className="w-[134px] font-semibold">Công ty</p>
+                <p className="font-semibold text-accent">
+                  {currentPerson.company?.companyName || "..."}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <p className="w-[134px] font-semibold">Email</p>
+                <p className="font-semibold text-accent">{currentPerson.email}</p>
+              </div>
+            </div>
+            <p className="mt-6 opacity-60">Thông tin thêm</p>
+            <div className="flex flex-col gap-4 pt-6">
+              <div className="flex items-center">
+                <p className="w-[134px] font-semibold">Ngày sinh</p>
+                <p className="font-semibold text-accent">
+                  {moment(ticksToDate(currentPerson.dob)).format("DD-MM-YYYY")}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <p className="w-[134px] font-semibold">Giới tính</p>
+                <p className="font-semibold text-accent">
+                  {currentPerson.gender === 1 ? "Nam" : "Nữ"}
+                </p>
+              </div>
+              {currentPerson.idCardNumber ? (
+                <div className="flex items-center">
+                  <p className="w-[134px] font-semibold">Mã thẻ</p>
+                  <p className="font-semibold text-accent">{currentPerson.idCardNumber}</p>
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+        )}
+        {selectedTab === "Đổi mật khẩu" && (
+          <div className="flex flex-col gap-4 py-6">
+            {/* old pass */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Mật khẩu cũ
+                </label>
+                <RequireText />
+              </div>
+
+              <input
+                maxLength={150}
+                value={oldPassword}
+                onChange={e => setOldPassword(e.target.value)}
+                type="text"
+                className={cn(
+                  "common-input-border w-full rounded-md p-2 leading-5 shadow-sm",
+                  showPassword ? "" : "security"
+                )}
+              />
+              <HiOutlineEye
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+                className="absolute right-3 top-1/2 hidden -translate-y-1/2 cursor-pointer hover:opacity-60 group-hover:block"
+                size={15}
+                color="#666"
+              />
+            </div>
+
+            {/* pass */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Mật khẩu mới
+                </label>
+                <RequireText />
+              </div>
+              <Tooltip
+                open={openPassTooltip}
+                title="Mật khẩu ít nhất 8 kí tự, gồm chữ, số và kí tự đặc biệt!"
+                arrow
+                placement="top-start"
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      minWidth: "max-content",
+                      whiteSpace: "nowrap",
+                      fontSize: "13px",
+                      padding: "12px",
+                      bgcolor: "#222",
+                      "& .MuiTooltip-arrow": {
+                        color: "#222"
+                      }
+                    }
+                  }
+                }}
+              >
+                <input
+                  onFocus={() => setFocusPassword(true)}
+                  onBlur={() => setFocusPassword(false)}
+                  maxLength={150}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  type="text"
+                  className={cn(
+                    "common-input-border w-[250px] rounded-md p-2 leading-5 shadow-sm",
+                    showPassword ? "" : "security"
+                  )}
+                />
+              </Tooltip>
+              <HiOutlineEye
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+                className="absolute right-3 top-1/2 hidden -translate-y-1/2 cursor-pointer hover:opacity-60 group-hover:block"
+                size={15}
+                color="#666"
+              />
+            </div>
+
+            {/* retype pass */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Nhập lại
+                </label>
+                <RequireText />
+              </div>
+              <Tooltip
+                open={openRePassTooltip}
+                title="Nhập lại mật khẩu chưa khớp!"
+                arrow
+                placement="bottom-start"
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      minWidth: "max-content",
+                      whiteSpace: "nowrap",
+                      fontSize: "13px",
+                      padding: "12px",
+                      bgcolor: "#222",
+                      "& .MuiTooltip-arrow": {
+                        color: "#222"
+                      }
+                    }
+                  }
+                }}
+              >
+                <input
+                  onFocus={() => setFocusRePassword(true)}
+                  onBlur={() => setFocusRePassword(false)}
+                  maxLength={150}
+                  value={rePassword}
+                  onChange={e => setRePassword(e.target.value)}
+                  type="text"
+                  className={cn(
+                    "common-input-border w-full rounded-md p-2 leading-5 shadow-sm",
+                    showPassword ? "" : "security"
+                  )}
+                />
+              </Tooltip>
+              <HiOutlineEye
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+                className="absolute right-3 top-1/2 hidden -translate-y-1/2 cursor-pointer hover:opacity-60 group-hover:block"
+                size={15}
+                color="#666"
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              {isLoading && <CircularProgress size={18} />}
+              <CustomButton onClick={handleChangePassword}>Đổi mật khẩu</CustomButton>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Profile;

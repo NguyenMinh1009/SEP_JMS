@@ -1,6 +1,6 @@
 import { Role } from "../enums/role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
-import { AiFillStar, AiFillEye } from "react-icons/ai";
+import { AiFillStar, AiFillEye, AiFillEdit } from "react-icons/ai";
 import { MdTextsms, MdPhotoCamera } from "react-icons/md";
 import { BsCheck } from "react-icons/bs";
 import { FaUser, FaLock } from "react-icons/fa";
@@ -10,13 +10,49 @@ import moment from "moment";
 import { ticksToDate } from "../utils/Datetime";
 import Images from "../img";
 import RequireText from "../components/common/RequireText";
-import { CircularProgress, Tooltip } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, FormControlLabel, FormGroup, Switch, Tooltip, Typography, styled } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { HiOutlineEye } from "react-icons/hi";
 import { cn } from "../utils/className";
 import { commonRegex } from "../constants";
 import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
-import APIClientInstance from "../api/AxiosInstance"; "../api/AxiosInstance";
+import APIClientInstance from "../api/AxiosInstance";import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
+import { info } from "console";
+ "../api/AxiosInstance";
+
+const Android12Switch = styled(Switch)(({ theme }) => ({
+  padding: 8,
+  '& .MuiSwitch-track': {
+    borderRadius: 22 / 2,
+    '&:before, &:after': {
+      content: '""',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 16,
+      height: 16,
+    },
+    '&:before': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+      left: 12,
+    },
+    '&:after': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+      right: 12,
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxShadow: 'none',
+    width: 16,
+    height: 16,
+    margin: 2,
+  },
+}));
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Thông tin");
@@ -29,13 +65,84 @@ const Profile = () => {
   const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isProcessUpdate, setIsProcessUpdate] = useState<boolean>(false);
+
   const currentPerson = useCurrentPerson();
   const snakeBar = useSnakeBar();
+
+  // state for update information
+  const [infoUpdate, setInfoUpdate] = useState<any>({});
+  const onChangeBindInfo = (value: any, path: string) => {
+    console.log("Current info:", infoUpdate);
+    let clone = {... infoUpdate};
+    clone[path] = value;
+    setInfoUpdate(clone);
+  }
+
+  useEffect(() => {
+    selectedTab === "Cập nhật thông tin" && setInfoUpdate({
+      avatarUrl: currentPerson.avatarUrl,
+      fullname: currentPerson.fullname,
+      phone: currentPerson.phone,
+      dob: currentPerson.dob,
+      gender: currentPerson.gender,
+      address: currentPerson.address
+    })
+  }, [selectedTab]);
+
+  // Add more notification configurations
+  const [notiState, setNotiState] = useState<boolean[]>([]);
+  const [isProcessNotifyConfig, setIsProcessNotifyConfig] = useState<boolean>(false);
+
+  const updateNotifyConfig = async () => {
+    setIsProcessNotifyConfig(true);
+    let arrs: number[] = [];
+    notiState.map((v, i) => v && arrs.push(i));
+    await APIClientInstance.post("notification/configure", arrs).then(res => {
+      setIsProcessNotifyConfig(false);
+      const currentData = JSON.parse(localStorage.getItem("user") ?? "");
+      currentData.notificationConfig = JSON.stringify(arrs);
+      currentPerson.setCurrentPerson?.(currentData);
+      localStorage.setItem("user", JSON.stringify(currentData));
+      window.dispatchEvent(new Event("storage"));
+    });
+  };
+
+  const notiItems = [
+    {
+      title: "Công việc",
+      value: 0
+    },
+    {
+      title: "Bình luân",
+      value: 1
+    },
+    {
+      title: "Email",
+      value: 2
+    }
+  ];
 
   useEffect(() => {
     if (focusPassword && !commonRegex.password.test(password)) setOpenPassTooltip(true);
     else setOpenPassTooltip(false);
   }, [focusPassword, password]);
+
+  useEffect(() => {
+    console.log(notiState);
+    if (notiState.length === 0) {
+      console.log("Update noti state:", notiState);
+      setIsProcessNotifyConfig(true);
+      let currentCfg = currentPerson.notificationConfig.replace("[", "").replace("]", "").split(",");
+      let clone : boolean[] = [];
+      currentCfg.map(value => clone[parseInt(value)] = true);
+      setIsProcessNotifyConfig(false);
+      setNotiState(clone);
+    } else {
+      updateNotifyConfig();
+    }
+    
+  }, [notiState]);
 
   useEffect(() => {
     if (focusRePassword && password !== rePassword) setOpenRePassTooltip(true);
@@ -68,11 +175,23 @@ const Profile = () => {
       //element: <TaskPreview />
     },
     {
+      text: "Cập nhật thông tin",
+      icon: <AiFillEdit size={14} />
+      //element: <TaskPreview />
+    },
+    {
         text: "Thông báo",
         icon: <AiFillEye size={14} />,
         // element: <TaskPreview />
       }
   ];
+
+  const onNotiSwitchChange = (e: React.ChangeEvent) => {
+    let control = e.target as HTMLInputElement;
+    const clone = recursiveStructuredClone(notiState);
+    clone[parseInt(control.value)] = control.checked;
+    setNotiState(clone);
+  }
 
   const handleChangePassword = () => {
     if (!oldPassword.trim()) {
@@ -93,6 +212,29 @@ const Profile = () => {
       })
       .finally(() => {
         setIsLoading(false);
+      });
+  };
+
+  const handleUpdateInfo = () => {
+    if (!infoUpdate.fullname.trim()) {
+      snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
+      return;
+    }
+    setIsProcessUpdate(true);
+    APIClientInstance.post("user/UpdateProfile", infoUpdate)
+      .then(() => {
+        const currentData = JSON.parse(localStorage.getItem("user") ?? "");
+        for (const prop in infoUpdate) currentData[prop] = infoUpdate[prop];
+        currentPerson.setCurrentPerson?.(currentData);
+        localStorage.setItem("user", JSON.stringify(currentData));
+        window.dispatchEvent(new Event("storage"));
+        snakeBar.setSnakeBar("Cập nhật thông tin thành công!", "success", true);
+      })
+      .catch(() => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+      })
+      .finally(() => {
+        setIsProcessUpdate(false);
       });
   };
 
@@ -169,9 +311,25 @@ const Profile = () => {
             ))}
           </div>
         </div>
-        {selectedTab === "Hoạt động" && (
-          <div className="max-h-full overflow-y-auto pb-10 pt-5 scrollbar-hide">
-            <p>Hoạt động gần đây</p>
+        {selectedTab === "Thông báo" && (
+          <div>
+            {/* <p className="mt-6 opacity-60">Cài đặt nhận thông báo</p> */}
+            <div>
+              <div className="flex flex-col gap-4 pt-6">
+                <FormGroup>
+                  {notiItems.map(v => (
+                    <FormControlLabel
+                      style={{marginLeft: "0px"}}
+                      value = {v.value}
+                      control={<Android12Switch checked={notiState[v.value]} disabled={isProcessNotifyConfig} onChange={onNotiSwitchChange} />}
+                      label={"Nhận thông báo từ " + v.title}
+                      key={v.value}
+                    />
+                  ))}
+                </FormGroup>
+              </div>
+              
+            </div>
           </div>
         )}
         {selectedTab === "Thông tin" && (
@@ -289,7 +447,7 @@ const Profile = () => {
                   onChange={e => setPassword(e.target.value)}
                   type="text"
                   className={cn(
-                    "common-input-border w-[250px] rounded-md p-2 leading-5 shadow-sm",
+                    "common-input-border w-full rounded-md p-2 leading-5 shadow-sm",
                     showPassword ? "" : "security"
                   )}
                 />
@@ -357,6 +515,74 @@ const Profile = () => {
             <div className="flex justify-end gap-3">
               {isLoading && <CircularProgress size={18} />}
               <CustomButton onClick={handleChangePassword}>Đổi mật khẩu</CustomButton>
+            </div>
+          </div>
+        )}
+        {selectedTab === "Cập nhật thông tin" && (
+          <div className="flex flex-col gap-4 py-6">
+            {/* full name */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Họ và tên
+                </label>
+                <RequireText />
+              </div>
+
+              <input
+                maxLength={150}
+                value={infoUpdate.fullname}
+                onChange={e => onChangeBindInfo(e.target.value, "fullname")}
+                type="text"
+                className={cn(
+                  "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
+                )}
+              />
+              
+            </div>
+            {/* phone number */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Số điện thoại
+                </label>
+                <RequireText />
+              </div>
+
+              <input
+                maxLength={150}
+                value={infoUpdate.phone??""}
+                onChange={e => onChangeBindInfo(e.target.value, "phone")}
+                type="number"
+                className={cn(
+                  "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
+                )}
+              />
+              
+            </div>
+            {/* Address */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Địa chỉ
+                </label>
+                <RequireText />
+              </div>
+
+              <input
+                maxLength={150}
+                value={infoUpdate.address??""}
+                onChange={e => onChangeBindInfo(e.target.value, "address")}
+                type="text"
+                className={cn(
+                  "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
+                )}
+              />
+              
+            </div>
+            <div className="flex justify-end gap-3">
+              {isProcessUpdate && <CircularProgress size={18} />}
+              <CustomButton onClick={handleUpdateInfo}>Cập nhật thông tin</CustomButton>
             </div>
           </div>
         )}

@@ -25,5 +25,9 @@ namespace SEP_JMS.Model.Api.Response.User
         public bool HiddenPrice { get; set; }
 
         public string Token { get; set; } = null!;
+
+        public string Address { get; set; } = null!;
+
+        public string NotificationConfig { get; set; } = null!;
     }
 }

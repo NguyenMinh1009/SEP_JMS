@@ -137,19 +137,19 @@ namespace SEP_JMS.API.Controllers
             }
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
         {
             try
             {
-                logger.Info($"{logPrefix} Start to send new password to user {ApiContext.Current.UserId}.");
+                logger.Info($"{logPrefix} Start to send new password to user {model.UserName}.");
                 await userService.ForgotPassword(model);
                 return Ok();
             }
             catch (Exception ex)
             {
-                logger.Error($"{logPrefix} Got exception while processing send new password to user {ApiContext.Current.UserId}. Error: {ex}");
+                logger.Error($"{logPrefix} Got exception while processing send new password to user {model.UserName}. Error: {ex}");
                 return StatusCode(500);
             }
         }

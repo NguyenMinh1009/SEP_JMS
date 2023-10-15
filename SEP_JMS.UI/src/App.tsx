@@ -25,6 +25,11 @@ import { CorrelationJobType } from "./enums/correlationJobType";
 import EditTask from "./pages/EditTask";
 import Home from "./pages/Home";
 
+import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
+// import SubTaskDetail from "./pages/SubTaskDetail";
+import Profile from "./pages/profile";
+import ForgotPassword from "./pages/ForgotPassword";
+
 const theme = createTheme(
   {
     typography: {
@@ -124,6 +129,7 @@ function App() {
           {!localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired() ? (
             <Routes>
               <Route path={`/${PathString.DANG_NHAP}`} element={<SignInSide />} />
+              <Route path={`/${PathString.QUEN_MAT_KHAU}`} element={<ForgotPassword />} />
               <Route path="*" element={<Navigate to={`/${PathString.DANG_NHAP}`} />} />
             </Routes>
           ) : (
@@ -224,6 +230,7 @@ function App() {
                       element={<Home isCorrelationJobType={CorrelationJobType.Job} isParentId />}
                     />
                   </Route>
+                  <Route path={`/${PathString.TAI_KHOAN}`} element={<Profile />} />
                   <Route
                     path="*"
                     element={

@@ -101,8 +101,8 @@ namespace SEP_JMS.Service.Services
             const string specialChars = "!@#$%^&*()_-+=<>?";
             const string digits = "0123456789";
             var random = new Random();
-            var password = new StringBuilder(6);
-            for (int i = 0; i < 4; i++)
+            var password = new StringBuilder();
+            for (int i = 0; i < 10; i++)
             {
                 password.Append(chars[random.Next(chars.Length)]);
             }

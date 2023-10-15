@@ -1,6 +1,6 @@
 import { Role } from "../enums/role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
-import { AiFillStar, AiFillEye } from "react-icons/ai";
+import { AiFillStar, AiFillEye, AiFillEdit } from "react-icons/ai";
 import { MdTextsms, MdPhotoCamera } from "react-icons/md";
 import { BsCheck } from "react-icons/bs";
 import { FaUser, FaLock } from "react-icons/fa";
@@ -18,6 +18,7 @@ import { commonRegex } from "../constants";
 import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
 import APIClientInstance from "../api/AxiosInstance";import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
+import { info } from "console";
  "../api/AxiosInstance";
 
 const Android12Switch = styled(Switch)(({ theme }) => ({
@@ -64,8 +65,30 @@ const Profile = () => {
   const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isProcessUpdate, setIsProcessUpdate] = useState<boolean>(false);
+
   const currentPerson = useCurrentPerson();
   const snakeBar = useSnakeBar();
+
+  // state for update information
+  const [infoUpdate, setInfoUpdate] = useState<any>({});
+  const onChangeBindInfo = (value: any, path: string) => {
+    console.log("Current info:", infoUpdate);
+    let clone = {... infoUpdate};
+    clone[path] = value;
+    setInfoUpdate(clone);
+  }
+
+  useEffect(() => {
+    selectedTab === "Cập nhật thông tin" && setInfoUpdate({
+      avatarUrl: currentPerson.avatarUrl,
+      fullname: currentPerson.fullname,
+      phone: currentPerson.phone,
+      dob: currentPerson.dob,
+      gender: currentPerson.gender,
+      address: currentPerson.address
+    })
+  }, [selectedTab]);
 
   // Add more notification configurations
   const [notiState, setNotiState] = useState<boolean[]>([]);
@@ -93,6 +116,10 @@ const Profile = () => {
     {
       title: "Bình luân",
       value: 1
+    },
+    {
+      title: "Email",
+      value: 2
     }
   ];
 
@@ -148,6 +175,11 @@ const Profile = () => {
       //element: <TaskPreview />
     },
     {
+      text: "Cập nhật thông tin",
+      icon: <AiFillEdit size={14} />
+      //element: <TaskPreview />
+    },
+    {
         text: "Thông báo",
         icon: <AiFillEye size={14} />,
         // element: <TaskPreview />
@@ -180,6 +212,29 @@ const Profile = () => {
       })
       .finally(() => {
         setIsLoading(false);
+      });
+  };
+
+  const handleUpdateInfo = () => {
+    if (!infoUpdate.fullname.trim()) {
+      snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
+      return;
+    }
+    setIsProcessUpdate(true);
+    APIClientInstance.post("user/UpdateProfile", infoUpdate)
+      .then(() => {
+        const currentData = JSON.parse(localStorage.getItem("user") ?? "");
+        for (const prop in infoUpdate) currentData[prop] = infoUpdate[prop];
+        currentPerson.setCurrentPerson?.(currentData);
+        localStorage.setItem("user", JSON.stringify(currentData));
+        window.dispatchEvent(new Event("storage"));
+        snakeBar.setSnakeBar("Cập nhật thông tin thành công!", "success", true);
+      })
+      .catch(() => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+      })
+      .finally(() => {
+        setIsProcessUpdate(false);
       });
   };
 
@@ -392,7 +447,7 @@ const Profile = () => {
                   onChange={e => setPassword(e.target.value)}
                   type="text"
                   className={cn(
-                    "common-input-border w-[250px] rounded-md p-2 leading-5 shadow-sm",
+                    "common-input-border w-full rounded-md p-2 leading-5 shadow-sm",
                     showPassword ? "" : "security"
                   )}
                 />
@@ -460,6 +515,74 @@ const Profile = () => {
             <div className="flex justify-end gap-3">
               {isLoading && <CircularProgress size={18} />}
               <CustomButton onClick={handleChangePassword}>Đổi mật khẩu</CustomButton>
+            </div>
+          </div>
+        )}
+        {selectedTab === "Cập nhật thông tin" && (
+          <div className="flex flex-col gap-4 py-6">
+            {/* full name */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Họ và tên
+                </label>
+                <RequireText />
+              </div>
+
+              <input
+                maxLength={150}
+                value={infoUpdate.fullname}
+                onChange={e => onChangeBindInfo(e.target.value, "fullname")}
+                type="text"
+                className={cn(
+                  "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
+                )}
+              />
+              
+            </div>
+            {/* phone number */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Số điện thoại
+                </label>
+                <RequireText />
+              </div>
+
+              <input
+                maxLength={150}
+                value={infoUpdate.phone??""}
+                onChange={e => onChangeBindInfo(e.target.value, "phone")}
+                type="number"
+                className={cn(
+                  "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
+                )}
+              />
+              
+            </div>
+            {/* Address */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Địa chỉ
+                </label>
+                <RequireText />
+              </div>
+
+              <input
+                maxLength={150}
+                value={infoUpdate.address??""}
+                onChange={e => onChangeBindInfo(e.target.value, "address")}
+                type="text"
+                className={cn(
+                  "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
+                )}
+              />
+              
+            </div>
+            <div className="flex justify-end gap-3">
+              {isProcessUpdate && <CircularProgress size={18} />}
+              <CustomButton onClick={handleUpdateInfo}>Cập nhật thông tin</CustomButton>
             </div>
           </div>
         )}

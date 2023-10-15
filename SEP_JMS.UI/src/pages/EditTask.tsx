@@ -98,6 +98,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
   const [designers, setDesigners] = useState<any[]>([]);
   const [companies, setCompanies] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
+  const [jobtypes, setJobtypes] = useState<any[]>([]);
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadFinalProgress, setUploadFinalProgress] = useState<number>(0);
@@ -245,6 +246,12 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
       .catch(err => console.error(err));
   };
 
+  const getJobTypeList = () => {
+    AlwayxInstance.get("jobtype/all")
+      .then(res => setJobtypes(res.data))
+      .catch(err => console.error(err));
+  };
+
   const getOrderList = () => {
     AlwayxInstance.post("company/all", {
       pageIndex: 1,
@@ -364,13 +371,13 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
     setButtonLoading(true);
     Promise.all([
       editBasicInfoPromise(),
-      editRequirementsPromise(),
-      editFinalFilePromise(),
-      editStatusForDesignerPromise(),
-      editPreviewFilePromise()
+      // editRequirementsPromise(),
+      // editFinalFilePromise(),
+      editStatusForDesignerPromise()
+      // editPreviewFilePromise()
     ])
       .then(() => {
-        navigate(`/${PathString.CONG_KHAI}/${taskId}`);
+        navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
       })
       .catch(err => {
         console.error(err);
@@ -413,10 +420,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
     setSelectedCompany(res.data.company);
     setSelectedCustomer(res.data.customer);
     setQuantity(res.data.quantity);
-    setSelectedJobType({
-      key: res.data.jobType,
-      text: jobOptions.find(({ key }) => key === res.data.jobType)?.text ?? ""
-    });
+    setSelectedJobType(res.data.jobType);
     setSelectedPriority(res.data.priority);
     setDeadline(moment(getDeadline(ticksToDate(res.data.deadline))));
     setSelectedDesigner(res.data.designer);
@@ -480,6 +484,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
         getDesignerList();
         getOrderList();
         getAccountList();
+        getJobTypeList();
       }
       getTaskDetails();
     }
@@ -873,9 +878,9 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
                 onChange={(_, newValue) => {
                   if (newValue) setSelectedJobType(newValue);
                 }}
-                getOptionLabel={option => option.text}
+                getOptionLabel={option => option.typeName}
                 size="small"
-                options={jobOptions}
+                options={jobtypes}
                 fullWidth
                 // disabled
                 renderInput={params => <TextField {...params} placeholder="-- Chọn loại --" />}

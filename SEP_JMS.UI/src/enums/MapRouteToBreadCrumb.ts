@@ -3,8 +3,8 @@ export enum PathString {
   QUEN_MAT_KHAU = "quen-mat-khau",
   CONG_KHAI = "viec-dang-lam",
   NOI_BO = "duyet-noi-bo",
-  VIEC_DU_AN = "du-an",
-  VIEC_HANG_NGAY = "hang-ngay",
+  VIEC_DU_AN = "viec-du-an",
+  VIEC_HANG_NGAY = "viec-hang-ngay",
   VIEC_DA_XONG = "viec-da-xong",
   THEM_MOI = "them-moi",
   THEM_MOI_CONG_VIEC_DU_AN = "them-moi-viec-du-an",
@@ -19,6 +19,5 @@ export enum PathString {
   CREATE_COMPANY = "them-moi-company",
   CREATE_CUSTOMER = "them-moi-khach-hang",
   CREATE_EMPLOYEE = "them-moi-nhan-vien",
-  REPORT = "thong-ke",
-  VIEC_CUA_DU_AN = "viec-du-an"
+  REPORT = "thong-ke"
 }

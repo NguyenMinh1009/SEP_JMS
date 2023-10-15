@@ -55,7 +55,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   const currentPerson = useCurrentPerson();
   const breadCrumbTitle = useTitle();
   const navigate = useNavigate();
-  const { taskId } = useParams();
+  const { taskId, subTaskId } = useParams();
 
   const getComments = () => {
     setCommentLoading(true);
@@ -63,7 +63,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
     AlwayxInstance.post("comment/all", {
       pageIndex: 1,
       pageSize: 5,
-      jobId: taskId,
+      jobId: subTaskId !== undefined ? subTaskId : taskId,
       from: null,
       to: to,
       correlationJobType: CorrelationJobType.Job,
@@ -113,8 +113,27 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   };
 
   const handleEdit = () => {
-    if (finishOnly) navigate(`/${PathString.VIEC_DA_XONG}/${taskId}/${PathString.CHINH_SUA}`);
-    else navigate(`/${PathString.CONG_KHAI}/${taskId}/${PathString.CHINH_SUA}`);
+    if (finishOnly) {
+      {
+        isCorrelationJobType === CorrelationJobType.Job
+          ? navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+            )
+          : navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+            );
+      }
+    } else {
+      {
+        isCorrelationJobType === CorrelationJobType.Job
+          ? navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+            )
+          : navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+            );
+      }
+    }
   };
 
   const handleCloseDialog = () => setOpenDialog(false);
@@ -156,21 +175,54 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
       });
   };
 
-  useEffect(() => {
-    getTaskDetails(
-      setLoading,
-      setImagesLoading,
-      setJobDetail,
-      breadCrumbTitle,
-      setDocFiles,
-      setImgFiles,
-      setOpenDialog,
-      `job/${taskId}`,
-      `file/job/${taskId}`
-    )
-      .then()
-      .catch(err => err);
-  }, [taskId]);
+  {
+    subTaskId === undefined
+      ? useEffect(() => {
+          getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `job/${taskId}`,
+            `file/job/${taskId}`
+          )
+            .then()
+            .catch(err => err);
+        }, [taskId])
+      : useEffect(() => {
+          getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `job/${subTaskId}`,
+            `file/job/${subTaskId}`
+          )
+            .then()
+            .catch(err => err);
+        }, [subTaskId]);
+  }
+  // useEffect(() => {
+  //   getTaskDetails(
+  //     setLoading,
+  //     setImagesLoading,
+  //     setJobDetail,
+  //     breadCrumbTitle,
+  //     setDocFiles,
+  //     setImgFiles,
+  //     setOpenDialog,
+  //     `job/${taskId}`,
+  //     `file/job/${taskId}`
+  //   )
+  //     .then()
+  //     .catch(err => err);
+  // }, [taskId]);
 
   useEffect(() => {
     if (isObserverVisible && hasOlderComment) {
@@ -275,11 +327,15 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                       </p>
                     </button>
                   </div>
-                  <SubTasksSection
-                    parentId={taskId}
-                    finishedOnly
-                    visibleType={VisibleType.Public}
-                  />
+                  {finishOnly ? (
+                    <SubTasksSection
+                      parentId={taskId}
+                      visibleType={VisibleType.Public}
+                      finishedOnly
+                    />
+                  ) : (
+                    <SubTasksSection parentId={taskId} visibleType={VisibleType.Public} />
+                  )}
                 </div>
               )}
 

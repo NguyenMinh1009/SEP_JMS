@@ -200,7 +200,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         <BasicTaskInfo
           Icon={<MdOutlineTypeSpecimen size={15} color="#555" />}
           title="Loại thiết kế:"
-          detail={jobDetail?.jobType.typeName ?? "..."}
+          detail={jobDetail?.jobType?.typeName || "..."}
         />
 
         {renderCorrelationJobType()}

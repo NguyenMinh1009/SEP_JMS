@@ -10,13 +10,48 @@ import moment from "moment";
 import { ticksToDate } from "../utils/Datetime";
 import Images from "../img";
 import RequireText from "../components/common/RequireText";
-import { CircularProgress, Tooltip } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, FormControlLabel, FormGroup, Switch, Tooltip, Typography, styled } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { HiOutlineEye } from "react-icons/hi";
 import { cn } from "../utils/className";
 import { commonRegex } from "../constants";
 import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
-import APIClientInstance from "../api/AxiosInstance"; "../api/AxiosInstance";
+import APIClientInstance from "../api/AxiosInstance";import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
+ "../api/AxiosInstance";
+
+const Android12Switch = styled(Switch)(({ theme }) => ({
+  padding: 8,
+  '& .MuiSwitch-track': {
+    borderRadius: 22 / 2,
+    '&:before, &:after': {
+      content: '""',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 16,
+      height: 16,
+    },
+    '&:before': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+      left: 12,
+    },
+    '&:after': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+      right: 12,
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxShadow: 'none',
+    width: 16,
+    height: 16,
+    margin: 2,
+  },
+}));
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Thông tin");
@@ -32,10 +67,55 @@ const Profile = () => {
   const currentPerson = useCurrentPerson();
   const snakeBar = useSnakeBar();
 
+  // Add more notification configurations
+  const [notiState, setNotiState] = useState<boolean[]>([]);
+  const [isProcessNotifyConfig, setIsProcessNotifyConfig] = useState<boolean>(false);
+
+  const updateNotifyConfig = async () => {
+    setIsProcessNotifyConfig(true);
+    let arrs: number[] = [];
+    notiState.map((v, i) => v && arrs.push(i));
+    await APIClientInstance.post("notification/configure", arrs).then(res => {
+      setIsProcessNotifyConfig(false);
+      const currentData = JSON.parse(localStorage.getItem("user") ?? "");
+      currentData.notificationConfig = JSON.stringify(arrs);
+      currentPerson.setCurrentPerson?.(currentData);
+      localStorage.setItem("user", JSON.stringify(currentData));
+      window.dispatchEvent(new Event("storage"));
+    });
+  };
+
+  const notiItems = [
+    {
+      title: "Công việc",
+      value: 0
+    },
+    {
+      title: "Bình luân",
+      value: 1
+    }
+  ];
+
   useEffect(() => {
     if (focusPassword && !commonRegex.password.test(password)) setOpenPassTooltip(true);
     else setOpenPassTooltip(false);
   }, [focusPassword, password]);
+
+  useEffect(() => {
+    console.log(notiState);
+    if (notiState.length === 0) {
+      console.log("Update noti state:", notiState);
+      setIsProcessNotifyConfig(true);
+      let currentCfg = currentPerson.notificationConfig.replace("[", "").replace("]", "").split(",");
+      let clone : boolean[] = [];
+      currentCfg.map(value => clone[parseInt(value)] = true);
+      setIsProcessNotifyConfig(false);
+      setNotiState(clone);
+    } else {
+      updateNotifyConfig();
+    }
+    
+  }, [notiState]);
 
   useEffect(() => {
     if (focusRePassword && password !== rePassword) setOpenRePassTooltip(true);
@@ -73,6 +153,13 @@ const Profile = () => {
         // element: <TaskPreview />
       }
   ];
+
+  const onNotiSwitchChange = (e: React.ChangeEvent) => {
+    let control = e.target as HTMLInputElement;
+    const clone = recursiveStructuredClone(notiState);
+    clone[parseInt(control.value)] = control.checked;
+    setNotiState(clone);
+  }
 
   const handleChangePassword = () => {
     if (!oldPassword.trim()) {
@@ -169,9 +256,25 @@ const Profile = () => {
             ))}
           </div>
         </div>
-        {selectedTab === "Hoạt động" && (
-          <div className="max-h-full overflow-y-auto pb-10 pt-5 scrollbar-hide">
-            <p>Hoạt động gần đây</p>
+        {selectedTab === "Thông báo" && (
+          <div>
+            {/* <p className="mt-6 opacity-60">Cài đặt nhận thông báo</p> */}
+            <div>
+              <div className="flex flex-col gap-4 pt-6">
+                <FormGroup>
+                  {notiItems.map(v => (
+                    <FormControlLabel
+                      style={{marginLeft: "0px"}}
+                      value = {v.value}
+                      control={<Android12Switch checked={notiState[v.value]} disabled={isProcessNotifyConfig} onChange={onNotiSwitchChange} />}
+                      label={"Nhận thông báo từ " + v.title}
+                      key={v.value}
+                    />
+                  ))}
+                </FormGroup>
+              </div>
+              
+            </div>
           </div>
         )}
         {selectedTab === "Thông tin" && (

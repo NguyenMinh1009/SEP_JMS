@@ -8,11 +8,13 @@ type IPerson = IEmployee &
     setCurrentPerson?: (person: IPerson) => void;
     hiddenPrice: boolean;
     username: string;
+    notificationConfig: string;
   };
 
 export const defaultPerson: IPerson = {
   userId: "",
   username: "",
+  notificationConfig: "",
   hiddenPrice: true,
   roleType: undefined,
   account: {

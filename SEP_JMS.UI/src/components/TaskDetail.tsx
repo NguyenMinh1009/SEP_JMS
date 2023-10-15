@@ -113,8 +113,27 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   };
 
   const handleEdit = () => {
-    if (finishOnly) navigate(`/${PathString.VIEC_DA_XONG}/${taskId}/${PathString.CHINH_SUA}`);
-    else navigate(`/${PathString.CONG_KHAI}/${taskId}/${PathString.CHINH_SUA}`);
+    if (finishOnly) {
+      {
+        isCorrelationJobType === CorrelationJobType.Job
+          ? navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+            )
+          : navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+            );
+      }
+    } else {
+      {
+        isCorrelationJobType === CorrelationJobType.Job
+          ? navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+            )
+          : navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+            );
+      }
+    }
   };
 
   const handleCloseDialog = () => setOpenDialog(false);
@@ -308,11 +327,15 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                       </p>
                     </button>
                   </div>
-                  <SubTasksSection
-                    parentId={taskId}
-                    finishedOnly
-                    visibleType={VisibleType.Public}
-                  />
+                  {finishOnly ? (
+                    <SubTasksSection
+                      parentId={taskId}
+                      visibleType={VisibleType.Public}
+                      finishedOnly
+                    />
+                  ) : (
+                    <SubTasksSection parentId={taskId} visibleType={VisibleType.Public} />
+                  )}
                 </div>
               )}
 

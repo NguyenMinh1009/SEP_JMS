@@ -87,6 +87,10 @@ namespace SEP_JMS.Repository.Repositories
             {
                 query = query.Where(d => d.job.ParentId == model.ParentId.Value);
             }
+            else
+            {
+                query = query.Where(d => d.job.ParentId == null);
+            }
             if (model.CorrelationType != null)
             {
                 query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
@@ -105,9 +109,15 @@ namespace SEP_JMS.Repository.Repositories
             }
             else
             {
-                query = from data in query
+                if (model.ParentId == null && model.JobStatus != JobStatus.Completed && model.CorrelationType == CorrelationJobType.Project)
+                {
+                    query = from data in query
                         where data.job.JobStatus != JobStatus.Completed
                         select data;
+                }
+                //query = from data in query
+                //        where data.job.JobStatus != JobStatus.Completed
+                //        select data;
             }
             if (model.AccountId != null)
             {

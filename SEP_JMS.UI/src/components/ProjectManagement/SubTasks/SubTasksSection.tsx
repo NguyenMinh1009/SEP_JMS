@@ -37,7 +37,7 @@ ISubTasksSection) => {
       pageIndex: page,
       pageSize: pageSize,
       parentId: parentId,
-      jobStatus: finishedOnly ? JobStatusType.Completed : null
+      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);

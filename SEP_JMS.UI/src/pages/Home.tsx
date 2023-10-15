@@ -9,9 +9,15 @@ interface ICreatePageProps {
   isInternal?: boolean;
   isCorrelationJobType: number;
   isParentId?: boolean;
+  finishedOnly?: boolean;
 }
 
-const Home: React.FC<ICreatePageProps> = ({ isInternal, isCorrelationJobType, isParentId }) => {
+const Home: React.FC<ICreatePageProps> = ({
+  isInternal,
+  isCorrelationJobType,
+  isParentId,
+  finishedOnly
+}) => {
   const { taskId } = useParams();
 
   return (
@@ -22,11 +28,28 @@ const Home: React.FC<ICreatePageProps> = ({ isInternal, isCorrelationJobType, is
         <p className="text-primary mb-6 text-base">Tạo mới công việc</p>
       )}
       {isParentId ? (
-        <CreateSubTask
+        finishedOnly ? (
+          <CreateSubTask
+            visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
+            correlationJobType={isCorrelationJobType}
+            label="Tạo việc mới của dự án"
+            parentId={taskId}
+            finishedOnly
+          />
+        ) : (
+          <CreateSubTask
+            visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
+            correlationJobType={isCorrelationJobType}
+            label="Tạo việc mới của dự án"
+            parentId={taskId}
+          />
+        )
+      ) : finishedOnly ? (
+        <CreateTask
           visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
           correlationJobType={isCorrelationJobType}
-          label="Tạo việc mới của dự án"
-          parentId={taskId}
+          label="Tạo việc mới"
+          finishedOnly
         />
       ) : (
         <CreateTask

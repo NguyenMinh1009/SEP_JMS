@@ -103,21 +103,33 @@ namespace SEP_JMS.Repository.Repositories
             }
             if (model.JobStatus != null)
             {
-                query = from data in query
-                        where data.job.JobStatus == model.JobStatus
-                        select data;
-            }
-            else
-            {
-                if (model.ParentId == null && model.JobStatus != JobStatus.Completed && model.CorrelationType == CorrelationJobType.Project)
+                if (model.ParentId == null)
                 {
                     query = from data in query
-                        where data.job.JobStatus != JobStatus.Completed
-                        select data;
+                                    where data.job.JobStatus == JobStatus.Completed
+                                    select data;
                 }
-                //query = from data in query
-                //        where data.job.JobStatus != JobStatus.Completed
-                //        select data;
+                else
+                {
+                    query = from data in query
+                            where data.job.JobStatus == JobStatus.Completed
+                            select data;
+                }
+                }
+            else
+            {
+                
+                if (model.ParentId == null) 
+                {
+                    query = from data in query
+                           where data.job.JobStatus != JobStatus.Completed
+                          select data;
+                }
+                else 
+                {
+                    query = from data in query
+                            select data;
+                }
             }
             if (model.AccountId != null)
             {

@@ -49,7 +49,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
       return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
     if (visibleType === VisibleType.Public)
       return `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
-    return `/${PathString.NOI_BO}/${taskId}/${subTaskId}`;
+    return `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
   };
 
   const getLinkForEditJob = () => {

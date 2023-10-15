@@ -60,6 +60,7 @@ interface ICreateTaskProp {
   label: string;
   correlationJobType: CorrelationJobType;
   visibleType: VisibleType;
+  finishedOnly?: boolean;
 }
 
 const getDefaultDeadline = (): Date => {
@@ -67,7 +68,12 @@ const getDefaultDeadline = (): Date => {
   curr.setDate(curr.getDate() + 7);
   return curr;
 };
-const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visibleType }) => {
+const CreateTask: React.FC<ICreateTaskProp> = ({
+  label,
+  correlationJobType,
+  visibleType,
+  finishedOnly
+}) => {
   const [value, setValue] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState<string>("");
@@ -263,7 +269,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
       designerId: selectedDesigner?.userId ?? "",
       quantity: correlationJobType === CorrelationJobType.Job ? quantity : 1,
       jobType: selectedJobType?.typeId,
-      jobStatus: selectedStatus,
+      jobStatus: finishedOnly ? JobStatusType.Completed : selectedStatus,
       deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
       priority: selectedPriority,
       correlationType: correlationJobType
@@ -281,8 +287,16 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
           case VisibleType.Public:
             {
               correlationJobType === CorrelationJobType.Job
+                ? finishedOnly
+                  ? navigate(
+                      `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${jobDetail.jobId}`
+                    )
+                  : navigate(
+                      `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${jobDetail.jobId}`
+                    )
+                : finishedOnly
                 ? navigate(
-                    `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${jobDetail.jobId}`
+                    `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${jobDetail.jobId}`
                   )
                 : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${jobDetail.jobId}`);
             }
@@ -712,24 +726,46 @@ const CreateTask: React.FC<ICreateTaskProp> = ({ label, correlationJobType, visi
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Trạng thái
               </label>
-              <Select
-                fullWidth
-                size="small"
-                id="demo-simple-select"
-                value={selectedStatus}
-                onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-                sx={{
-                  "& .MuiInputBase-inputSizeSmall": {
-                    fontSize: "13px !important"
-                  }
-                }}
-              >
-                {statusOptions.map(({ key, text }) => (
-                  <MenuItem key={key} value={key}>
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
+              {finishedOnly ? (
+                <Select
+                  disabled={true}
+                  fullWidth
+                  size="small"
+                  id="demo-simple-select"
+                  value={JobStatusType.Completed}
+                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                  sx={{
+                    "& .MuiInputBase-inputSizeSmall": {
+                      fontSize: "13px !important"
+                    }
+                  }}
+                >
+                  {statusOptions.map(({ key, text }) => (
+                    <MenuItem key={key} value={key}>
+                      {text}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <Select
+                  fullWidth
+                  size="small"
+                  id="demo-simple-select"
+                  value={selectedStatus}
+                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                  sx={{
+                    "& .MuiInputBase-inputSizeSmall": {
+                      fontSize: "13px !important"
+                    }
+                  }}
+                >
+                  {statusOptions.map(({ key, text }) => (
+                    <MenuItem key={key} value={key}>
+                      {text}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
             </div>
             {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">

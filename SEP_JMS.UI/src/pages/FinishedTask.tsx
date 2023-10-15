@@ -64,7 +64,11 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
           <div className="flex flex-col gap-11">
             {currentPerson.roleType !== Role.DESIGNER && (
               <div
-                onClick={() => navigate(`/${PathString.VIEC_DA_XONG}/${PathString.THEM_MOI}`)}
+                onClick={() =>
+                  navigate(
+                    `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`
+                  )
+                }
                 className="flex h-10 w-20 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75 3xl:w-auto"
               >
                 <IoAddCircleOutline size={20} className="text-white" />

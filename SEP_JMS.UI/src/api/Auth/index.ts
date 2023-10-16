@@ -20,3 +20,10 @@ export const commonLogin = async (username: string, password: string): Promise<a
 		password,
 	}).then((res) => res.data);
 };
+
+export const commonForgot = async (userName: string, email: string): Promise<any> => {
+	return APIClientInstance.post("user/ForgotPassword", {
+		userName,
+		email,
+	}).then((res) => res.data);
+};

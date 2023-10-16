@@ -86,18 +86,18 @@ const SideBar = () => {
               items: [
                 {
                   parent: {
-                    text: "Item 1",
-                    to: `#none1`,
+                    text: "Việc dự án",
+                    to: `${PathString.NOI_BO}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `#none01`
+                    prefix: `${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
                   parent: {
-                    text: "Item 2",
-                    to: `#none1`,
+                    text: "Việc hàng ngày",
+                    to: `${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `#none01`
+                    prefix: `${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]
@@ -112,18 +112,18 @@ const SideBar = () => {
               items: [
                 {
                   parent: {
-                    text: "Item 10",
-                    to: `#none1`,
+                    text: "Việc dự án",
+                    to: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `#none01`
+                    prefix: `${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
                   parent: {
-                    text: "Item 20",
-                    to: `#none1`,
+                    text: "Việc hàng ngày",
+                    to: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `#none01`
+                    prefix: `${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]
@@ -138,18 +138,18 @@ const SideBar = () => {
               items: [
                 {
                   parent: {
-                    text: "Item 11",
-                    to: `#none1`,
+                    text: "Việc dự án",
+                    to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `#none01`
+                    prefix: `${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
                   parent: {
-                    text: "Item 21",
-                    to: `#none1`,
+                    text: "Việc hàng ngày",
+                    to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `#none01`
+                    prefix: `${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]
@@ -389,26 +389,35 @@ const SideBar = () => {
                       )}
                     </ListItem>
                   ) : (
-                    
-                    <React.Fragment key={contentItem.parent.text + "-sub"}><ListItem
-                        className={`group relative py-0 ${sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"}`}
+                    <React.Fragment key={contentItem.parent.text + "-sub"}>
+                      <ListItem
+                        className={`group relative py-0 ${
+                          sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
+                        }`}
                         key={contentItem.parent.text}
                       >
                         <ListItemButton
                           onClick={() => handleNestedsClick(_index)}
                           // title={contentItem.parent.text}
-                          className={`relative w-full items-center overflow-hidden rounded-md ${sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"} ${getSelectedBackgroundColor(contentItem.parent.text)}`}
+                          className={`relative w-full items-center overflow-hidden rounded-md ${
+                            sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
+                          } ${getSelectedBackgroundColor(contentItem.parent.text)}`}
                         >
                           <ListItemIcon
-                            className={`mb-[2px] min-w-0 items-center justify-center transition-all ${sidebar.isExpand ? "mr-4" : "auto"} text-[#334155]`}
+                            className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
+                              sidebar.isExpand ? "mr-4" : "auto"
+                            } text-[#334155]`}
                           >
                             <div className="relative flex items-center justify-center">
                               {contentItem.parent.Icon}
                             </div>
                           </ListItemIcon>
                           <ListItemText
-                            className={`${sidebar.isExpand ? "" : "hidden"} text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
-                            primary={contentItem.parent.text} />
+                            className={`${
+                              sidebar.isExpand ? "" : "hidden"
+                            } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                            primary={contentItem.parent.text}
+                          />
                           {nestedOpenArr[_index] ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
                         {getSelectedBorderStyle(contentItem.parent.text)}
@@ -417,45 +426,62 @@ const SideBar = () => {
                             {contentItem.parent.text}
                           </div>
                         )}
-                      </ListItem><Collapse in={nestedOpenArr[_index]} timeout="auto" unmountOnExit>
-                          <List component="div">
-                            {contentItem.parent.items?.map((subItem, _rIdx) => subItem && (
-                              <ListItem
-                                className={`group relative py-0 ${sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"}`}
-                                key={subItem.parent.text}
-                              >
-                                <ListItemButton
-                                  onClick={() => handleClickListItem(subItem)}
-                                  // title={contentItem.parent.text}
-                                  className={`relative w-full items-center overflow-hidden rounded-md ${sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"} ${getSelectedBackgroundColor(subItem.parent.text)}`}
+                      </ListItem>
+                      <Collapse in={nestedOpenArr[_index]} timeout="auto" unmountOnExit>
+                        <List component="div">
+                          {contentItem.parent.items?.map(
+                            (subItem, _rIdx) =>
+                              subItem && (
+                                <ListItem
+                                  className={`group relative py-0 ${
+                                    sidebar.isExpand
+                                      ? "flex flex-col items-start px-8"
+                                      : "justify-center"
+                                  }`}
+                                  key={subItem.parent.text}
                                 >
-                                  <ListItemIcon
-                                    className={`mb-[2px] min-w-0 items-center justify-center transition-all ${sidebar.isExpand ? "mr-4" : "auto"} text-[#334155]`}
+                                  <ListItemButton
+                                    onClick={() => handleClickListItem(subItem)}
+                                    // title={contentItem.parent.text}
+                                    className={`relative w-full items-center overflow-hidden rounded-md ${
+                                      sidebar.isExpand
+                                        ? "justify-start pl-7 pr-4"
+                                        : "justify-center px-5"
+                                    } ${getSelectedBackgroundColor(subItem.parent.text)}`}
                                   >
-                                    <div className="relative flex items-center justify-center">
-                                      {subItem.parent.Icon}
-                                      {subItem.parent.to === `${PathString.THONG_BAO}` && (
-                                        <div
-                                          className={`absolute right-0 top-0 flex -translate-y-[2px] items-center justify-center rounded-full bg-accent  p-1 text-xs font-semibold text-white`} />
-                                      )}
+                                    <ListItemIcon
+                                      className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
+                                        sidebar.isExpand ? "mr-4" : "auto"
+                                      } text-[#334155]`}
+                                    >
+                                      <div className="relative flex items-center justify-center">
+                                        {subItem.parent.Icon}
+                                        {subItem.parent.to === `${PathString.THONG_BAO}` && (
+                                          <div
+                                            className={`absolute right-0 top-0 flex -translate-y-[2px] items-center justify-center rounded-full bg-accent  p-1 text-xs font-semibold text-white`}
+                                          />
+                                        )}
+                                      </div>
+                                    </ListItemIcon>
+                                    <ListItemText
+                                      className={`${
+                                        sidebar.isExpand ? "" : "hidden"
+                                      } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                                      primary={subItem.parent.text}
+                                    />
+                                  </ListItemButton>
+                                  {getSelectedBorderStyle(subItem.parent.text)}
+                                  {!sidebar.isExpand && (
+                                    <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
+                                      {subItem.parent.text}
                                     </div>
-                                  </ListItemIcon>
-                                  <ListItemText
-                                    className={`${sidebar.isExpand ? "" : "hidden"} text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
-                                    primary={subItem.parent.text} />
-                                </ListItemButton>
-                                {getSelectedBorderStyle(subItem.parent.text)}
-                                {!sidebar.isExpand && (
-                                  <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[20] flex w-0 items-center justify-start overflow-hidden border-y border-accent bg-white shadow-md transition-all group-hover:w-40 group-hover:pl-5">
-                                    {subItem.parent.text}
-                                  </div>
-                                )}
-                              </ListItem>
-                            ))}
-                          </List>
-                        </Collapse>
-                        </React.Fragment>
-                    
+                                  )}
+                                </ListItem>
+                              )
+                          )}
+                        </List>
+                      </Collapse>
+                    </React.Fragment>
                   )
                 )}
               </List>

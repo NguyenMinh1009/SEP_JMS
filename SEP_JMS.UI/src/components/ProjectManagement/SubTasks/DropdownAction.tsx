@@ -46,10 +46,10 @@ const DropdownAction: React.FC<IDropdownAction> = ({
   };
   const getLinkForViewJob = (): string => {
     if (finishOnly)
-      return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.VIEC_CUA_DU_AN}/${subTaskId}`;
+      return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
     if (visibleType === VisibleType.Public)
-      return `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.VIEC_CUA_DU_AN}/${subTaskId}`;
-    return `/${PathString.NOI_BO}/${taskId}/${PathString.VIEC_CUA_DU_AN}/${subTaskId}`;
+      return `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
+    return `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
   };
 
   const getLinkForEditJob = () => {

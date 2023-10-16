@@ -4,6 +4,7 @@ import { AiOutlineEllipsis } from "react-icons/ai";
 import TaskPropertiesLabel from "./TaskPropertiesLabel";
 import DropdownAction from "./DropdownAction";
 import { VisibleType } from "../../../enums/visibleType";
+import { JobStatusType } from "../../../enums/jobStatusType";
 
 interface SubTasksProps {
   tasks: any[];
@@ -39,7 +40,12 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType }) => {
                     </div>
                   </div>
                   {/*actions */}
-                  <DropdownAction visibleType={visibleType} finishOnly subTaskId={task.jobId} />
+                  {task.jobStatus === JobStatusType.Completed ? (
+                    <DropdownAction visibleType={visibleType} finishOnly subTaskId={task.jobId} />
+                  ) : (
+                    <DropdownAction visibleType={visibleType} subTaskId={task.jobId} />
+                  )}
+
                   {/* ---------- */}
                 </div>
               </div>

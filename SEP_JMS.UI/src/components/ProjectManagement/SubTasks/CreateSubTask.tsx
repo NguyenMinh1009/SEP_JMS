@@ -14,7 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { DateTimePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
 import { MdOutlineExpandCircleDown } from "react-icons/md";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AlwayxInstance from "../../../api/AxiosInstance";
 import { allowFileTypes, defaultCompany } from "../../../constants";
 import { CorrelationJobType } from "../../../enums/correlationJobType";
@@ -31,7 +31,6 @@ import FileSection from "../../FileSection";
 import ImageSection from "../../../components/common/ImageSection";
 import RequireText from "../../../components/common/RequireText";
 import { statusOptions } from "../../../components/common/StatusSection";
-import ProjectParentSection from "./ProjectParentSection";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -61,6 +60,7 @@ interface ICreateTaskProp {
   correlationJobType: CorrelationJobType;
   visibleType: VisibleType;
   parentId: any;
+  finishedOnly?: boolean;
 }
 
 const getDefaultDeadline = (): Date => {
@@ -72,7 +72,8 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
   label,
   correlationJobType,
   visibleType,
-  parentId
+  parentId,
+  finishedOnly
 }) => {
   const [value, setValue] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
@@ -109,6 +110,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
 
   const currentPerson = useCurrentPerson();
   const snakeBar = useSnakeBar();
+  const { taskId } = useParams();
 
   Quill.register(
     {
@@ -269,7 +271,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
       designerId: selectedDesigner?.userId ?? "",
       quantity: correlationJobType === CorrelationJobType.Job ? quantity : 1,
       jobType: selectedJobType?.typeId,
-      jobStatus: selectedStatus,
+      jobStatus: finishedOnly ? JobStatusType.Completed : selectedStatus,
       deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
       priority: selectedPriority,
       correlationType: correlationJobType,
@@ -287,11 +289,9 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
         switch (visibleType) {
           case VisibleType.Public:
             {
-              correlationJobType === CorrelationJobType.Job
-                ? navigate(
-                    `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${jobDetail.jobId}`
-                  )
-                : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${jobDetail.jobId}`);
+              finishedOnly
+                ? navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`)
+                : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
             }
 
             break;
@@ -720,24 +720,46 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Trạng thái
               </label>
-              <Select
-                fullWidth
-                size="small"
-                id="demo-simple-select"
-                value={selectedStatus}
-                onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-                sx={{
-                  "& .MuiInputBase-inputSizeSmall": {
-                    fontSize: "13px !important"
-                  }
-                }}
-              >
-                {statusOptions.map(({ key, text }) => (
-                  <MenuItem key={key} value={key}>
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
+              {finishedOnly ? (
+                <Select
+                  disabled={true}
+                  fullWidth
+                  size="small"
+                  id="demo-simple-select"
+                  value={JobStatusType.Completed}
+                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                  sx={{
+                    "& .MuiInputBase-inputSizeSmall": {
+                      fontSize: "13px !important"
+                    }
+                  }}
+                >
+                  {statusOptions.map(({ key, text }) => (
+                    <MenuItem key={key} value={key}>
+                      {text}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <Select
+                  fullWidth
+                  size="small"
+                  id="demo-simple-select"
+                  value={selectedStatus}
+                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                  sx={{
+                    "& .MuiInputBase-inputSizeSmall": {
+                      fontSize: "13px !important"
+                    }
+                  }}
+                >
+                  {statusOptions.map(({ key, text }) => (
+                    <MenuItem key={key} value={key}>
+                      {text}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
             </div>
             {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">

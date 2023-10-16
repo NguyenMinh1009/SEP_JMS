@@ -75,7 +75,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
         getJobs();
       }
     }
-  }, [filterInfoController.content]);
+  }, [filterInfoController.content, isCorrelationJobType]);
 
   return !isLoading ? (
     <div>

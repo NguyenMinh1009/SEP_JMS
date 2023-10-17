@@ -27,8 +27,9 @@ import Home from "./pages/Home";
 
 import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
 // import SubTaskDetail from "./pages/SubTaskDetail";
-import Profile from "./pages/profile";
+import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
+import UsersPage from "./pages/Users";
 
 const theme = createTheme(
   {
@@ -157,6 +158,10 @@ function App() {
                   />
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
                     <>
+                      <Route path={`/${PathString.USERS}/*`}>
+                        <Route index element={<UsersPage />} />
+                        
+                      </Route>
                       <Route
                         path={`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`}
                         element={

@@ -206,7 +206,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
           align="center"
         >
-          {row.jobType.typeName ?? "..."}
+          {row.jobType?.typeName ?? "..."}
         </TableCell>
         {renderPriceCellBasedOnJobType()}
         <TableCell

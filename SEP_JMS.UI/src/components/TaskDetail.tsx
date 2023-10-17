@@ -113,26 +113,38 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   };
 
   const handleEdit = () => {
-    if (finishOnly) {
-      {
-        isCorrelationJobType === CorrelationJobType.Job
-          ? navigate(
-              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
-            )
-          : navigate(
-              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
-            );
+    if (subTaskId === undefined) {
+      // xử lý job và project
+      if (finishOnly) {
+        {
+          isCorrelationJobType === CorrelationJobType.Job
+            ? navigate(
+                `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+              )
+            : navigate(
+                `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+              );
+        }
+      } else {
+        {
+          isCorrelationJobType === CorrelationJobType.Job
+            ? navigate(
+                `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+              )
+            : navigate(
+                `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+              );
+        }
       }
     } else {
-      {
-        isCorrelationJobType === CorrelationJobType.Job
-          ? navigate(
-              `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
-            )
-          : navigate(
-              `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
-            );
-      }
+      // xu ly subtasks
+      finishOnly
+        ? navigate(
+            `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
+          )
+        : navigate(
+            `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
+          );
     }
   };
 

@@ -1,23 +1,45 @@
 // SubTasks.tsx
-import React from "react";
-import { AiOutlineEllipsis } from "react-icons/ai";
-import TaskPropertiesLabel from "./TaskPropertiesLabel";
-import DropdownAction from "./DropdownAction";
-import { VisibleType } from "../../../enums/visibleType";
+import { CircularProgress } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
 import { JobStatusType } from "../../../enums/jobStatusType";
+import { VisibleType } from "../../../enums/visibleType";
+import { recursiveStructuredClone } from "../../../utils/recursiveStructuredClone";
+import DropdownAction from "./DropdownAction";
+import TaskPropertiesLabel from "./TaskPropertiesLabel";
 
 interface SubTasksProps {
   tasks: any[];
   // parentId: string;
   visibleType: VisibleType;
-  // finishedOnly?: boolean;
+  finishedOnly?: boolean;
 }
 
-const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType }) => {
+const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOnly }) => {
+  const [jobs, setJobs] = useState<any[]>(tasks);
+
+  const removeSubTask = useCallback(
+    (taskId: any) => {
+      const updatedJobs = [...jobs];
+      // Tìm index của task cần xóa
+      const taskIndex = updatedJobs.findIndex(task => task.jobId === taskId);
+      // Nếu tìm thấy thì xóa đi
+      if (taskIndex > -1) {
+        updatedJobs.splice(taskIndex, 1);
+      }
+      // Cập nhật lại jobs state
+      setJobs(updatedJobs);
+    },
+    [jobs]
+  );
+
+  useEffect(() => {
+    setJobs(tasks);
+  }, [tasks]);
+
   return (
     <div>
-      {tasks.length !== 0 ? (
-        tasks.map((task, index) => (
+      {jobs?.length !== 0 ? (
+        jobs.map((task, index) => (
           <div key={index} className="border-custom-border-100 border border-b-0">
             <div className="relative">
               <div>
@@ -41,9 +63,23 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType }) => {
                   </div>
                   {/*actions */}
                   {task.jobStatus === JobStatusType.Completed ? (
-                    <DropdownAction visibleType={visibleType} finishOnly subTaskId={task.jobId} />
+                    finishedOnly ? (
+                      <DropdownAction
+                        visibleType={visibleType}
+                        finishedOnly
+                        subTaskId={task.jobId}
+                      />
+                    ) : (
+                      <DropdownAction visibleType={visibleType} subTaskId={task.jobId} />
+                    )
+                  ) : finishedOnly ? (
+                    <DropdownAction visibleType={visibleType} subTaskId={task.jobId} finishedOnly />
                   ) : (
-                    <DropdownAction visibleType={visibleType} subTaskId={task.jobId} />
+                    <DropdownAction
+                      visibleType={visibleType}
+                      subTaskId={task.jobId}
+                      removeSubTask={removeSubTask}
+                    />
                   )}
 
                   {/* ---------- */}

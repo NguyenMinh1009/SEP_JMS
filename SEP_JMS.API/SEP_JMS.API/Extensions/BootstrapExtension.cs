@@ -22,6 +22,7 @@ namespace SEP_JMS.API.Extensions
                 .AddScoped<IPriceGroupRepository, PriceGroupRepository>()
                 .AddScoped<IPriceRepository, PriceRepository>()
                 .AddScoped<IUserRepository, UserRepository>()
+                .AddScoped<ICommentRepository, CommentRepository>()
 
                 .AddScoped<ICompanyService, CompanyService>()
                 .AddScoped<IJobService, JobService>()
@@ -29,6 +30,7 @@ namespace SEP_JMS.API.Extensions
                 .AddScoped<IJobTypeService, JobTypeService>()
                 .AddScoped<INotificationRepository, NotificationRepository>()
                 .AddScoped<INotificationService, NotificationService>()
+                .AddScoped<ICommentService, CommentService>()
 
                 .AddSingleton<IJMSLogger, JMSLogger>()
                 .AddAutoMapper(Assembly.Load("SEP_JMS.Mapper"));

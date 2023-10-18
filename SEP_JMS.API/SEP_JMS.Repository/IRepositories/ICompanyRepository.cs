@@ -7,5 +7,7 @@ namespace SEP_JMS.Repository.IRepositories
     public interface ICompanyRepository : IBaseRepository<Company>
     {
         public Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model);
+        public Task<Company?> GetCompanyById(Guid id);
+        public Task<Company?> GetCompany(Guid companyId);
     }
 }

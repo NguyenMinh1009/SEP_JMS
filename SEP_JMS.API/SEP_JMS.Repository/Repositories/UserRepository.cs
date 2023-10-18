@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SEP_JMS.Common;
 using SEP_JMS.Model;
+using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Request.User;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model.Models;
@@ -38,11 +39,80 @@ namespace SEP_JMS.Repository.Repositories
             return user;
         }
 
+        public async Task<User?> GetUserByIdWithoutRole(Guid userId)
+        {
+            return await Context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.UserId == userId);
+        }
+        public async Task<bool> IsValidUsername(string username)
+        {
+            return !await Context.Users.AnyAsync(user => user.Username.ToLower() == username.ToLower());
+        }
+
         public async Task<int> ChangePassword(Guid userId, string newPassword)
         {
             return await Context.Users.Where(job => job.UserId == userId)
                 .ExecuteUpdateAsync(users => users
                 .SetProperty(user => user.Password, user => newPassword));
+        }
+        public async Task<PagingModel<Tuple<User, Company>>> FindUsers(GetUsersRequestModel model)
+        {
+            var query = from user in Context.Users
+
+                        join company in Context.Companies
+                        on user.CompanyId equals company.CompanyId
+                        into companies
+                        from company in companies.DefaultIfEmpty()
+
+                        where user.RoleType == model.Role
+
+                        select new { user, company };
+
+            if (!string.IsNullOrEmpty(model.SearchText))
+            {
+                query = from data in query
+                        where data.user.Fullname.ToLower().Contains(model.SearchText.ToLower())
+                        || (data.user.Email != null && data.user.Email.ToLower().Contains(model.SearchText.ToLower()))
+                        select data;
+            }
+            var accounts = await query.OrderBy(data => data.user.Fullname)
+                .ThenBy(data => data.user.Email)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .Select(data => Tuple.Create(data.user, data.company))
+                .AsNoTracking()
+                .ToListAsync();
+            var count = await query.CountAsync();
+            return new PagingModel<Tuple<User, Company>>
+            {
+                Items = accounts,
+                Count = count
+            };
+        }
+        public async Task ChangeStatus(Guid id, AccountStatus status)
+        {
+            var user = await Context.Users.FirstAsync(u => u.UserId == id);
+            user.AccountStatus = status;
+            await Context.SaveChangesAsync();
+        }
+        public async Task AddUser(User user)
+        {
+            await Context.Users.AddAsync(user);
+            await Context.SaveChangesAsync();
+        }
+        public async Task UpdateCustomer(Guid id, CustomerAdminUpdateRequestModel model)
+        {
+            var customer = await Context.Users.FirstAsync(cus => cus.UserId == id && cus.RoleType == RoleType.Customer);
+            customer.Username = model.Username;
+            customer.Password = model.Password ?? customer.Password;
+            customer.Fullname = model.Fullname;
+            customer.Email = model.Email;
+            customer.Phone = model.Phone;
+            customer.DOB = model.DOB;
+            customer.Gender = model.Gender;
+            customer.HiddenPrice = model.HiddenPrice;
+            customer.AccountStatus = model.AccountStatus;
+            customer.CompanyId = model.CompanyId;
+            await Context.SaveChangesAsync();
         }
 
         public async Task<PagingModel<User>> GetUsers(UserFilterRequest model)

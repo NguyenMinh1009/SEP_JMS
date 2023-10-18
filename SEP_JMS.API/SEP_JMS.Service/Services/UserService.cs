@@ -11,6 +11,9 @@ using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Net;
+using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Enums.System;
+using SEP_JMS.Repository.Repositories;
 
 namespace SEP_JMS.Service.Services
 {
@@ -21,6 +24,7 @@ namespace SEP_JMS.Service.Services
         private readonly IPriceRepository priceRepository;
         private readonly IPriceGroupRepository priceGroupRepository;
         private readonly IJobTypeRepository jobTypeRepository;
+        private readonly ICompanyRepository companyRepository;
         private readonly IConfiguration configuration;
 
         private readonly IJMSLogger logger;
@@ -34,7 +38,8 @@ namespace SEP_JMS.Service.Services
 
             IMapper mapper,
             IJMSLogger logger,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ICompanyRepository companyRepository)
         {
             this.jobRepository = jobRepository;
             this.userRepository = userRepository;
@@ -45,6 +50,7 @@ namespace SEP_JMS.Service.Services
             this.mapper = mapper;
             this.logger = logger;
             this.configuration = configuration;
+            this.companyRepository = companyRepository;
         }
 
         public async Task<PagingModel<User>> GetUsers(UserFilterRequest model)
@@ -109,6 +115,47 @@ namespace SEP_JMS.Service.Services
             password.Append(specialChars[random.Next(specialChars.Length)]);
             password.Append(digits[random.Next(digits.Length)]);
             return password.ToString();
+        }
+        public async Task<User?> GetUserByIdWithoutRole(Guid userId)
+        {
+            return await userRepository.GetUserByIdWithoutRole(userId);
+        }
+        public async Task<bool> IsValidUsername(string username)
+        {
+            return await userRepository.IsValidUsername(username);
+        }
+        public async Task<PagingModel<UserDetailsDisplayModel>> FindUsers(GetUsersRequestModel model)
+        {
+            var usersInfo = await userRepository.FindUsers(model);
+            var users = new List<UserDetailsDisplayModel>();
+            foreach (var userInfo in usersInfo.Items)
+            {
+                var user = mapper.Map<UserDetailsDisplayModel>(userInfo.Item1);
+                if (user.RoleType == RoleType.Customer) user.Company = mapper.Map<CompanyDisplayModel>(userInfo.Item2);
+                users.Add(user);
+            }
+            return new PagingModel<UserDetailsDisplayModel>
+            {
+                Items = users,
+                Count = usersInfo.Count
+            };
+        }
+        public async Task ChangeStatus(Guid id, AccountStatus status)
+        {
+            await userRepository.ChangeStatus(id, status);
+        }
+        public async Task<Guid?> CreateCustomer(CustomerCreateRequestModel model)
+        {
+            var company = await companyRepository.GetCompany(model.CompanyId);
+            if (company == null) return null;
+
+            var user = mapper.Map<User>(model);
+            await userRepository.AddUser(user);
+            return user.UserId;
+        }
+        public async Task UpdateCustomer(Guid id, CustomerAdminUpdateRequestModel model)
+        {
+            await userRepository.UpdateCustomer(id, model);
         }
     }
 }

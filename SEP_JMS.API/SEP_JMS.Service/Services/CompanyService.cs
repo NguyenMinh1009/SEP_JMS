@@ -45,5 +45,9 @@ namespace SEP_JMS.Service.Services
         {
             return await companyRepository.GetCompanies(model);
         }
+        public async Task<Company?> GetCompanyById(Guid id)
+        {
+            return await companyRepository.GetCompanyById(id);
+        }
     }
 }

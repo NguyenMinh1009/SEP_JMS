@@ -30,5 +30,16 @@ namespace SEP_JMS.Repository.Repositories
                 Count = count
             };
         }
+
+        public async Task<Company?> GetCompanyById(Guid id)
+        {
+            return await Context.Companies.AsNoTracking()
+                .SingleOrDefaultAsync(com => com.CompanyId == id);
+        }
+        public async Task<Company?> GetCompany(Guid companyId)
+        {
+            return await Context.Companies.AsNoTracking()
+                .SingleOrDefaultAsync(com => com.CompanyId == companyId);
+        }
     }
 }

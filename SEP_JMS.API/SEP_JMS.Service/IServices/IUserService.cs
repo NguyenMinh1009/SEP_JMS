@@ -2,6 +2,8 @@
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Enums.System;
 
 namespace SEP_JMS.Service.IServices
 {
@@ -13,5 +15,11 @@ namespace SEP_JMS.Service.IServices
         public Task<int> ChangePassword(ChangePasswordRequest model);
         public Task<User?> UpdateProfile(UpdateProfileRequest model);
         public Task ForgotPassword(ForgotPasswordRequest model);
+        public Task<User?> GetUserByIdWithoutRole(Guid userId);
+        public Task<bool> IsValidUsername(string username);
+        public Task<PagingModel<UserDetailsDisplayModel>> FindUsers(GetUsersRequestModel model);
+        public Task ChangeStatus(Guid id, AccountStatus status);
+        public Task<Guid?> CreateCustomer(CustomerCreateRequestModel model);
+        public Task UpdateCustomer(Guid id, CustomerAdminUpdateRequestModel model);
     }
 }

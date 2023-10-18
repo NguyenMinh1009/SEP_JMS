@@ -7,5 +7,6 @@ namespace SEP_JMS.Service.IServices
     public interface ICompanyService
     {
         public Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model);
+        public Task<Company?> GetCompanyById(Guid id);
     }
 }

@@ -27,8 +27,9 @@ import Home from "./pages/Home";
 
 import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
 // import SubTaskDetail from "./pages/SubTaskDetail";
-import Profile from "./pages/profile";
+import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
+import UsersPage from "./pages/Users";
 
 const theme = createTheme(
   {
@@ -157,6 +158,10 @@ function App() {
                   />
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
                     <>
+                      <Route path={`/${PathString.USERS}/*`}>
+                        <Route index element={<UsersPage />} />
+                        
+                      </Route>
                       <Route
                         path={`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`}
                         element={
@@ -178,7 +183,10 @@ function App() {
                       path=":taskId"
                       element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
                     />
-                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
+                    <Route
+                      path={`:taskId/${PathString.CHINH_SUA}`}
+                      element={<EditTask isCorrelationJobType={CorrelationJobType.Job} />}
+                    />
                   </Route>
 
                   {/* viec-cong-khai/viec-du-an */}
@@ -191,7 +199,10 @@ function App() {
                       path=":taskId"
                       element={<TasksDetail isCorrelationJobType={CorrelationJobType.Project} />}
                     />
-                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
+                    <Route
+                      path={`:taskId/${PathString.CHINH_SUA}`}
+                      element={<EditTask isCorrelationJobType={CorrelationJobType.Project} />}
+                    />
                     <Route
                       path={`:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`}
                       element={<Home isCorrelationJobType={CorrelationJobType.Job} isParentId />}
@@ -200,6 +211,11 @@ function App() {
                     <Route
                       path=":taskId/:subTaskId"
                       element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
+                    />
+
+                    <Route
+                      path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
+                      element={<EditTask isCorrelationJobType={CorrelationJobType.Job} />}
                     />
                   </Route>
 
@@ -212,7 +228,10 @@ function App() {
                         <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Job} />
                       }
                     />
-                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
+                    <Route
+                      path={`:taskId/${PathString.CHINH_SUA}`}
+                      element={<EditTask isCorrelationJobType={CorrelationJobType.Job} />}
+                    />
                   </Route>
 
                   {/* viec-da-xong/viec-du-an */}
@@ -239,7 +258,10 @@ function App() {
                         />
                       }
                     />
-                    <Route path={`:taskId/${PathString.CHINH_SUA}`} element={<EditTask />} />
+                    <Route
+                      path={`:taskId/${PathString.CHINH_SUA}`}
+                      element={<EditTask isCorrelationJobType={CorrelationJobType.Project} />}
+                    />
                   </Route>
                   <Route path={`/${PathString.TAI_KHOAN}`} element={<Profile />} />
                   <Route

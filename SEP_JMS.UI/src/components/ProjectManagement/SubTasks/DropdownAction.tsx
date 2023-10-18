@@ -4,25 +4,33 @@ import { CorrelationJobType } from "../../../enums/correlationJobType";
 import { VisibleType } from "../../../enums/visibleType";
 import { PathString } from "../../../enums/MapRouteToBreadCrumb";
 import { useNavigate, useParams } from "react-router-dom";
+import AlwayxInstance from "../../../api/AxiosInstance";
+import CustomDialog from "../../common/CustomDialog";
+import useSnakeBar from "../../../hooks/store/useSnakeBar";
 
 interface IDropdownAction {
   // correlationJobType: CorrelationJobType;
   visibleType: VisibleType;
-  finishOnly?: boolean;
+  finishedOnly?: boolean;
   // taskId: any;
   subTaskId: any;
+  removeSubTask?: (id: any) => void;
 }
 
 const DropdownAction: React.FC<IDropdownAction> = ({
   visibleType,
-  finishOnly,
+  finishedOnly,
   // taskId,
-  subTaskId
+  subTaskId,
+  removeSubTask
 }) => {
+  const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
+
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { taskId } = useParams();
+  const snakeBar = useSnakeBar();
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -45,7 +53,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
     setIsOpen(!isOpen);
   };
   const getLinkForViewJob = (): string => {
-    if (finishOnly)
+    if (finishedOnly)
       return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
     if (visibleType === VisibleType.Public)
       return `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
@@ -60,55 +68,78 @@ const DropdownAction: React.FC<IDropdownAction> = ({
   };
 
   const handleUpdateClick = () => {
-    console.log("Update action");
-    // setIsOpen(false);
+    navigate(getLinkForEditJob());
   };
 
-  const handleDeleteClick = () => {
-    console.log("Delete action");
-    // setIsOpen(false);
+  const handleClose = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const handleClickDeleteTask = () => setOpenConfirmDialog(true);
+
+  const handleDeleteTask = async () => {
+    try {
+      const deleteUrl = "job/" + subTaskId;
+      await AlwayxInstance.delete(deleteUrl);
+      removeSubTask?.(subTaskId);
+      snakeBar.setSnakeBar("Xoá công việc thành công!", "success", true);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
-      <div>
-        <button
-          type="button"
-          className="text-custom-text-200 hover:text-custom-text-100 hover:bg-custom-background-80 relative grid cursor-pointer place-items-center rounded p-1 outline-none"
-          id="headlessui-menu-button"
-          aria-haspopup="true"
-          aria-expanded={isOpen ? "true" : "false"}
-          onClick={toggleDropdown}
-        >
-          <AiOutlineEllipsis />
-        </button>
-      </div>
-
-      {isOpen && (
-        <div className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md border border-gray-300 bg-white shadow-lg">
-          <div className="py-1">
-            <button
-              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              onClick={handleViewClick}
-            >
-              View
-            </button>
-            <button
-              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              onClick={handleUpdateClick}
-            >
-              Update
-            </button>
-            <button
-              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              onClick={handleDeleteClick}
-            >
-              Delete
-            </button>
-          </div>
+    <>
+      <CustomDialog
+        openDialog={openConfirmDialog}
+        handleClose={handleClose}
+        title="Bạn có muốn xoá công việc này?"
+        description="Một khi xoá, dữ liệu sẽ không thể khôi phục!"
+        primaryBtnText="Quay trở lại"
+        secondaryBtnText="Đồng ý xoá"
+        primaryBtnCallback={handleClose}
+        secondaryBtnCallback={handleDeleteTask}
+      />
+      <div className="relative inline-block text-left" ref={dropdownRef}>
+        <div>
+          <button
+            type="button"
+            className="text-custom-text-200 hover:text-custom-text-100 hover:bg-custom-background-80 relative grid cursor-pointer place-items-center rounded p-1 outline-none"
+            id="headlessui-menu-button"
+            aria-haspopup="true"
+            aria-expanded={isOpen ? "true" : "false"}
+            onClick={toggleDropdown}
+          >
+            <AiOutlineEllipsis />
+          </button>
         </div>
-      )}
-    </div>
+
+        {isOpen && (
+          <div className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md border border-gray-300 bg-white shadow-lg">
+            <div className="py-1">
+              <button
+                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                onClick={handleViewClick}
+              >
+                View
+              </button>
+              <button
+                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                onClick={handleUpdateClick}
+              >
+                Update
+              </button>
+              <button
+                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                onClick={handleClickDeleteTask}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

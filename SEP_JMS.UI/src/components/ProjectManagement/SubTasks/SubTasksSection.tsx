@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SubTasksProps from "./SubTasksProps";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import AlwayxInstance from "../../../api/AxiosInstance";
 import useFilterInfo from "../../../hooks/store/useFilterInfo";
 import { JobStatusType } from "../../../enums/jobStatusType";
@@ -58,7 +58,19 @@ ISubTasksSection) => {
     }
   }, []);
 
-  return <div>{!isLoading && <SubTasksProps tasks={jobs} visibleType={visibleType} />}</div>;
+  return (
+    <div>
+      {!isLoading ? (
+        finishedOnly ? (
+          <SubTasksProps tasks={jobs} visibleType={visibleType} finishedOnly />
+        ) : (
+          <SubTasksProps tasks={jobs} visibleType={visibleType} />
+        )
+      ) : (
+        <CircularProgress size={25} />
+      )}
+    </div>
+  );
 };
 
 export default SubTasksSection;

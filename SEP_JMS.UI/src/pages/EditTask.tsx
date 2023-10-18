@@ -61,7 +61,10 @@ const quillModules = {
   "emoji-shortname": true
 };
 
-interface ICreateTaskProp {}
+interface IEditTaskProp {
+  isCorrelationJobType: number;
+  finishedOnly?: boolean;
+}
 
 const getDeadline = (date?: Date): Date => {
   if (date) return date;
@@ -70,7 +73,7 @@ const getDeadline = (date?: Date): Date => {
   return curr;
 };
 
-const EditTask: React.FC<ICreateTaskProp> = () => {
+const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly }) => {
   const [taskDetail, setTaskDetail] = useState<any>();
   const [value, setValue] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
@@ -81,9 +84,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
   const [previewFiles, setPreviewFiles] = useState<File[]>([]);
   const [previewFilesFromAPI, setPreviewFilesFromAPI] = useState<FileResponse[]>([]);
   const [title, setTitle] = useState<string>("");
-  const [selectedJobType, setSelectedJobType] = useState<{ key: JobType; text: string }>(
-    jobOptions[0]
-  );
+  const [selectedJobType, setSelectedJobType] = useState<any | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
   const [selectedDesigner, setSelectedDesigner] = useState<any | null>(null);
   const [selectedAccount, setSelectedAccount] = useState<any | null>(null);
@@ -102,9 +103,6 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadFinalProgress, setUploadFinalProgress] = useState<number>(0);
-  const [correlationType, setCorrelationType] = useState<CorrelationJobType>(
-    CorrelationJobType.Job
-  );
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -114,7 +112,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
 
   const titleBreadCrumb = useTitle();
 
-  const { taskId } = useParams();
+  const { taskId, subTaskId } = useParams();
 
   Quill.register(
     {
@@ -216,20 +214,22 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
   };
 
   const getCustomerListForAdmin = () => {
-    AlwayxInstance.post("customer/find", {
+    AlwayxInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
-      searchText: null
+      searchText: null,
+      role: Role.CUSTOMER
     })
       .then(res => setCustomers(res.data.items))
       .catch(err => console.error(err));
   };
 
   const getDesignerList = () => {
-    AlwayxInstance.post("employee/designer/all", {
+    AlwayxInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
-      searchText: null
+      searchText: null,
+      role: Role.DESIGNER
     })
       .then(res => setDesigners(res.data.items))
       .catch(err => console.error(err));
@@ -237,10 +237,11 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
 
   const getAccountList = () => {
     if (!currentPerson.roleType || currentPerson.roleType === Role.DESIGNER) return;
-    AlwayxInstance.post("employee/account/all", {
+    AlwayxInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
-      searchText: null
+      searchText: null,
+      role: Role.ACCOUNT
     })
       .then(res => setAccounts(res.data.items))
       .catch(err => console.error(err));
@@ -253,7 +254,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
   };
 
   const getOrderList = () => {
-    AlwayxInstance.post("company/all", {
+    AlwayxInstance.post("company/search", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: ""
@@ -265,17 +266,21 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
   const getCorrelationJobOptions = () => {
     return (
       <>
-        <label htmlFor="" className="text-primary col-span-2">
-          Số lượng
-        </label>
-        <input
-          disabled={currentPerson.roleType === Role.DESIGNER}
-          type="number"
-          value={quantity}
-          min={0}
-          onChange={e => setQuantity(Number(e.target.value))}
-          className="w-full rounded-md border-2 p-2 leading-5 shadow-sm"
-        />
+        {isCorrelationJobType === CorrelationJobType.Job && (
+          <>
+            <label htmlFor="" className="text-primary col-span-2">
+              Số lượng
+            </label>
+            <input
+              disabled={currentPerson.roleType === Role.DESIGNER}
+              type="number"
+              value={quantity}
+              min={0}
+              onChange={e => setQuantity(Number(e.target.value))}
+              className="w-full rounded-md border-2 p-2 leading-5 shadow-sm"
+            />
+          </>
+        )}
       </>
     );
   };
@@ -295,18 +300,35 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
 
   const editBasicInfoPromise = () => {
     return currentPerson.roleType !== Role.DESIGNER
-      ? AlwayxInstance.put(`job/${taskId}`, {
-          title: title,
-          description: getSanitizeText(value),
-          designerId: selectedDesigner?.userId,
-          accountId: selectedAccount?.userId,
-          quantity: quantity,
-          jobType: selectedJobType.key,
-          deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-          priority: selectedPriority,
-          jobStatus: selectedStatus,
-          correlationType: correlationType
-        })
+      ? subTaskId === undefined
+        ? AlwayxInstance.put(`job/${taskId}`, {
+            title: title,
+            description: getSanitizeText(value),
+            designerId: selectedDesigner?.userId,
+            accountId: selectedAccount?.userId,
+            quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+            jobType: selectedJobType.typeId,
+            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+            priority: selectedPriority,
+            jobStatus: selectedStatus,
+            correlationType:
+              isCorrelationJobType === CorrelationJobType.Job
+                ? CorrelationJobType.Job
+                : CorrelationJobType.Project
+          })
+        : AlwayxInstance.put(`job/${subTaskId}`, {
+            parentId: taskId,
+            title: title,
+            description: getSanitizeText(value),
+            designerId: selectedDesigner?.userId,
+            accountId: selectedAccount?.userId,
+            quantity: quantity,
+            jobType: selectedJobType.typeId,
+            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+            priority: selectedPriority,
+            jobStatus: selectedStatus,
+            correlationType: CorrelationJobType.Job
+          })
       : Promise.resolve(null);
   };
 
@@ -377,7 +399,35 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
       // editPreviewFilePromise()
     ])
       .then(() => {
-        navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+        {
+          if (isCorrelationJobType === CorrelationJobType.Job) {
+            // edit viec-hang-ngay
+            if (subTaskId === undefined) {
+              if (selectedStatus === JobStatusType.Completed) {
+                navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+              } else {
+                navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+              }
+            }
+            // Edit sub task
+            else {
+              if (finishedOnly) {
+                navigate(
+                  `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
+                );
+              } else {
+                navigate(
+                  `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
+                );
+              }
+            }
+            // Edit project
+          } else {
+            if (selectedStatus === JobStatusType.Completed)
+              navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
+            navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
+          }
+        }
       })
       .catch(err => {
         console.error(err);
@@ -392,21 +442,34 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
 
   const getTaskDetails = async () => {
     setLoading(true);
-    const res = await AlwayxInstance.get(`job/${taskId}`);
+    let res: any;
+    subTaskId === undefined
+      ? (res = await AlwayxInstance.get(`job/${taskId}`))
+      : (res = await AlwayxInstance.get(`job/${subTaskId}`));
     setTaskDetail(res.data);
     titleBreadCrumb.setContent(res.data.title);
     const requirementList: FileResponse[] = res.data?.requirements?.files;
     setOldFilesFromApi(requirementList ?? []);
     if (requirementList && requirementList.length > 0) {
       for (const requirement of requirementList) {
-        const response = await AlwayxInstance.post(
-          `file/job/${taskId}`,
-          {
-            fileName: requirement.fileName,
-            postsType: PostType.post
-          },
-          { responseType: "blob" }
-        );
+        let response: any;
+        subTaskId === undefined
+          ? await AlwayxInstance.post(
+              `file/job/${taskId}`,
+              {
+                fileName: requirement.fileName,
+                postsType: PostType.post
+              },
+              { responseType: "blob" }
+            )
+          : await AlwayxInstance.post(
+              `file/job/${subTaskId}`,
+              {
+                fileName: requirement.fileName,
+                postsType: PostType.post
+              },
+              { responseType: "blob" }
+            );
         const newFile = new File([response.data], requirement.originalName, {
           type: response.data.type
         });
@@ -426,7 +489,6 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
     setSelectedDesigner(res.data.designer);
     setSelectedAccount(res.data.account);
     setSelectedStatus(res.data.jobStatus);
-    setCorrelationType(res.data.correlationType);
     setLoading(false);
   };
 
@@ -976,7 +1038,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
                 ))}
               </Select>
             </div>
-            <div className="flex flex-col items-start gap-3">
+            {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại công việc
               </label>
@@ -993,7 +1055,7 @@ const EditTask: React.FC<ICreateTaskProp> = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </div>
+            </div> */}
           </div>
           <div className="flex flex-1 items-center justify-center">
             <div className="relative mt-5 flex min-h-[100px] items-center gap-4">

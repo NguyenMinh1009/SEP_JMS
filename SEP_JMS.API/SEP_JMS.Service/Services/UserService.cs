@@ -157,5 +157,21 @@ namespace SEP_JMS.Service.Services
         {
             await userRepository.UpdateCustomer(id, model);
         }
+        public async Task<Guid?> CreateEmployee(EmployeeCreateRequestModel model)
+        {
+            if (model.RoleType == RoleType.Customer) return null;
+
+            var user = mapper.Map<User>(model);
+            await userRepository.AddUser(user);
+            return user.UserId;
+        }
+        public async Task UpdateEmployee(Guid id, EmployeeAdminUpdateRequestModel model)
+        {
+            await userRepository.UpdateEmployee(id, model);
+        }
+        public async Task<User?> GetUserById(Guid userId, RoleType role)
+        {
+            return await userRepository.GetUserById(userId, role);
+        }
     }
 }

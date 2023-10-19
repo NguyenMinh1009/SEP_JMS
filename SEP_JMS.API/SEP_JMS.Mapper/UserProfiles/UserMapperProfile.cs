@@ -21,4 +21,16 @@ namespace SEP_JMS.Mapper.UserProfiles
                 .ForMember(des => des.UserId, opt => opt.MapFrom(src => Guid.NewGuid()));
         }
     }
+    public class EmployeeCreateRequestModelToUserModelMapperProfile : Profile
+    {
+        public EmployeeCreateRequestModelToUserModelMapperProfile()
+        {
+            var now = DateTime.UtcNow.Ticks;
+            CreateMap<EmployeeCreateRequestModel, Model.Models.User>()
+                .ForMember(des => des.AccountStatus, opt => opt.MapFrom(src => AccountStatus.Active))
+                .ForMember(des => des.CreatedTime, opt => opt.MapFrom(src => now))
+                .ForMember(des => des.OffboardTime, opt => opt.Ignore())
+                .ForMember(des => des.UserId, opt => opt.MapFrom(src => Guid.NewGuid()));
+        }
+    }
 }

@@ -20,5 +20,7 @@ namespace SEP_JMS.Repository.IRepositories
         public Task ChangeStatus(Guid id, AccountStatus status);
         public Task AddUser(User user);
         public Task UpdateCustomer(Guid id, CustomerAdminUpdateRequestModel model);
+        public Task UpdateEmployee(Guid id, EmployeeAdminUpdateRequestModel model);
+        public Task<User?> GetUserById(Guid userId, RoleType role);
     }
 }

@@ -114,6 +114,28 @@ namespace SEP_JMS.Repository.Repositories
             customer.CompanyId = model.CompanyId;
             await Context.SaveChangesAsync();
         }
+        public async Task UpdateEmployee(Guid id, EmployeeAdminUpdateRequestModel model)
+        {
+            var emp = await Context.Users.FirstAsync(cus => cus.UserId == id && cus.RoleType != RoleType.Customer);
+            emp.Username = model.Username;
+            emp.Password = model.Password ?? emp.Password;
+            emp.Fullname = model.Fullname;
+            emp.Email = model.Email;
+            emp.Phone = model.Phone;
+            emp.DOB = model.DOB;
+            emp.Gender = model.Gender;
+            emp.IDCardNumber = model.IDCardNumber;
+            emp.Address = model.Address;
+            emp.OnboardTime = model.OnboardTime;
+            emp.OffboardTime = model.OffboardTime;
+            emp.RoleType = model.RoleType;
+            emp.AccountStatus = model.AccountStatus;
+            await Context.SaveChangesAsync();
+        }
+        public async Task<User?> GetUserById(Guid userId, RoleType role)
+        {
+            return await Context.Users.AsNoTracking().SingleOrDefaultAsync(user => user.UserId == userId && user.RoleType == role);
+        }
 
         public async Task<PagingModel<User>> GetUsers(UserFilterRequest model)
         {

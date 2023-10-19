@@ -21,5 +21,8 @@ namespace SEP_JMS.Service.IServices
         public Task ChangeStatus(Guid id, AccountStatus status);
         public Task<Guid?> CreateCustomer(CustomerCreateRequestModel model);
         public Task UpdateCustomer(Guid id, CustomerAdminUpdateRequestModel model);
+        public Task<Guid?> CreateEmployee(EmployeeCreateRequestModel model);
+        public Task UpdateEmployee(Guid id, EmployeeAdminUpdateRequestModel model);
+        public Task<User?> GetUserById(Guid userId, RoleType role);
     }
 }

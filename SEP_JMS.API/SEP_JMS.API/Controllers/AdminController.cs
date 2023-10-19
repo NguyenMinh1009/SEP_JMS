@@ -23,7 +23,7 @@ namespace SEP_JMS.API.Controllers
 
         private readonly ICompanyService companyService;
         private readonly IUserService userService;
-        //private readonly IPriceService priceService;
+        private readonly IPriceService priceService;
 
         private readonly IMapper mapper;
         private readonly IJMSLogger logger;
@@ -31,17 +31,161 @@ namespace SEP_JMS.API.Controllers
         public AdminController(ICommentService commentService,
             ICompanyService companyService,
             IUserService userService,
-            //IPriceService priceService,
+            IPriceService priceService,
 
             IMapper mapper,
             IJMSLogger logger)
         {
             this.companyService = companyService;
             this.userService = userService;
-            //this.priceService = priceService;
+            this.priceService = priceService;
 
             this.mapper = mapper;
             this.logger = logger;
+        }
+        [HttpPost("company/all")]
+        public async Task<ActionResult<PagingModel<CompanyDetailsDisplayModel>>> GetAllCompanies([FromBody] CompanyAdminFilterRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get companies.");
+                var companies = await companyService.GetCompanies(model);
+                var result = new List<CompanyDetailsDisplayModel>();
+                foreach (var company in companies.Items)
+                {
+                    result.Add(new CompanyDetailsDisplayModel
+                    {
+                        PriceGroup = company.Item3,
+                        Account = mapper.Map<AccountDetailsDisplayModel>(company.Item2),
+                        Company = mapper.Map<CompanyDisplayModel>(company.Item1)
+                    });
+                }
+                return new PagingModel<CompanyDetailsDisplayModel>
+                {
+                    Count = companies.Count,
+                    Items = result
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when getting companies. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [HttpGet("company/{companyId}")]
+        public async Task<ActionResult<CompanyDetailsDisplayModel>> GetCompany([FromRoute] Guid companyId)
+        {
+            try
+            {
+                var response = new CompanyDetailsDisplayModel();
+                logger.Info($"{logPrefix} Start to find users.");
+                var company = await companyService.GetCompanyById(companyId);
+                if (company == null) return NotFound();
+                response.Company = mapper.Map<CompanyDisplayModel>(company);
+                var account = await userService.GetUserById(company.AccountId, RoleType.Account);
+                if (account != null) response.Account = mapper.Map<AccountDetailsDisplayModel>(account);
+                var priceGroup = await priceService.GetGroup(company.PriceGroupId);
+                if (priceGroup != null) response.PriceGroup = priceGroup;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when finding users. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [HttpPost("add/company")]
+        public async Task<ActionResult<CompanyDisplayModel>> CreateCompany(CompanyCreateRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to create a new company with name {model.CompanyName}.");
+                var account = await userService.GetUserById(model.AccountId, RoleType.Account);
+                if (account == null)
+                {
+                    logger.Warn($"{logPrefix} Not found account with Id {model.AccountId} when creating company {model.CompanyName}.");
+                    return BadRequest();
+                }
+                var groupPrice = await priceService.GetGroup(model.PriceGroupId);
+                if (groupPrice == null)
+                {
+                    logger.Warn($"{logPrefix} Not found price group with Id {model.PriceGroupId} when creating company {model.CompanyName}.");
+                    return BadRequest();
+                }
+
+                return await companyService.CreateCompany(model);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when creating a new company with name {model.CompanyName}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [HttpPut("update/company/{id}")]
+        public async Task<IActionResult> UpdateCompany([FromRoute] Guid id, [FromBody] CompanyUpdateRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update company {id}.");
+                var account = await userService.GetUserById(model.AccountId, RoleType.Account);
+                if (account == null)
+                {
+                    logger.Warn($"{logPrefix} Not found account with Id {model.AccountId} when updating company {model.CompanyName}.");
+                    return BadRequest();
+                }
+                var groupPrice = await priceService.GetGroup(model.PriceGroupId);
+                if (groupPrice == null)
+                {
+                    logger.Warn($"{logPrefix} Not found price group with Id {model.PriceGroupId} when updating company {model.CompanyName}.");
+                    return BadRequest();
+                }
+
+                await companyService.UpdateCompany(id, model);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when updating company {id}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [HttpPost("add/employee")]
+        public async Task<ActionResult<UserCreateDisplayModel>> CreateEmployee(EmployeeCreateRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to create a new employee with username {model.Username}.");
+                if (!DataVerificationUtility.VerifyUsernameStrong(model.Username)) BadRequest("Username invalid format");
+                if (!DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
+                var userId = await userService.CreateEmployee(model);
+                if (userId == null) return StatusCode(500);
+                return new UserCreateDisplayModel
+                {
+                    UserId = userId.Value
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when creating a new employee with username {model.Username}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [HttpPut("update/employee/{id}")]
+        public async Task<ActionResult<UserCreateDisplayModel>> UpdateEmployee([FromRoute] Guid id, [FromBody] EmployeeAdminUpdateRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update employee {id}.");
+                if (model.Username != null && !DataVerificationUtility.VerifyUsernameStrong(model.Username)) BadRequest("Username invalid format");
+                if (model.Password != null && !DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
+                await userService.UpdateEmployee(id, model);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when updating employee {id}. Error: {ex}");
+                return StatusCode(500);
+            }
         }
         [HttpPost("add/customer")]
         public async Task<ActionResult<UserCreateDisplayModel>> CreateCustomer(CustomerCreateRequestModel model)

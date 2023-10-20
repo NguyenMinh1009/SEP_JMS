@@ -24,6 +24,7 @@ namespace SEP_JMS.API.Extensions
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<ICommentRepository, CommentRepository>()
 
+                .AddScoped<IPriceService, PriceService>()
                 .AddScoped<ICompanyService, CompanyService>()
                 .AddScoped<IJobService, JobService>()
                 .AddScoped<IUserService, UserService>()

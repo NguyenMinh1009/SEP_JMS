@@ -5,6 +5,7 @@ using SEP_JMS.Service.IServices;
 using AutoMapper;
 using SEP_JMS.Common.Logger;
 using SEP_JMS.Repository.IRepositories;
+using SEP_JMS.Model.Api.Response;
 
 namespace SEP_JMS.Service.Services
 {
@@ -44,6 +45,24 @@ namespace SEP_JMS.Service.Services
         public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model)
         {
             return await companyRepository.GetCompanies(model);
+        }
+        public async Task<PagingModel<Tuple<Company, User, PriceGroup>>> GetCompanies(CompanyAdminFilterRequestModel model)
+        {
+            return await companyRepository.GetCompanies(model);
+        }
+        public async Task<Company?> GetCompanyById(Guid id)
+        {
+            return await companyRepository.GetCompanyById(id);
+        }
+        public async Task<CompanyDisplayModel> CreateCompany(CompanyCreateRequestModel model)
+        {
+            var companyModel = mapper.Map<Company>(model);
+            await companyRepository.AddCompany(companyModel);
+            return mapper.Map<CompanyDisplayModel>(companyModel);
+        }
+        public async Task UpdateCompany(Guid id, CompanyUpdateRequestModel model)
+        {
+            await companyRepository.UpdateCompany(id, model);
         }
     }
 }

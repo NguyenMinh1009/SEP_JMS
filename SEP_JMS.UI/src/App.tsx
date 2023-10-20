@@ -27,7 +27,7 @@ import Home from "./pages/Home";
 
 import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
 // import SubTaskDetail from "./pages/SubTaskDetail";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import UsersPage from "./pages/Users";
 import CreateCompany from "./pages/CreateCompany";

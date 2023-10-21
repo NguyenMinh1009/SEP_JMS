@@ -19,11 +19,12 @@ import { useIsFirstRender } from "../hooks/useIsFirstRender";
 
 interface ITaskPreview {
   sidebar?: boolean;
+  isCorrelationJobType: number;
 }
 
 const pageSize = 10;
 
-const InternalTaskPreview = ({ sidebar }: ITaskPreview) => {
+const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = React.useState<number>(0);
@@ -81,27 +82,53 @@ const InternalTaskPreview = ({ sidebar }: ITaskPreview) => {
             className="task-preview-container max-h-[calc(100vh-360px)] overflow-y-auto rounded-sm shadow-md "
           >
             <TableContainer>
-              <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                <EnhancedTableHead correlationJobType={CorrelationJobType.Job} />
-                <TableBody>
-                  {jobs
-                    .filter(job => job.internalJobStatus !== JobStatusType.Completed)
-                    ?.map((row: any, index: number) => {
-                      return (
-                        <TaskPreviewTableRow
-                          visibleType={VisibleType.Internal}
-                          correlationJobType={CorrelationJobType.Job}
-                          key={JSON.stringify(row)}
-                          index={index}
-                          row={row}
-                          page={page}
-                          pageSize={pageSize}
-                          removeTaskPreview={removeTaskPreview}
-                        />
-                      );
-                    })}
-                </TableBody>
-              </Table>
+              {/* --Job-- */}
+              {isCorrelationJobType === CorrelationJobType.Job ? (
+                <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                  <EnhancedTableHead correlationJobType={CorrelationJobType.Job} />
+                  <TableBody>
+                    {jobs
+                      .filter(job => job.internalJobStatus !== JobStatusType.Completed)
+                      ?.map((row: any, index: number) => {
+                        return (
+                          <TaskPreviewTableRow
+                            visibleType={VisibleType.Internal}
+                            correlationJobType={CorrelationJobType.Job}
+                            key={JSON.stringify(row)}
+                            index={index}
+                            row={row}
+                            page={page}
+                            pageSize={pageSize}
+                            removeTaskPreview={removeTaskPreview}
+                          />
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              ) : (
+                // ----Project----
+                <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                  <EnhancedTableHead correlationJobType={CorrelationJobType.Project} />
+                  <TableBody>
+                    {jobs
+                      .filter(job => job.internalJobStatus !== JobStatusType.Completed)
+                      ?.map((row: any, index: number) => {
+                        return (
+                          <TaskPreviewTableRow
+                            visibleType={VisibleType.Internal}
+                            correlationJobType={CorrelationJobType.Project}
+                            key={JSON.stringify(row)}
+                            index={index}
+                            row={row}
+                            page={page}
+                            pageSize={pageSize}
+                            removeTaskPreview={removeTaskPreview}
+                          />
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              )}
             </TableContainer>
           </Box>
           <div className="mx-auto mt-8 flex items-center justify-center">

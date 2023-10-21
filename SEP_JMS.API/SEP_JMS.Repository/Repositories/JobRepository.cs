@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SEP_JMS.Common;
 using SEP_JMS.Common.Converters;
 using SEP_JMS.Model;
+using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Request.Job;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model.Models;
@@ -603,6 +604,129 @@ namespace SEP_JMS.Repository.Repositories
                 .Select(data => Tuple.Create(data.job, data.company))
                 .AsNoTracking()
                 .ToListAsync();
+        }
+        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(InternalJobFilterRequestModel model)
+        {
+            var userId = ApiContext.Current.UserId;
+            var role = ApiContext.Current.Role;
+            var query = from job in Context.Jobs
+
+                        join createdUser in Context.Users
+                        on job.CreatedBy equals createdUser.UserId
+                        into createdUsers
+                        from createdUser in createdUsers.DefaultIfEmpty()
+
+                        join customer in Context.Users
+                        on job.CustomerId equals customer.UserId
+                        into customers
+                        from customer in customers.DefaultIfEmpty()
+
+                        join account in Context.Users
+                        on job.AccountId equals account.UserId
+                        into accounts
+                        from account in accounts.DefaultIfEmpty()
+
+                        join designer in Context.Users
+                        on job.DesignerId equals designer.UserId
+                        into designers
+                        from designer in designers.DefaultIfEmpty()
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+                        into companies
+                        from company in companies.DefaultIfEmpty()
+
+                        where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
+                        select new { job, createdUser, customer, account, designer, company };
+            if (model.CorrelationType != null)
+            {
+                query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
+            }
+
+            if (!string.IsNullOrEmpty(model.SearchText))
+            {
+                query = from data in query
+                        where data.job.Title.ToLower().Contains(model.SearchText.ToLower())
+                        select data;
+            }
+            if (model.InternalJobStatus != null)
+            {
+                query = from data in query
+                        where data.job.InternalJobStatus == model.InternalJobStatus
+                        select data;
+            }
+            else
+            {
+                query = from data in query
+                        where data.job.JobStatus != JobStatus.Completed
+                        select data;
+            }
+            if (model.AccountId != null)
+            {
+                query = from data in query
+                        where data.job.AccountId == model.AccountId
+                        select data;
+            }
+            if (model.CompanyId != null)
+            {
+                query = from data in query
+                        where data.company.CompanyId == model.CompanyId
+                        select data;
+            }
+            if (model.DesignerId != null)
+            {
+                query = from data in query
+                        where data.job.DesignerId == model.DesignerId
+                        select data;
+            }
+            if (model.From != null)
+            {
+                query = from data in query
+                        where data.job.CreatedTime >= model.From
+                        select data;
+            }
+            if (model.To != null)
+            {
+                query = from data in query
+                        where data.job.CreatedTime <= model.To
+                        select data;
+            }
+            if (model.Priority != null)
+            {
+                query = from data in query
+                        where data.job.Priority == model.Priority
+                        select data;
+            }
+            if (model.CustomerId.HasValue)
+            {
+                query = from data in query
+                        where data.job.CustomerId == model.CustomerId.Value
+                        select data;
+            }
+            if (model.CreatedBy.HasValue)
+            {
+                query = from data in query
+                        where data.job.CreatedBy == model.CreatedBy.Value
+                        select data;
+            }
+            if (model.JobType != Guid.Empty)
+            {
+                query = from data in query
+                        where data.job.JobType == model.JobType
+                        select data;
+            }
+            var jobs = await query.OrderByDescending(data => data.job.CreatedTime)
+                            .Skip((model.PageIndex - 1) * model.PageSize)
+                            .Take(model.PageSize)
+                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company))
+                            .AsNoTracking()
+                            .ToListAsync();
+            var count = await query.CountAsync();
+            return new PagingModel<Tuple<Job, User, User, User, User, Company>>
+            {
+                Items = jobs,
+                Count = count
+            };
         }
 
         public async Task<List<Tuple<Company, long, int>>> GetJobStatistics(StatisticsJobRequest model, JobStatus? jobStatus)

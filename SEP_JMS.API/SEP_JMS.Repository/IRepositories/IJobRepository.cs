@@ -3,6 +3,7 @@ using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model.Models.ExtensionModels;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model;
+using SEP_JMS.Model.Api.Request;
 
 namespace SEP_JMS.Repository.IRepositories
 {
@@ -39,5 +40,6 @@ namespace SEP_JMS.Repository.IRepositories
         public Task<List<Tuple<Job, Company>>> GetAllJobsForExport(ExportJobRequest model);
 
         public Task<List<Tuple<Company, long, int>>> GetJobStatistics(StatisticsJobRequest model, JobStatus? jobStatus);
+        public Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(InternalJobFilterRequestModel model);
     }
 }

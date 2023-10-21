@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SEP_JMS.Model.Enums.System;
+using SEP_JMS.Common;
 
 namespace SEP_JMS.Service.Services
 {
@@ -45,6 +47,50 @@ namespace SEP_JMS.Service.Services
                 Items = result,
                 Count = internalJobsInfo.Count
             };
+        }
+
+        public async Task<InternalJobDetailsDisplayModel?> GetInternalJob(Guid internalJobId)
+        {
+            var rs = await jobRepository.GetJob(internalJobId);
+            if (rs == null) return null;
+
+            var internalJobDisplay = mapper.Map<InternalJobDetailsDisplayModel>(rs.Item1);
+            internalJobDisplay.CreatedBy = mapper.Map<UserCommonDisplayModel>(rs.Item2);
+            internalJobDisplay.Customer = mapper.Map<CustomerBasicDisplayModel>(rs.Item3);
+            internalJobDisplay.Account = mapper.Map<EmployeeBasicDisplayModel>(rs.Item4);
+            internalJobDisplay.Designer = mapper.Map<EmployeeBasicDisplayModel>(rs.Item5);
+            internalJobDisplay.Company = mapper.Map<CompanyDisplayModel>(rs.Item6);
+
+            return internalJobDisplay;
+        }
+
+        public async Task<bool> UpdateInternalJobStatus(Guid internalJobId, InternalJobStatus internalJobStatus)
+        {
+            var job = await jobRepository.GetBasicJob(internalJobId);
+            if (job == null) return false;
+
+            var currentStatus = job.InternalJobStatus;
+
+            switch (ApiContext.Current.Role)
+            {
+                case RoleType.Admin:
+                    break;
+
+                case RoleType.Designer:
+                    if (internalJobStatus == InternalJobStatus.Completed || internalJobStatus == InternalJobStatus.Pending) return false;
+                    if (currentStatus == InternalJobStatus.Completed || currentStatus == InternalJobStatus.Pending) return false;
+                    break;
+
+                case RoleType.Account:
+                case RoleType.Customer:
+                    if (currentStatus == InternalJobStatus.Completed) return false;
+                    break;
+
+                default: return false;
+            }
+
+            await jobRepository.UpdateInternalJobStatus(internalJobId, internalJobStatus);
+            return true;
         }
     }
 }

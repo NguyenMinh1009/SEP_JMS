@@ -5,8 +5,10 @@ using SEP_JMS.Common.Constants;
 using SEP_JMS.Common.Logger;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Request.InternalJob;
 using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Service.IServices;
+using System.Net;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -40,6 +42,41 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when getting all internal jobs. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize(Policy = PolicyConstants.Internal)]
+        [HttpGet("{jobId}")]
+        public async Task<ActionResult<InternalJobDetailsDisplayModel>> GetInternalJob([FromRoute] Guid jobId)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get the internal job {jobId}.");
+                var internalJob = await internalJobService.GetInternalJob(jobId);
+                if (internalJob == null) return StatusCode(404);
+                return internalJob;
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when getting the internal job {jobId}. Error: {ex}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [Authorize(Policy = PolicyConstants.Internal)]
+        [HttpPut("{jobId}/status")]
+        public async Task<IActionResult> UpdateInternalJobStatus([FromRoute] Guid jobId, [FromBody] InternalJobStatusUpdateRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update internal job status {model.InternalJobStatus}.");
+                var success = await internalJobService.UpdateInternalJobStatus(jobId, model.InternalJobStatus);
+                return success ? Ok() : BadRequest();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when updating internal job status {model.InternalJobStatus}. Error: {ex}");
                 return StatusCode(500);
             }
         }

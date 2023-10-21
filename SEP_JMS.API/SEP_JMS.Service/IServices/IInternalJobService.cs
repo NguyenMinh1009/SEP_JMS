@@ -6,11 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SEP_JMS.Model.Enums.System;
 
 namespace SEP_JMS.Service.IServices
 {
     public interface IInternalJobService
     {
         public Task<PagingModel<InternalJobDetailsDisplayModel>> GetAllInternalJobs(InternalJobFilterRequestModel model);
+
+        public Task<InternalJobDetailsDisplayModel?> GetInternalJob(Guid internalJobId);
+
+        public Task<bool> UpdateInternalJobStatus(Guid internalJobId, InternalJobStatus internalJobStatus);
     }
 }

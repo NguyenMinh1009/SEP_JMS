@@ -27,6 +27,7 @@ namespace SEP_JMS.API.Extensions
                 .AddScoped<IPriceService, PriceService>()
                 .AddScoped<ICompanyService, CompanyService>()
                 .AddScoped<IJobService, JobService>()
+                .AddScoped<IInternalJobService, InternalJobService>()
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IJobTypeService, JobTypeService>()
                 .AddScoped<INotificationRepository, NotificationRepository>()

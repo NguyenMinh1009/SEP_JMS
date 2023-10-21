@@ -27,9 +27,15 @@ import Home from "./pages/Home";
 
 import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
 // import SubTaskDetail from "./pages/SubTaskDetail";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import UsersPage from "./pages/Users";
+import CreateCompany from "./pages/CreateCompany";
+import CreateCustomer from "./pages/CreateCustomer";
+import CreateEmployee from "./pages/CreateEmployee";
+import EditCompany from "./pages/EditCompany";
+import EditCustomer from "./pages/EditCustomer";
+import EditEmployee from "./pages/EditEmployee";
 
 const theme = createTheme(
   {
@@ -160,6 +166,27 @@ function App() {
                     <>
                       <Route path={`/${PathString.USERS}/*`}>
                         <Route index element={<UsersPage />} />
+                        <Route path={`${PathString.CREATE_COMPANY}`} element={<CreateCompany />} />
+                        <Route
+                          path={`${PathString.CREATE_CUSTOMER}`}
+                          element={<CreateCustomer />}
+                        />
+                        <Route
+                          path={`${PathString.CREATE_EMPLOYEE}`}
+                          element={<CreateEmployee />}
+                        />
+                        <Route
+                          path={`${PathString.KHACH_HANG}/:userId/${PathString.CHINH_SUA}`}
+                          element={<EditCustomer />}
+                        />
+                        <Route
+                          path={`${PathString.COMPANY}/:companyId/${PathString.CHINH_SUA}`}
+                          element={<EditCompany />}
+                        />
+                        <Route
+                          path={`${PathString.NHAN_VIEN}/:userId/${PathString.CHINH_SUA}`}
+                          element={<EditEmployee />}
+                        />
                       </Route>
                       <Route
                         path={`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`}

@@ -15,4 +15,11 @@ namespace SEP_JMS.Mapper.EmployeeProfiles
             CreateMap<Model.Models.User, AccountDetailsDisplayModel>();
         }
     }
+    public class UserModelToEmployeeBasicDisplayModelMapperProfile : Profile
+    {
+        public UserModelToEmployeeBasicDisplayModelMapperProfile()
+        {
+            CreateMap<Model.Models.User, EmployeeBasicDisplayModel>();
+        }
+    }
 }

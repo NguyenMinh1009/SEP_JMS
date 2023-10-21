@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SEP_JMS.Model.Api.Response;
 
 namespace SEP_JMS.Service.Services
 {
@@ -85,14 +86,36 @@ namespace SEP_JMS.Service.Services
             return await commentRepository.GetCommentByCorrelationJobId(jobId, commentId, visible);
         }
 
-        public Task<PagingModel<CommentDetailsDisplayModel>?> GetComments(CommentFilterRequestModel model)
+        public async Task<PagingModel<CommentDetailsDisplayModel>?> GetComments(CommentFilterRequestModel model)
         {
-            throw new NotImplementedException();
+            var rs = await GetCorelationJobUsers(model.JobId, model.VisibleType);
+            if (!rs.Item1.Any()) return null;
+
+            var commentsInfo = await commentRepository.GetComments(model);
+            var comments = new List<CommentDetailsDisplayModel>();
+            foreach (var commentInfo in commentsInfo.Items)
+            {
+                var comment = mapper.Map<CommentDetailsDisplayModel>(commentInfo.Item1);
+                comment.User = mapper.Map<UserCommonDisplayModel>(commentInfo.Item2);
+                if (commentInfo.Item3 != null && commentInfo.Item3.CommentStatus == CommentStatus.Visible)
+                {
+                    var reply = mapper.Map<ReplyCommentDetailsDisplayModel>(commentInfo.Item3);
+                    reply.User = mapper.Map<UserCommonDisplayModel>(commentInfo.Item4);
+                    comment.ReplyComment = reply;
+                }
+                comments.Add(comment);
+            }
+
+            return new PagingModel<CommentDetailsDisplayModel>
+            {
+                Items = comments,
+                Count = commentsInfo.Count
+            };
         }
 
-        public Task HideComment(Guid commentId, CommentStatus status)
+        public async Task HideComment(Guid commentId, CommentStatus status)
         {
-            throw new NotImplementedException();
+            await commentRepository.HideComment(commentId, status);
         }
         private async Task<Tuple<List<Guid>, JobStatus?>> GetCorelationJobUsers(Guid jobId, VisibleType visibleType)
         {

@@ -39,6 +39,7 @@ export const getTaskDetails = async (
       if (mime.getType(item.fileName)?.includes("image")) imgList.push(item);
     });
     setImagesLoading(true);
+    setImgFiles([]);
     for (const img of imgList) {
       const response = await AlwayxInstance.post(
         imgEndPoint,

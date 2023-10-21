@@ -66,9 +66,11 @@ const Jobs: React.FC<IJobs> = ({ isInternal, isCorrelationJobType }) => {
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
           {isInternal ? (
-            // {isCorrelationJobType === CorrelationJobType.Job ? }
-            // <InternalTaskPreview />
-            ""
+            isCorrelationJobType === CorrelationJobType.Job ? (
+              <InternalTaskPreview isCorrelationJobType={CorrelationJobType.Job} />
+            ) : (
+              <InternalTaskPreview isCorrelationJobType={CorrelationJobType.Project} />
+            )
           ) : isCorrelationJobType === CorrelationJobType.Job ? (
             <TaskPreview isCorrelationJobType={CorrelationJobType.Job} />
           ) : (

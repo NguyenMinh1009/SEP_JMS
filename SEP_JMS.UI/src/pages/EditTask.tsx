@@ -342,11 +342,19 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
       files.forEach(file => {
         editRequirementsFormData.append("files", file);
       });
-      return AlwayxInstance.post(
-        `job/${taskId}/requirement`,
-        editRequirementsFormData,
-        requirementConfig
-      );
+      if (subTaskId === undefined) {
+        return AlwayxInstance.post(
+          `job/${taskId}/requirement`,
+          editRequirementsFormData,
+          requirementConfig
+        );
+      } else {
+        return AlwayxInstance.post(
+          `job/${subTaskId}/requirement`,
+          editRequirementsFormData,
+          requirementConfig
+        );
+      }
     }
     return Promise.resolve(null);
   };
@@ -393,10 +401,10 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
     setButtonLoading(true);
     Promise.all([
       editBasicInfoPromise(),
-      // editRequirementsPromise(),
-      // editFinalFilePromise(),
-      editStatusForDesignerPromise()
-      // editPreviewFilePromise()
+      editRequirementsPromise(),
+      editFinalFilePromise(),
+      editStatusForDesignerPromise(),
+      editPreviewFilePromise()
     ])
       .then(() => {
         {
@@ -452,24 +460,24 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
     setOldFilesFromApi(requirementList ?? []);
     if (requirementList && requirementList.length > 0) {
       for (const requirement of requirementList) {
-        let response: any;
-        subTaskId === undefined
-          ? await AlwayxInstance.post(
-              `file/job/${taskId}`,
-              {
-                fileName: requirement.fileName,
-                postsType: PostType.post
-              },
-              { responseType: "blob" }
-            )
-          : await AlwayxInstance.post(
-              `file/job/${subTaskId}`,
-              {
-                fileName: requirement.fileName,
-                postsType: PostType.post
-              },
-              { responseType: "blob" }
-            );
+        let response: any =
+          subTaskId === undefined
+            ? await AlwayxInstance.post(
+                `file/job/${taskId}`,
+                {
+                  fileName: requirement.fileName,
+                  postsType: PostType.post
+                },
+                { responseType: "blob" }
+              )
+            : await AlwayxInstance.post(
+                `file/job/${subTaskId}`,
+                {
+                  fileName: requirement.fileName,
+                  postsType: PostType.post
+                },
+                { responseType: "blob" }
+              );
         const newFile = new File([response.data], requirement.originalName, {
           type: response.data.type
         });

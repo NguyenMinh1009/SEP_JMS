@@ -8,7 +8,7 @@ import {
   Tooltip
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import AlwayxInstance from "../api/AxiosInstance";
+import APIClientInstance from "../api/AxiosInstance";
 import RequireText from "../components/common/RequireText";
 import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
@@ -72,7 +72,7 @@ const CreateCustomer = () => {
   };
 
   const getCompanies = async () => {
-    const companiesRes = await AlwayxInstance.post("company/all", {
+    const companiesRes = await APIClientInstance.post("company/all", {
       pageIndex: 1,
       pageSize: 2147483647
     });
@@ -86,7 +86,7 @@ const CreateCustomer = () => {
     const validateSuccess = await validateInput();
     if (!validateSuccess) return;
     setButtonLoading(true);
-    AlwayxInstance.post("admin/add/customer", {
+    APIClientInstance.post("admin/add/customer", {
       username: username.trim(),
       password: password.trim(),
       fullname: fullname.trim(),
@@ -141,7 +141,7 @@ const CreateCustomer = () => {
 
     const {
       data: { isValid }
-    } = await AlwayxInstance.post("admin/username/validate", {
+    } = await APIClientInstance.post("admin/username/validate", {
       username: username.trim()
     });
 

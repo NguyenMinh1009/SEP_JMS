@@ -1,6 +1,6 @@
 import { Checkbox, CircularProgress, Divider, MenuItem, Select, Tooltip } from "@mui/material";
 import { useEffect, useState, useMemo } from "react";
-import AlwayxInstance from "../api/AxiosInstance";
+import APIClientInstance from "../api/AxiosInstance";
 import RequireText from "../components/common/RequireText";
 import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
@@ -23,6 +23,7 @@ import { CreateRole } from "../enums/createRole";
 import { UsersPreviewData } from "../interface/usersPreviewData";
 import useTitle from "../hooks/store/useCurrentTitle";
 import { AccountStatusType } from "../enums/accountStatusType";
+import ASwitchButton from "../components/common/ASwitchButton";
 
 const EditEmployee = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -74,7 +75,7 @@ const EditEmployee = () => {
   }, []);
 
   const getEmployeeInfo = async () => {
-    const { data: result } = await AlwayxInstance.get(`admin/getuser/${userId}`);
+    const { data: result } = await APIClientInstance.get(`admin/getuser/${userId}`);
     setLoading(false);
 
     const currentEmployee: UsersPreviewData = result;
@@ -111,7 +112,7 @@ const EditEmployee = () => {
 
     if (!validateSuccess) return;
     setButtonLoading(true);
-    AlwayxInstance.put(`admin/update/employee/${userId}`, {
+    APIClientInstance.put(`admin/update/employee/${userId}`, {
       username: username.trim(),
       fullname: fullname.trim(),
       password: passwordChecked ? password.trim() : null,
@@ -169,7 +170,7 @@ const EditEmployee = () => {
     let isValid: boolean = true;
     if (username !== initUsername) {
       isValid = (
-        await AlwayxInstance.post("admin/username/validate", {
+        await APIClientInstance.post("admin/username/validate", {
           username: username.trim()
         })
       ).data.isValid;
@@ -187,8 +188,7 @@ const EditEmployee = () => {
       <div className="mb-6 flex items-center gap-6">
         <p className="text-primary text-base">Chỉnh sửa thông tin nhân viên</p>
         <div className="flex items-center">
-          <Checkbox
-            size="small"
+          <ASwitchButton
             checked={passwordChecked}
             onChange={handleChangePasswordCheckBox}
             inputProps={{ "aria-label": "controlled" }}

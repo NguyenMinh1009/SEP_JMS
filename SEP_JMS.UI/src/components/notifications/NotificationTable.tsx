@@ -23,7 +23,7 @@ interface INotifyPreview {
   searchValue: string;
 }
 
-const pageSize = 2;
+const pageSize = 10;
 
 const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue }) => {
   const [notifications, setNotifications] = useState<any[]>([]);

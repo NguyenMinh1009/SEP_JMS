@@ -1,6 +1,6 @@
 import { CircularProgress, Divider, MenuItem, Select, Tooltip } from "@mui/material";
 import { useEffect, useState, useMemo } from "react";
-import AlwayxInstance from "../api/AxiosInstance";
+import APIClientInstance from "../api/AxiosInstance";
 import RequireText from "../components/common/RequireText";
 import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
@@ -80,7 +80,7 @@ const CreateEmployee = () => {
 
     if (!validateSuccess) return;
     setButtonLoading(true);
-    AlwayxInstance.post("admin/add/employee", {
+    APIClientInstance.post("admin/add/employee", {
       username: username.trim(),
       password: password.trim(),
       fullname: fullname.trim(),
@@ -134,7 +134,7 @@ const CreateEmployee = () => {
 
     const {
       data: { isValid }
-    } = await AlwayxInstance.post("admin/username/validate", {
+    } = await APIClientInstance.post("admin/username/validate", {
       username: username.trim()
     });
 

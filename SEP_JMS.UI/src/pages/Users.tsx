@@ -11,8 +11,8 @@ import { PathString } from "../enums/MapRouteToBreadCrumb";
 import useCurrentSelectedRole from "../hooks/store/useCurrentSelectedRole";
 import CompanyPreview from "../components/company/CompanyPreview";
 
-interface IFinishedTasks {}
-const UsersPage: React.FC<IFinishedTasks> = () => {
+interface IUsersManageProps {}
+const UsersPage: React.FC<IUsersManageProps> = () => {
   const navigate = useNavigate();
   const { selectedRole: selectedCreateRole, setRole } = useCurrentSelectedRole();
   const [selectedRole, setSelectedRole] = useState<CreateRole>(CreateRole.CUSTOMER);

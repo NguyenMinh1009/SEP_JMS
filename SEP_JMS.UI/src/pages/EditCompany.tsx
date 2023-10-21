@@ -1,6 +1,6 @@
 import { Autocomplete, CircularProgress, Divider, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import AlwayxInstance from "../api/AxiosInstance";
+import APIClientInstance from "../api/AxiosInstance";
 import { Role } from "../enums/role";
 import { UsersPreviewData } from "../interface/usersPreviewData";
 import RequireText from "../components/common/RequireText";
@@ -34,7 +34,7 @@ const EditCompany = () => {
   }, []);
 
   const getAccounts = async () => {
-    const accountRes = await AlwayxInstance.post("admin/users/all", {
+    const accountRes = await APIClientInstance.post("admin/users/all", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: "",
@@ -47,13 +47,13 @@ const EditCompany = () => {
   };
 
   const getGroupIdPrice = async () => {
-    const priceGroupRes = await AlwayxInstance.post("price/all", {});
+    const priceGroupRes = await APIClientInstance.post("price/all", {});
     if (priceGroupRes.data) setPriceGroups(priceGroupRes.data.items);
   };
 
   const getCompanyInfo = async () => {
     try {
-      const companyRes = await AlwayxInstance.get(`admin/company/${companyId}`);
+      const companyRes = await APIClientInstance.get(`admin/company/${companyId}`);
       const { account, company, priceGroup } = companyRes.data as CompanyResponseType;
       setCompanyName(company.companyName);
       companyTitle.setContent(company.companyName);
@@ -72,7 +72,7 @@ const EditCompany = () => {
 
   const handleEditCompany = () => {
     setButtonLoading(true);
-    AlwayxInstance.put(`admin/update/company/${companyId}`, {
+    APIClientInstance.put(`admin/update/company/${companyId}`, {
       companyName: companyName,
       companyAddress: companyAddress,
       description: description,

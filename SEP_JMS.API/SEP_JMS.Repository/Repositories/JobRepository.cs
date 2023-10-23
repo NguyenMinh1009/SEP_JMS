@@ -709,7 +709,7 @@ namespace SEP_JMS.Repository.Repositories
                         where data.job.CreatedBy == model.CreatedBy.Value
                         select data;
             }
-            if (model.JobType != Guid.Empty)
+            if (model.JobType != null && model.JobType != Guid.Empty)
             {
                 query = from data in query
                         where data.job.JobType == model.JobType

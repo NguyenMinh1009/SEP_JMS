@@ -28,7 +28,7 @@ namespace SEP_JMS.Model.Api.Request
 
         public Guid? CreatedBy { get; set; }
 
-        [EnumDataType(typeof(JobType))]
+        // [EnumDataType(typeof(JobType))]
         public Guid? JobType { get; set; }
 
         public Guid? AccountId { get; set; }

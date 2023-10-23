@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import { CircularProgress } from "@mui/material";
 
 import Box from "@mui/material/Box";
@@ -29,7 +29,7 @@ const TaskPreview: React.FC<IUserPreview> = ({ role, searchValue }) => {
 
   const getUsers = async () => {
     setLoading(true);
-    await AlwayxInstance.post("admin/users/all", {
+    await APIClientInstance.post("admin/users/all", {
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchValue,

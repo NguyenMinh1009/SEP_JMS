@@ -23,6 +23,7 @@ namespace SEP_JMS.Mapper.JobProfiles
                 .ForMember(des => des.Customer, opt => opt.Ignore())
                 .ForMember(des => des.Designer, opt => opt.Ignore())
                 .ForMember(des => des.CreatedBy, opt => opt.Ignore())
+                .ForMember(des => des.JobType, opt => opt.Ignore())
                 .ForMember(des => des.Company, opt => opt.Ignore());
         }
     }

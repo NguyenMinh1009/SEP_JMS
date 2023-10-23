@@ -56,24 +56,32 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOn
                       {/*label prioritize task */}
                       <TaskPropertiesLabel type="prioritizeTask" info={task.priority} />
                       {/*label status task */}
-                      <TaskPropertiesLabel type="statusTask" info={task.jobStatus} />
+                      {visibleType === VisibleType.Internal ? (
+                        <TaskPropertiesLabel
+                          type="internalStatusTask"
+                          info={task.internalJobStatus}
+                        />
+                      ) : (
+                        <TaskPropertiesLabel type="statusTask" info={task.jobStatus} />
+                      )}
                       {/*label assigned person  */}
                       <TaskPropertiesLabel type="assignedPerson" info={task.designer.fullname} />
                     </div>
                   </div>
                   {/*actions */}
-                  {task.jobStatus === JobStatusType.Completed ? (
-                    finishedOnly ? (
-                      <DropdownAction
-                        visibleType={visibleType}
-                        finishedOnly
-                        subTaskId={task.jobId}
-                      />
-                    ) : (
-                      <DropdownAction visibleType={visibleType} subTaskId={task.jobId} />
-                    )
-                  ) : finishedOnly ? (
-                    <DropdownAction visibleType={visibleType} subTaskId={task.jobId} finishedOnly />
+                  {finishedOnly ? (
+                    <DropdownAction
+                      visibleType={visibleType}
+                      subTaskId={task.jobId}
+                      finishedOnly
+                      removeSubTask={removeSubTask}
+                    />
+                  ) : task.jobStatus === JobStatusType.Completed ? (
+                    <DropdownAction
+                      visibleType={visibleType}
+                      subTaskId={task.jobId}
+                      removeSubTask={removeSubTask}
+                    />
                   ) : (
                     <DropdownAction
                       visibleType={visibleType}
@@ -81,8 +89,6 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOn
                       removeSubTask={removeSubTask}
                     />
                   )}
-
-                  {/* ---------- */}
                 </div>
               </div>
             </div>

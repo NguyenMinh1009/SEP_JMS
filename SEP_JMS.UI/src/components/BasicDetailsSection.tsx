@@ -55,14 +55,9 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
   const currentPerson = useCurrentPerson();
 
   const handleChangeInternalStatus = (status: InternalJobStatusType) => {
-    AlwayxInstance.put(
-      correlationJobType === CorrelationJobType.Job
-        ? `internal/job/${taskId}/status`
-        : `internal/project/${taskId}/status`,
-      {
-        internalJobStatus: status
-      }
-    )
+    AlwayxInstance.put(`internal/job/${taskId}/status`, {
+      internalJobStatus: status
+    })
       .then(() => {
         setSelectedStatus(status);
         if (status === InternalJobStatusType.Completed) {

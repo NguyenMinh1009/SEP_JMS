@@ -40,6 +40,6 @@ namespace SEP_JMS.Repository.IRepositories
         public Task<List<Tuple<Job, Company>>> GetAllJobsForExport(ExportJobRequest model);
 
         public Task<List<Tuple<Company, long, int>>> GetJobStatistics(StatisticsJobRequest model, JobStatus? jobStatus);
-        public Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(InternalJobFilterRequestModel model);
+        public Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(InternalJobFilterRequestModel model);
     }
 }

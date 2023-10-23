@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Common;
+using SEP_JMS.Model.Api.Response.JobType;
 
 namespace SEP_JMS.Service.Services
 {
@@ -39,6 +40,7 @@ namespace SEP_JMS.Service.Services
                 internalJobDisplay.Account = mapper.Map<EmployeeBasicDisplayModel>(internalJobInfo.Item4);
                 internalJobDisplay.Designer = mapper.Map<EmployeeBasicDisplayModel>(internalJobInfo.Item5);
                 internalJobDisplay.Company = mapper.Map<CompanyDisplayModel>(internalJobInfo.Item6);
+                internalJobDisplay.JobType = mapper.Map<JobTypeDisplayModel>(internalJobInfo.Item7);
 
                 result.Add(internalJobDisplay);
             }
@@ -60,6 +62,7 @@ namespace SEP_JMS.Service.Services
             internalJobDisplay.Account = mapper.Map<EmployeeBasicDisplayModel>(rs.Item4);
             internalJobDisplay.Designer = mapper.Map<EmployeeBasicDisplayModel>(rs.Item5);
             internalJobDisplay.Company = mapper.Map<CompanyDisplayModel>(rs.Item6);
+            internalJobDisplay.JobType = mapper.Map<JobTypeDisplayModel>(rs.Item7);
 
             return internalJobDisplay;
         }

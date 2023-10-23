@@ -39,7 +39,11 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
       pageIndex: page,
       pageSize: pageSize,
       searchText: "",
-      ...filterInfoController.content
+      ...filterInfoController.content,
+      correlationType:
+        isCorrelationJobType === CorrelationJobType.Job
+          ? CorrelationJobType.Job
+          : CorrelationJobType.Project
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -71,7 +75,7 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
         getJobs();
       }
     }
-  }, [filterInfoController.content]);
+  }, [filterInfoController.content, isCorrelationJobType]);
 
   return !isLoading ? (
     <div>
@@ -135,8 +139,10 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
             <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
           </div>
         </>
-      ) : (
+      ) : isCorrelationJobType === CorrelationJobType.Job ? (
         <div>Chưa có công việc để hiển thị</div>
+      ) : (
+        <div>Chưa có dự án để hiển thị</div>
       )}
     </div>
   ) : (

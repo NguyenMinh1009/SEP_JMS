@@ -36,6 +36,7 @@ import CreateEmployee from "./pages/CreateEmployee";
 import EditCompany from "./pages/EditCompany";
 import EditCustomer from "./pages/EditCustomer";
 import EditEmployee from "./pages/EditEmployee";
+import InternalTasksDetail from "./components/InternalTaskDetail";
 
 const theme = createTheme(
   {
@@ -201,16 +202,66 @@ function App() {
                     </>
                   )}
                   <Route path={`/${PathString.THONG_BAO}`} element={<Notifications />} />
-                  {/* noi-bo */}
+                  {/* noi-bo-hang-ngay */}
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
                     <Route path={`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}*`}>
                       <Route
                         index
                         element={<Jobs isInternal isCorrelationJobType={CorrelationJobType.Job} />}
                       />
-                      {/* <Route path=":taskId" element={<InternalTasksDetail />} /> */}
+                      <Route
+                        path=":taskId"
+                        element={
+                          <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Job} />
+                        }
+                      />
                       <Route
                         path={`:taskId/${PathString.CHINH_SUA}`}
+                        element={
+                          <EditTask isCorrelationJobType={CorrelationJobType.Job} isInternal />
+                        }
+                      />
+                    </Route>
+                  )}
+                  {/* noi-bo-du-an */}
+                  {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
+                    <Route path={`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}*`}>
+                      <Route
+                        index
+                        element={
+                          <Jobs isInternal isCorrelationJobType={CorrelationJobType.Project} />
+                        }
+                      />
+                      <Route
+                        path=":taskId"
+                        element={
+                          <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Project} />
+                        }
+                      />
+                      <Route
+                        path={`:taskId/${PathString.CHINH_SUA}`}
+                        element={
+                          <EditTask isCorrelationJobType={CorrelationJobType.Project} isInternal />
+                        }
+                      />
+                      <Route
+                        path={`:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`}
+                        element={
+                          <Home
+                            isCorrelationJobType={CorrelationJobType.Job}
+                            isParentId
+                            isInternal
+                          />
+                        }
+                      />
+                      <Route
+                        path=":taskId/:subTaskId"
+                        element={
+                          <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Job} />
+                        }
+                      />
+                      <Route
+                        path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
                         element={<EditTask isCorrelationJobType={CorrelationJobType.Job} />}
                       />
                     </Route>

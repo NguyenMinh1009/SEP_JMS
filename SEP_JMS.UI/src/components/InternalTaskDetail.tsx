@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import CommentSection from "../components/CommentSection";
 import { MdOutlineExpandCircleDown } from "react-icons/md";
+import { IComments } from "../interface/comment";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { useNavigate, useParams } from "react-router-dom";
 import AlwayxInstance from "../api/AxiosInstance";
@@ -15,29 +17,26 @@ import { getTaskDetails } from "../utils/getTaskDetails";
 import { useInView } from "react-intersection-observer";
 import TaskDetailsDescription from "./TaskDetailsDescription";
 import useSnakeBar from "../hooks/store/useSnakeBar";
+import { InternalJobStatusType } from "../enums/internalJobStatusType";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import { cn } from "../utils/className";
 import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
 import { FileResponse } from "../interface/fileResponse";
 import CustomDialog from "./common/CustomDialog";
-import CommentSection from "../components/CommentSection";
-import { IComments } from "../interface/comment";
-import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
+import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
 
 interface ITaskDetail {
-  finishOnly?: boolean;
   isCorrelationJobType: number;
 }
 
-const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }) => {
+const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) => {
   const [jobDetail, setJobDetail] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isOpenDialog, setOpenDialog] = useState<boolean>(false);
   const [isImagesLoading, setImagesLoading] = useState<boolean>(false);
   const [isCommentLoading, setCommentLoading] = useState<boolean>(false);
   const [imgFiles, setImgFiles] = useState<File[]>([]);
-  const [finalFiles, setFinalFiles] = useState<File[]>([]);
   const [docFiles, setDocFiles] = useState<FileResponse[]>([]);
   const [comments, setComments] = useState<{
     items: IComments[];
@@ -63,11 +62,14 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
     AlwayxInstance.post("comment/all", {
       pageIndex: 1,
       pageSize: 5,
-      jobId: subTaskId !== undefined ? subTaskId : taskId,
+      jobId: taskId,
       from: null,
       to: to,
-      correlationJobType: CorrelationJobType.Job,
-      visibleType: VisibleType.Public
+      correlationJobType:
+        isCorrelationJobType === CorrelationJobType.Job
+          ? CorrelationJobType.Job
+          : CorrelationJobType.Project,
+      visibleType: VisibleType.Internal
     })
       .then(res => {
         const data = res.data;
@@ -112,43 +114,23 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
     setComments(commentsClone);
   };
 
+  const handleCloseDialog = () => setOpenDialog(false);
+
   const handleEdit = () => {
     if (subTaskId === undefined) {
-      // xử lý job và project
-      if (finishOnly) {
-        {
-          isCorrelationJobType === CorrelationJobType.Job
-            ? navigate(
-                `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
-              )
-            : navigate(
-                `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
-              );
-        }
-      } else {
-        {
-          isCorrelationJobType === CorrelationJobType.Job
-            ? navigate(
-                `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
-              )
-            : navigate(
-                `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
-              );
-        }
-      }
-    } else {
-      // xu ly subtasks
-      finishOnly
+      isCorrelationJobType === CorrelationJobType.Job
         ? navigate(
-            `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
+            `/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
           )
         : navigate(
-            `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
+            `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
           );
+    } else {
+      navigate(
+        `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
+      );
     }
   };
-
-  const handleCloseDialog = () => setOpenDialog(false);
 
   const getLatestComments = () => {
     setCommentLoading(true);
@@ -160,13 +142,20 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
       from: firstCommentCreatedTime ? firstCommentCreatedTime + 100 : null,
       to: null,
       correlationJobType: CorrelationJobType.Job,
-      visibleType: VisibleType.Public
+      visibleType: VisibleType.Internal
     })
       .then(res => {
         const data = res.data;
         if (data.count > 0) {
           const listComments = data.items;
           setComments(prev => {
+            if (
+              listComments.some((comment: IComments) =>
+                prev.items.some(prevItem => prevItem.commentId === comment.commentId)
+              )
+            ) {
+              return prev;
+            }
             const temp = recursiveStructuredClone(prev);
             temp.count = data.count;
             temp.items = [...listComments, ...temp.items];
@@ -187,54 +176,29 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
       });
   };
 
-  {
-    subTaskId === undefined
-      ? useEffect(() => {
-          getTaskDetails(
-            setLoading,
-            setImagesLoading,
-            setJobDetail,
-            breadCrumbTitle,
-            setDocFiles,
-            setImgFiles,
-            setOpenDialog,
-            `job/${taskId}`,
-            `file/job/${taskId}`
-          )
-            .then()
-            .catch(err => err);
-        }, [taskId])
-      : useEffect(() => {
-          getTaskDetails(
-            setLoading,
-            setImagesLoading,
-            setJobDetail,
-            breadCrumbTitle,
-            setDocFiles,
-            setImgFiles,
-            setOpenDialog,
-            `job/${subTaskId}`,
-            `file/job/${subTaskId}`
-          )
-            .then()
-            .catch(err => err);
-        }, [subTaskId]);
-  }
+  useEffect(() => {
+    getTaskDetails(
+      setLoading,
+      setImagesLoading,
+      setJobDetail,
+      breadCrumbTitle,
+      setDocFiles,
+      setImgFiles,
+      setOpenDialog,
+      `internal/job/${taskId}`,
+      `file/job/${taskId}`
+    )
+      .then()
+      .catch(err => err);
+  }, [taskId]);
 
   useEffect(() => {
     if (isObserverVisible && hasOlderComment) {
       getComments();
     }
   }, [isObserverVisible]);
-
   const handleCreateTask = () => {
-    finishOnly
-      ? navigate(
-          `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
-        )
-      : navigate(
-          `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
-        );
+    `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`;
   };
   return (
     <>
@@ -249,20 +213,15 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
         secondaryBtnCallback={handleCloseDialog}
       />
       <div className="flex items-center justify-between">
-        {isCorrelationJobType === CorrelationJobType.Project ? (
-          <p className="text-primary mb-6 text-base">Chi tiết dự án</p>
-        ) : (
-          <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
-        )}
-
+        <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
-            onClick={() => navigate(`/${PathString.NOI_BO}/${taskId}`)}
+            onClick={() => navigate(`/${PathString.CONG_KHAI}/${taskId}`)}
             className="mr-2 flex cursor-pointer items-center gap-1 text-[#0655a7] hover:opacity-75 xl:mr-0"
           >
             <MdOutlineExpandCircleDown size={16} color="#0655a7" className="-rotate-90" />
             <p>
-              <i className="text-[13px] font-[500]">Chuyển tới duyệt nội bộ</i>
+              <i className="text-[13px] font-[500]">Chuyển tới chờ khách duyệt</i>
             </p>
           </div>
         )}
@@ -295,12 +254,11 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
             >
               <TaskDetailsDescription
                 isImagesLoading={isImagesLoading}
-                finalFiles={finalFiles}
-                setFinalFiles={setFinalFiles}
                 taskDetail={jobDetail}
                 docFiles={docFiles}
                 imgFiles={imgFiles}
               />
+
               {/*SubtasksSection */}
 
               {isCorrelationJobType === CorrelationJobType.Project && (
@@ -319,31 +277,23 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                       </p>
                     </button>
                   </div>
-                  {finishOnly ? (
-                    <SubTasksSection
-                      parentId={taskId}
-                      visibleType={VisibleType.Public}
-                      finishedOnly
-                    />
-                  ) : (
-                    <SubTasksSection parentId={taskId} visibleType={VisibleType.Public} />
-                  )}
+                  <SubTasksSection parentId={taskId} visibleType={VisibleType.Internal} />
                 </div>
               )}
-
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
-                <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
+                <p className="text-primary mr-4 w-fit pr-4 text-base leading-5">
                   Comments công việc
                 </p>
-                {/* <p className="text-primary mr-4 w-fit  pr-4 text-base font-[400] leading-5">
+                {/* <p className="text-primary mr-4 w-fit pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
                 </p> */}
               </div>
               <div ref={commentSectionTopRef}></div>
               <CommentSection
                 getComments={getLatestComments}
-                visibleType={VisibleType.Public}
+                // correlationJobType={CorrelationJobType.Job}
+                visibleType={VisibleType.Internal}
                 setComments={setComments}
                 comments={comments?.items}
                 handleHideComment={handleHideComment}
@@ -369,7 +319,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
               <BasicDetailsSection
                 setOpenDialog={setOpenDialog}
                 taskDetail={jobDetail}
-                visibleType={VisibleType.Public}
+                visibleType={VisibleType.Internal}
                 correlationJobType={
                   isCorrelationJobType === CorrelationJobType.Job
                     ? CorrelationJobType.Job
@@ -385,4 +335,4 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   );
 };
 
-export default TasksDetail;
+export default InternalTasksDetail;

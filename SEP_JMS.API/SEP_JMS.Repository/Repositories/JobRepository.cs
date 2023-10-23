@@ -638,6 +638,12 @@ namespace SEP_JMS.Repository.Repositories
 
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
                         select new { job, createdUser, customer, account, designer, company };
+            
+            if (model.ParentId != null)
+            {
+                query = query.Where(d => d.job.ParentId == model.ParentId.Value);
+            }
+
             if (model.CorrelationType != null)
             {
                 query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
@@ -709,7 +715,7 @@ namespace SEP_JMS.Repository.Repositories
                         where data.job.CreatedBy == model.CreatedBy.Value
                         select data;
             }
-            if (model.JobType != Guid.Empty)
+            if (model.JobType != null && model.JobType != Guid.Empty)
             {
                 query = from data in query
                         where data.job.JobType == model.JobType

@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { PathString } from "../../enums/MapRouteToBreadCrumb";
 import { AiOutlineLock, AiOutlineUnlock } from "react-icons/ai";
 import { AccountStatusType } from "../../enums/accountStatusType";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
 type IRowProps = {
@@ -55,7 +55,7 @@ const UsersPreviewRow: React.FC<IRowProps> = ({ row, index, pageSize, page, role
   };
 
   const handleActiveUser = () => {
-    AlwayxInstance.post(
+    APIClientInstance.post(
       row.accountStatus === AccountStatusType.Active
         ? `admin/inactive/${row.userId}`
         : `admin/active/${row.userId}`

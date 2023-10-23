@@ -605,7 +605,7 @@ namespace SEP_JMS.Repository.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
-        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company>>> GetAllJobs(InternalJobFilterRequestModel model)
+        public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(InternalJobFilterRequestModel model)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
@@ -636,12 +636,21 @@ namespace SEP_JMS.Repository.Repositories
                         into companies
                         from company in companies.DefaultIfEmpty()
 
+                        join jobType in Context.TypeOfJobs
+                        on job.JobType equals jobType.TypeId
+                        into jobTypes
+                        from jobType in jobTypes.DefaultIfEmpty()
+
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
-                        select new { job, createdUser, customer, account, designer, company };
-            
+                        select new { job, createdUser, customer, account, designer, company, jobType };
+
             if (model.ParentId != null)
             {
                 query = query.Where(d => d.job.ParentId == model.ParentId.Value);
+            }
+            else
+            {
+                query = query.Where(d => d.job.ParentId == null);
             }
 
             if (model.CorrelationType != null)
@@ -657,15 +666,33 @@ namespace SEP_JMS.Repository.Repositories
             }
             if (model.InternalJobStatus != null)
             {
-                query = from data in query
-                        where data.job.InternalJobStatus == model.InternalJobStatus
-                        select data;
+                if (model.ParentId == null)
+                {
+                    query = from data in query
+                            where data.job.InternalJobStatus == InternalJobStatus.Completed
+                            select data;
+                }
+                else
+                {
+                    query = from data in query
+                            where data.job.InternalJobStatus == InternalJobStatus.Completed
+                            select data;
+                }
             }
             else
             {
-                query = from data in query
-                        where data.job.JobStatus != JobStatus.Completed
-                        select data;
+
+                if (model.ParentId == null)
+                {
+                    query = from data in query
+                            where data.job.InternalJobStatus != InternalJobStatus.Completed
+                            select data;
+                }
+                else
+                {
+                    query = from data in query
+                            select data;
+                }
             }
             if (model.AccountId != null)
             {
@@ -724,11 +751,11 @@ namespace SEP_JMS.Repository.Repositories
             var jobs = await query.OrderByDescending(data => data.job.CreatedTime)
                             .Skip((model.PageIndex - 1) * model.PageSize)
                             .Take(model.PageSize)
-                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company))
+                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company, data.jobType))
                             .AsNoTracking()
                             .ToListAsync();
             var count = await query.CountAsync();
-            return new PagingModel<Tuple<Job, User, User, User, User, Company>>
+            return new PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>
             {
                 Items = jobs,
                 Count = count

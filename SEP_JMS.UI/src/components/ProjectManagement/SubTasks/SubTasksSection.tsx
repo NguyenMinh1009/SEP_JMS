@@ -33,16 +33,29 @@ ISubTasksSection) => {
 
   const getJobs = async () => {
     setLoading(true);
-    await AlwayxInstance.post("job/all", {
-      pageIndex: page,
-      pageSize: pageSize,
-      parentId: parentId,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
-    }).then(res => {
-      setLoading(false);
-      setJobs(res.data.items);
-      setPageCount(Math.ceil(res.data.count / pageSize));
-    });
+    if (visibleType === VisibleType.Public) {
+      await AlwayxInstance.post("job/all", {
+        pageIndex: page,
+        pageSize: pageSize,
+        parentId: parentId,
+        jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
+      }).then(res => {
+        setLoading(false);
+        setJobs(res.data.items);
+        setPageCount(Math.ceil(res.data.count / pageSize));
+      });
+    } else {
+      await AlwayxInstance.post("internal/job/all", {
+        pageIndex: page,
+        pageSize: pageSize,
+        parentId: parentId,
+        jobStatus: filterInfoController.content.jobStatus
+      }).then(res => {
+        setLoading(false);
+        setJobs(res.data.items);
+        setPageCount(Math.ceil(res.data.count / pageSize));
+      });
+    }
   };
   useEffect(() => {
     getJobs();

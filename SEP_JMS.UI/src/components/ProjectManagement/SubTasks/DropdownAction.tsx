@@ -47,7 +47,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, []); // Empty dependency array means this effect will only run once when component mounts
+  }, []);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

@@ -22,7 +22,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { Role } from "../enums/role";
 import { VisibleType } from "../enums/visibleType";
 import { Autocomplete, MenuItem, Select, TextField, Tooltip } from "@mui/material";
-import { statusOptions } from "../components/common/StatusSection";
+import { statusOptions, internalStatusOptions } from "../components/common/StatusSection";
 import { JobStatusType } from "../enums/jobStatusType";
 import RequireText from "../components/common/RequireText";
 import useTitle from "../hooks/store/useCurrentTitle";
@@ -37,6 +37,7 @@ import { allowFileTypes, correlationJobOptions } from "../constants";
 import { FileResponse } from "../interface/fileResponse";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { AxiosRequestConfig } from "axios";
+import { InternalJobStatusType } from "../enums/internalJobStatusType";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -62,6 +63,7 @@ const quillModules = {
 };
 
 interface IEditTaskProp {
+  isInternal?: boolean;
   isCorrelationJobType: number;
   finishedOnly?: boolean;
 }
@@ -73,7 +75,7 @@ const getDeadline = (date?: Date): Date => {
   return curr;
 };
 
-const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly }) => {
+const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly, isInternal }) => {
   const [taskDetail, setTaskDetail] = useState<any>();
   const [value, setValue] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
@@ -93,6 +95,9 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedPriority, setSelectedPriority] = useState<Priority>(Priority.MEDIUM);
   const [selectedStatus, setSelectedStatus] = useState<JobStatusType>(JobStatusType.NotDo);
+  const [selectedInternalStatus, setSelectedInternalStatus] = useState<InternalJobStatusType>(
+    InternalJobStatusType.NotDo
+  );
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
   const [customers, setCustomers] = useState<any[]>([]);
@@ -285,51 +290,72 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
     );
   };
 
-  //// const getCustomerId = () => {
-  //   return currentPerson.roleType !== Role.CUSTOMER
-  //     ? selectedCustomer?.userId
-  //     : currentPerson.userId;
-  // };
-
-  //// const getAccountId = () => {
-  //   if (currentPerson.roleType === Role.ADMIN)
-  //     return customers.find(item => item.userId === selectedCustomer?.userId)?.account?.userId;
-  //   else if (currentPerson.roleType === Role.ACCOUNT) return currentPerson?.userId;
-  //   else return currentPerson?.account?.userId;
-  // };
-
   const editBasicInfoPromise = () => {
-    return currentPerson.roleType !== Role.DESIGNER
-      ? subTaskId === undefined
-        ? AlwayxInstance.put(`job/${taskId}`, {
-            title: title,
-            description: getSanitizeText(value),
-            designerId: selectedDesigner?.userId,
-            accountId: selectedAccount?.userId,
-            quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
-            jobType: selectedJobType.typeId,
-            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-            priority: selectedPriority,
-            jobStatus: selectedStatus,
-            correlationType:
-              isCorrelationJobType === CorrelationJobType.Job
-                ? CorrelationJobType.Job
-                : CorrelationJobType.Project
-          })
-        : AlwayxInstance.put(`job/${subTaskId}`, {
-            parentId: taskId,
-            title: title,
-            description: getSanitizeText(value),
-            designerId: selectedDesigner?.userId,
-            accountId: selectedAccount?.userId,
-            quantity: quantity,
-            jobType: selectedJobType.typeId,
-            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-            priority: selectedPriority,
-            jobStatus: selectedStatus,
-            correlationType: CorrelationJobType.Job
-          })
-      : Promise.resolve(null);
+    if (isInternal) {
+      return currentPerson.roleType !== Role.DESIGNER
+        ? subTaskId === undefined
+          ? AlwayxInstance.put(`job/${taskId}`, {
+              title: title,
+              description: getSanitizeText(value),
+              designerId: selectedDesigner?.userId,
+              accountId: selectedAccount?.userId,
+              quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+              jobType: selectedJobType.typeId,
+              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+              priority: selectedPriority,
+              jobStatus: selectedInternalStatus,
+              correlationType:
+                isCorrelationJobType === CorrelationJobType.Job
+                  ? CorrelationJobType.Job
+                  : CorrelationJobType.Project
+            })
+          : AlwayxInstance.put(`job/${subTaskId}`, {
+              parentId: taskId,
+              title: title,
+              description: getSanitizeText(value),
+              designerId: selectedDesigner?.userId,
+              accountId: selectedAccount?.userId,
+              quantity: quantity,
+              jobType: selectedJobType.typeId,
+              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+              priority: selectedPriority,
+              jobStatus: selectedInternalStatus,
+              correlationType: CorrelationJobType.Job
+            })
+        : Promise.resolve(null);
+    } else {
+      return currentPerson.roleType !== Role.DESIGNER
+        ? subTaskId === undefined
+          ? AlwayxInstance.put(`job/${taskId}`, {
+              title: title,
+              description: getSanitizeText(value),
+              designerId: selectedDesigner?.userId,
+              accountId: selectedAccount?.userId,
+              quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+              jobType: selectedJobType.typeId,
+              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+              priority: selectedPriority,
+              jobStatus: selectedStatus,
+              correlationType:
+                isCorrelationJobType === CorrelationJobType.Job
+                  ? CorrelationJobType.Job
+                  : CorrelationJobType.Project
+            })
+          : AlwayxInstance.put(`job/${subTaskId}`, {
+              parentId: taskId,
+              title: title,
+              description: getSanitizeText(value),
+              designerId: selectedDesigner?.userId,
+              accountId: selectedAccount?.userId,
+              quantity: quantity,
+              jobType: selectedJobType.typeId,
+              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+              priority: selectedPriority,
+              jobStatus: selectedStatus,
+              correlationType: CorrelationJobType.Job
+            })
+        : Promise.resolve(null);
+    }
   };
 
   const editRequirementsPromise = () => {
@@ -408,32 +434,55 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
     ])
       .then(() => {
         {
-          if (isCorrelationJobType === CorrelationJobType.Job) {
-            // edit viec-hang-ngay
-            if (subTaskId === undefined) {
-              if (selectedStatus === JobStatusType.Completed) {
-                navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
-              } else {
-                navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+          if (isInternal) {
+            if (isCorrelationJobType === CorrelationJobType.Job) {
+              // edit noi bo viec-hang-ngay
+              if (subTaskId === undefined) {
+                if (selectedStatus === JobStatusType.Completed) {
+                  navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+                } else {
+                  navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+                }
+              }
+              // edit noi bo subtask
+              else {
+                navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`);
               }
             }
-            // Edit sub task
+            // edit noi bo project
             else {
-              if (finishedOnly) {
-                navigate(
-                  `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
-                );
-              } else {
-                navigate(
-                  `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
-                );
-              }
+              if (selectedStatus === JobStatusType.Completed)
+                navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
+              navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
             }
-            // Edit project
           } else {
-            if (selectedStatus === JobStatusType.Completed)
-              navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
-            navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
+            if (isCorrelationJobType === CorrelationJobType.Job) {
+              // edit viec-hang-ngay
+              if (subTaskId === undefined) {
+                if (selectedStatus === JobStatusType.Completed) {
+                  navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+                } else {
+                  navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+                }
+              }
+              // Edit sub task
+              else {
+                if (finishedOnly) {
+                  navigate(
+                    `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
+                  );
+                } else {
+                  navigate(
+                    `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
+                  );
+                }
+              }
+              // Edit project
+            } else {
+              if (selectedStatus === JobStatusType.Completed)
+                navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
+              navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
+            }
           }
         }
       })
@@ -451,9 +500,15 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
   const getTaskDetails = async () => {
     setLoading(true);
     let res: any;
-    subTaskId === undefined
-      ? (res = await AlwayxInstance.get(`job/${taskId}`))
-      : (res = await AlwayxInstance.get(`job/${subTaskId}`));
+    if (isInternal) {
+      subTaskId === undefined
+        ? (res = await AlwayxInstance.get(`internal/job/${taskId}`))
+        : (res = await AlwayxInstance.get(`internal/job/${subTaskId}`));
+    } else {
+      subTaskId === undefined
+        ? (res = await AlwayxInstance.get(`job/${taskId}`))
+        : (res = await AlwayxInstance.get(`job/${subTaskId}`));
+    }
     setTaskDetail(res.data);
     titleBreadCrumb.setContent(res.data.title);
     const requirementList: FileResponse[] = res.data?.requirements?.files;
@@ -497,6 +552,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
     setSelectedDesigner(res.data.designer);
     setSelectedAccount(res.data.account);
     setSelectedStatus(res.data.jobStatus);
+    setSelectedInternalStatus(res.data.internalJobStatus);
     setLoading(false);
   };
 
@@ -544,6 +600,99 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
         return "Đang xử lý ảnh";
       }
       return "Đang xử lý ảnh";
+    }
+  };
+
+  const renderStatusTask = () => {
+    if (isInternal) {
+      return (
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            Trạng thái{" "}
+            {currentPerson.roleType !== Role.CUSTOMER && (
+              <span className="mb-3 text-[13px] font-semibold text-orange-500">
+                <i>(Nội Bộ)</i>
+              </span>
+            )}
+          </label>
+          <Select
+            disabled={
+              currentPerson.roleType === Role.DESIGNER ||
+              (currentPerson.roleType !== Role.ADMIN &&
+                selectedInternalStatus === InternalJobStatusType.Completed)
+            }
+            fullWidth
+            size="small"
+            id="demo-simple-select"
+            value={selectedInternalStatus}
+            onChange={e => setSelectedInternalStatus(Number(e.target.value))}
+          >
+            {internalStatusOptions.map(({ key, text }) => (
+              <MenuItem
+                key={key}
+                disabled={
+                  key === InternalJobStatusType.Completed &&
+                  (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
+                    currentPerson.roleType === Role.CUSTOMER)
+                }
+                value={key}
+                title={
+                  key === InternalJobStatusType.Completed &&
+                  previewFiles?.length + previewFilesFromAPI?.length < 1
+                    ? "Cần có ảnh preview!"
+                    : ""
+                }
+              >
+                {text}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            Trạng thái{" "}
+            {currentPerson.roleType !== Role.CUSTOMER && (
+              <span className="mb-3 text-[13px] font-semibold text-orange-500">
+                <i>(Công khai)</i>
+              </span>
+            )}
+          </label>
+          <Select
+            disabled={
+              currentPerson.roleType === Role.DESIGNER ||
+              (currentPerson.roleType !== Role.ADMIN && selectedStatus === JobStatusType.Completed)
+            }
+            fullWidth
+            size="small"
+            id="demo-simple-select"
+            value={selectedStatus}
+            onChange={e => setSelectedStatus(Number(e.target.value))}
+          >
+            {statusOptions.map(({ key, text }) => (
+              <MenuItem
+                key={key}
+                disabled={
+                  key === JobStatusType.Completed &&
+                  (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
+                    currentPerson.roleType === Role.CUSTOMER)
+                }
+                value={key}
+                title={
+                  key === JobStatusType.Completed &&
+                  previewFiles?.length + previewFilesFromAPI?.length < 1
+                    ? "Cần có ảnh preview!"
+                    : ""
+                }
+              >
+                {text}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+      );
     }
   };
 
@@ -1004,66 +1153,8 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly 
                 }}
               />
             </div>
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Trạng thái{" "}
-                {currentPerson.roleType !== Role.CUSTOMER && (
-                  <span className="mb-3 text-[13px] font-semibold text-orange-500">
-                    <i>(Công khai)</i>
-                  </span>
-                )}
-              </label>
-              <Select
-                disabled={
-                  currentPerson.roleType === Role.DESIGNER ||
-                  (currentPerson.roleType !== Role.ADMIN &&
-                    selectedStatus === JobStatusType.Completed)
-                }
-                fullWidth
-                size="small"
-                id="demo-simple-select"
-                value={selectedStatus}
-                onChange={e => setSelectedStatus(Number(e.target.value))}
-              >
-                {statusOptions.map(({ key, text }) => (
-                  <MenuItem
-                    key={key}
-                    disabled={
-                      key === JobStatusType.Completed &&
-                      (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
-                        currentPerson.roleType === Role.CUSTOMER)
-                    }
-                    value={key}
-                    title={
-                      key === JobStatusType.Completed &&
-                      previewFiles?.length + previewFilesFromAPI?.length < 1
-                        ? "Cần có ảnh preview!"
-                        : ""
-                    }
-                  >
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-            {/* <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Loại công việc
-              </label>
-              <Select
-                fullWidth
-                size="small"
-                id="demo-simple-select"
-                value={correlationType}
-                onChange={e => setCorrelationType(Number(e.target.value))}
-              >
-                {correlationJobOptions.map(({ key, text }) => (
-                  <MenuItem key={key} value={key}>
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div> */}
+            {/* render trang thai */}
+            {renderStatusTask()}
           </div>
           <div className="flex flex-1 items-center justify-center">
             <div className="relative mt-5 flex min-h-[100px] items-center gap-4">

@@ -3,6 +3,7 @@ import { MdOutlineClose, MdOutlineDone, MdOutlineHourglassFull } from "react-ico
 import { ITaskPropertiesLabel } from "../../../interface/ITaskPropertiesLabel";
 import { Priority } from "../../../enums/priority";
 import { JobStatusType } from "../../../enums/jobStatusType";
+import { InternalJobStatusType } from "../../../enums/internalJobStatusType";
 const TaskPropertiesLabel: React.FC<ITaskPropertiesLabel> = ({ type, info }) => {
   const getInfoLabel = () => {
     if (type === "statusTask") {
@@ -25,21 +26,21 @@ const TaskPropertiesLabel: React.FC<ITaskPropertiesLabel> = ({ type, info }) => 
           return (
             <div className="flex items-center gap-2">
               <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
-              <span className="truncate">Close</span>
+              <span className="truncate">CustomerReview</span>
             </div>
           );
         case JobStatusType.Doing:
           return (
             <div className="flex items-center gap-2">
               <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
-              <span className="truncate">Close</span>
+              <span className="truncate">Doing</span>
             </div>
           );
         case JobStatusType.NotDo:
           return (
             <div className="flex items-center gap-2">
               <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
-              <span className="truncate">Close</span>
+              <span className="truncate">NotDo</span>
             </div>
           );
         default:
@@ -70,6 +71,54 @@ const TaskPropertiesLabel: React.FC<ITaskPropertiesLabel> = ({ type, info }) => 
           <span className="text-black-500 truncate">{info}</span>
         </div>
       );
+    }
+    if (type === "internalStatusTask") {
+      switch (info) {
+        case InternalJobStatusType.Completed:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineDone style={{ fill: "green", fontSize: "15px" }} />
+              <span className="truncate text-green-500">Done</span>
+            </div>
+          );
+        case InternalJobStatusType.Pending:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineHourglassFull style={{ fill: "orange", fontSize: "15px" }} />
+              <span className="truncate">Pending</span>
+            </div>
+          );
+        case InternalJobStatusType.CustomerReview:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
+              <span className="truncate">CustomerReview</span>
+            </div>
+          );
+        case InternalJobStatusType.Doing:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
+              <span className="truncate">Doing</span>
+            </div>
+          );
+        case InternalJobStatusType.NotDo:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
+              <span className="truncate">NotDo</span>
+            </div>
+          );
+        case InternalJobStatusType.InternalReview:
+          return (
+            <div className="flex items-center gap-2">
+              <MdOutlineClose style={{ fill: "gray", fontSize: "15px" }} />
+              <span className="truncate">InternalReview</span>
+            </div>
+          );
+        default:
+          return null;
+      }
     }
   };
   return (

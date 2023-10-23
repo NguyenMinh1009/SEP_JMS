@@ -135,8 +135,10 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
             <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
           </div>
         </>
-      ) : (
+      ) : isCorrelationJobType === CorrelationJobType.Job ? (
         <div>Chưa có công việc để hiển thị</div>
+      ) : (
+        <div>Chưa có dự án để hiển thị</div>
       )}
     </div>
   ) : (

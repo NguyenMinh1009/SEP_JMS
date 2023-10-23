@@ -201,7 +201,7 @@ function App() {
                     </>
                   )}
                   <Route path={`/${PathString.THONG_BAO}`} element={<Notifications />} />
-                  {/* noi-bo */}
+                  {/* noi-bo-hang-ngay */}
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
                     <Route path={`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}*`}>
                       <Route
@@ -212,6 +212,20 @@ function App() {
                       <Route
                         path={`:taskId/${PathString.CHINH_SUA}`}
                         element={<EditTask isCorrelationJobType={CorrelationJobType.Job} />}
+                      />
+                    </Route>
+                  )}
+                  {/* noi-bo-du-an */}
+                  {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
+                    <Route path={`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}*`}>
+                      <Route
+                        index
+                        element={<Jobs isInternal isCorrelationJobType={CorrelationJobType.Project} />}
+                      />
+                      {/* <Route path=":taskId" element={<InternalTasksDetail />} /> */}
+                      <Route
+                        path={`:taskId/${PathString.CHINH_SUA}`}
+                        element={<EditTask isCorrelationJobType={CorrelationJobType.Project} />}
                       />
                     </Route>
                   )}

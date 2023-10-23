@@ -638,6 +638,12 @@ namespace SEP_JMS.Repository.Repositories
 
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
                         select new { job, createdUser, customer, account, designer, company };
+            
+            if (model.ParentId != null)
+            {
+                query = query.Where(d => d.job.ParentId == model.ParentId.Value);
+            }
+
             if (model.CorrelationType != null)
             {
                 query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);

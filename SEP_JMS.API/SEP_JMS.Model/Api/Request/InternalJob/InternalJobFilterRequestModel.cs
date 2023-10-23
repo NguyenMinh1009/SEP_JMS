@@ -12,6 +12,8 @@ namespace SEP_JMS.Model.Api.Request
 {
     public class InternalJobFilterRequestModel : BaseFilterRequest
     {
+        public Guid? ParentId { get; set; }
+
         public long? From { get; set; }
 
         public long? To { get; set; }

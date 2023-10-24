@@ -176,21 +176,39 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
       });
   };
 
-  useEffect(() => {
-    getTaskDetails(
-      setLoading,
-      setImagesLoading,
-      setJobDetail,
-      breadCrumbTitle,
-      setDocFiles,
-      setImgFiles,
-      setOpenDialog,
-      `internal/job/${taskId}`,
-      `file/job/${taskId}`
-    )
-      .then()
-      .catch(err => err);
-  }, [taskId]);
+  {
+    subTaskId === undefined
+      ? useEffect(() => {
+          getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `internal/job/${taskId}`,
+            `file/job/${taskId}`
+          )
+            .then()
+            .catch(err => err);
+        }, [taskId])
+      : useEffect(() => {
+          getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `internal/job/${subTaskId}`,
+            `file/job/${subTaskId}`
+          )
+            .then()
+            .catch(err => err);
+        }, [subTaskId]);
+  }
 
   useEffect(() => {
     if (isObserverVisible && hasOlderComment) {
@@ -198,7 +216,9 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
     }
   }, [isObserverVisible]);
   const handleCreateTask = () => {
-    `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`;
+    navigate(
+      `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
+    );
   };
   return (
     <>

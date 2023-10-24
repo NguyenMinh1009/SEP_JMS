@@ -262,7 +262,19 @@ function App() {
                       />
                       <Route
                         path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
-                        element={<EditTask isCorrelationJobType={CorrelationJobType.Job} />}
+                        element={
+                          <EditTask isInternal isCorrelationJobType={CorrelationJobType.Job} />
+                        }
+                      />
+                      <Route
+                        path={`:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`}
+                        element={
+                          <Home
+                            isCorrelationJobType={CorrelationJobType.Job}
+                            isParentId
+                            isInternal
+                          />
+                        }
                       />
                     </Route>
                   )}

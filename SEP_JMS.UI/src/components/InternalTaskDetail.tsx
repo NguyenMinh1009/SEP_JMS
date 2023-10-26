@@ -65,10 +65,6 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
       jobId: taskId,
       from: null,
       to: to,
-      correlationJobType:
-        isCorrelationJobType === CorrelationJobType.Job
-          ? CorrelationJobType.Job
-          : CorrelationJobType.Project,
       visibleType: VisibleType.Internal
     })
       .then(res => {

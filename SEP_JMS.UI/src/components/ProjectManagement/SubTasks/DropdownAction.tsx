@@ -3,7 +3,7 @@ import { AiOutlineEllipsis } from "react-icons/ai";
 import { CorrelationJobType } from "../../../enums/correlationJobType";
 import { VisibleType } from "../../../enums/visibleType";
 import { PathString } from "../../../enums/MapRouteToBreadCrumb";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, redirect } from "react-router-dom";
 import AlwayxInstance from "../../../api/AxiosInstance";
 import CustomDialog from "../../common/CustomDialog";
 import useSnakeBar from "../../../hooks/store/useSnakeBar";
@@ -64,7 +64,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
     return getLinkForViewJob() + `/${PathString.CHINH_SUA}`;
   };
   const handleViewClick = () => {
-    navigate(getLinkForViewJob());
+    location.href = getLinkForViewJob();
   };
 
   const handleUpdateClick = () => {

@@ -47,7 +47,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
   const getCommentTimes = useRef<number>(0);
 
-  const [to, setTo] = useState<number | null>(null);
+  const [to, setTo] = useState<null | number>(null);
   const { ref: observerRef, inView: isObserverVisible } = useInView();
   const commentSectionTopRef = useRef<HTMLDivElement | null>(null);
   // custom hooks
@@ -63,10 +63,9 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
     AlwayxInstance.post("comment/all", {
       pageIndex: 1,
       pageSize: 5,
-      jobId: subTaskId !== undefined ? subTaskId : taskId,
+      jobId: subTaskId === undefined ? taskId : subTaskId,
       from: null,
       to: to,
-      correlationJobType: CorrelationJobType.Job,
       visibleType: VisibleType.Public
     })
       .then(res => {
@@ -226,6 +225,12 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
       getComments();
     }
   }, [isObserverVisible]);
+
+  // useEffect(() => {
+  //   setComments({ items: [], count: 0 });
+  //   setTo(0);
+  //   getComments();
+  // }, [isCorrelationJobType]);
 
   const handleCreateTask = () => {
     finishOnly

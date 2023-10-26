@@ -92,7 +92,7 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
   );
 
   const snakeBar = useSnakeBar();
-  const { taskId } = useParams();
+  const { taskId, subTaskId } = useParams();
 
   Quill.register(
     {
@@ -156,20 +156,37 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
       }
     });
 
-    AlwayxInstance.post(`comment/${taskId}`, formData)
-      .then(() => {
-        getComments();
-        setValue("");
-        setFiles([]);
-        setLoading(false);
-        setOpenReplySection?.(false);
-        if (reply === undefined) setOpenTaskPanel(false);
-      })
-      .catch(_err => {
-        setLoading(false);
-        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-      })
-      .finally(() => setLoading(false));
+    {
+      subTaskId === undefined
+        ? AlwayxInstance.post(`comment/${taskId}`, formData)
+            .then(() => {
+              getComments();
+              setValue("");
+              setFiles([]);
+              setLoading(false);
+              setOpenReplySection?.(false);
+              if (reply === undefined) setOpenTaskPanel(false);
+            })
+            .catch(_err => {
+              setLoading(false);
+              snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+            })
+            .finally(() => setLoading(false))
+        : AlwayxInstance.post(`comment/${subTaskId}`, formData)
+            .then(() => {
+              getComments();
+              setValue("");
+              setFiles([]);
+              setLoading(false);
+              setOpenReplySection?.(false);
+              if (reply === undefined) setOpenTaskPanel(false);
+            })
+            .catch(_err => {
+              setLoading(false);
+              snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+            })
+            .finally(() => setLoading(false));
+    }
   };
 
   const handleClose = () => {

@@ -13,6 +13,7 @@ export enum PathString {
   CHINH_SUA = "chinh-sua",
   USERS = "quan-ly-users",
   PRICES = "quan-ly-gia",
+  TYPEOFJOBS = "chinh-sua-loai-thiet-ke",
   KHACH_HANG = "khach-hang",
   NHAN_VIEN = "nhan-vien",
   COMPANY = "company",

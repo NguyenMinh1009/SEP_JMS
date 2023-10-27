@@ -37,6 +37,11 @@ import EditCompany from "./pages/EditCompany";
 import EditCustomer from "./pages/EditCustomer";
 import EditEmployee from "./pages/EditEmployee";
 import InternalTasksDetail from "./components/InternalTaskDetail";
+import CreatePriceGroups from "./pages/CreatePriceGroups";
+import EditPriceGroup from "./pages/EditPriceGroup";
+import PricesPage from "./pages/Prices";
+import PriceList from "./pages/PriceList";
+import EditTypeOfJobs from "./pages/EditTypeOfJobs";
 
 const theme = createTheme(
   {
@@ -222,6 +227,7 @@ function App() {
                         }
                       />
                     </Route>
+
                   )}
                   {/* noi-bo-du-an */}
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
@@ -266,6 +272,21 @@ function App() {
                       />
                     </Route>
                   )}
+
+                  {/* Manage Prices */}
+                  {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
+                    <Route path={`/${PathString.PRICES}/*`}>
+                      <Route index element={<PricesPage />} />
+                      <Route path={PathString.THEM_MOI} element={<CreatePriceGroups />} />
+                      <Route path={PathString.TYPEOFJOBS} element={<EditTypeOfJobs />} />
+                      <Route path=":priceGroupId" element={<PriceList />} />
+                      <Route
+                        path={`:priceGroupId/${PathString.CHINH_SUA}`}
+                        element={<EditPriceGroup />}
+                      />
+                    </Route>
+                  )}
+
 
                   {/* viec-cong-khai/viec-hang-ngay */}
                   <Route path={`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}*`}>

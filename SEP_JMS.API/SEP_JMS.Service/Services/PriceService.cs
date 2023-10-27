@@ -38,12 +38,12 @@ namespace SEP_JMS.Service.Services
         {
             return await priceRepository.UpdatePriceGroup(id, model);
         }
-        public async Task<bool> UsedInCompany(int groupId)
+        public async Task<bool> UsedInCompany(Guid groupId)
         {
             return await priceRepository.UsedInCompany(groupId);
         }
 
-        public async Task DeletePriceGroup(int groupId)
+        public async Task DeletePriceGroup(Guid groupId)
         {
             await priceRepository.DeletePriceGroup(groupId);
         }

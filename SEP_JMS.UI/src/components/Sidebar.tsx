@@ -129,15 +129,15 @@ const SideBar = () => {
               Icon: <IoPricetagsOutline size={18} />,
               prefix: `${PathString.PRICES}`
             }
-          },
-          {
-            parent: {
-              text: "Thống kê",
-              to: `${PathString.REPORT}`,
-              Icon: <TbReport size={18} className="opacity-90" />,
-              prefix: `${PathString.REPORT}`
-            }
           }
+          // {
+          //   parent: {
+          //     text: "Thống kê",
+          //     to: `${PathString.REPORT}`,
+          //     Icon: <TbReport size={18} className="opacity-90" />,
+          //     prefix: `${PathString.REPORT}`
+          //   }
+          // }
           // {
           //   parent: {
           //     text: "Tài khoản",

@@ -14,7 +14,7 @@ import moment from "moment";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import JobFilterSection from "../components/common/JobFilterSection";
 import useFilterInfo from "../hooks/store/useFilterInfo";
-import AlwayxInstance from "../api/AxiosInstance";
+import APIClientInstance from "../api/AxiosInstance";
 import NotificationTable from "../components/notifications/NotificationTable";
 import { NotificationStatus } from "../enums/NotificationStatus";
 import { BsCheckAll } from "react-icons/bs";
@@ -32,7 +32,7 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
   const snakeBar = useSnakeBar();
 
   const handleMarkReadAllNoti = () => {
-    AlwayxInstance.post(
+    APIClientInstance.post(
       `/notification/readAll`
     )
     .then(() => {

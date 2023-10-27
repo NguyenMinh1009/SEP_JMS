@@ -9,7 +9,7 @@ import { IoCreateOutline } from "react-icons/io5";
 import { Role } from "../../enums/role";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import CustomDialog from "../common/CustomDialog";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { GoDotFill } from "react-icons/go";
 import { RiArchiveDrawerFill } from "react-icons/ri";
@@ -41,7 +41,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   const handleClickNoti = () => {
         // get job status then navigate from UI
         // mark as read
-        AlwayxInstance.post(
+        APIClientInstance.post(
           `/notification/read/${row.notificationId}`
         )
         .then(() => {
@@ -68,7 +68,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   };
 
   const handleArchiveNoti = () => {
-    AlwayxInstance.post(
+    APIClientInstance.post(
       (row.archivedAt == null || row.archivedAt == 0) ?
       `/notification/archive/${row.notificationId}` : `/notification/unarchive/${row.notificationId}`
     )
@@ -93,7 +93,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   };
 
   const handleDeleteNoti = () => {
-    AlwayxInstance.delete(
+    APIClientInstance.delete(
       `/notification/${row.notificationId}`
     )
     .then(() => {

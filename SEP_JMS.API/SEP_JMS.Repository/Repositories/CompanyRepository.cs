@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SEP_JMS.Common;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Request.File;
+using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Repository.IRepositories;
 
@@ -12,6 +15,42 @@ namespace SEP_JMS.Repository.Repositories
         {
         }
 
+        public async Task<PagingModel<Company>> GetCompanyForFilterJobAccountAndDesigner(BaseFilterRequest model)
+        {
+            var userId = ApiContext.Current.UserId;
+
+            var query = from customer in Context.Users
+                        join job in Context.Jobs
+                        on customer.UserId equals job.CustomerId
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+
+                        select new { company, job };
+            if (ApiContext.Current.Role == RoleType.Account)
+            {
+                query = from data in query
+                        where data.job.AccountId == userId
+                        select data;
+            }
+            else if (ApiContext.Current.Role == RoleType.Designer)
+            {
+                query = from data in query
+                        where data.job.DesignerId == userId
+                        select data;
+            }
+            else throw new Exception("Not supported role");
+            var count = await query.Select(a => a.company).Distinct().CountAsync();
+            var items = await query.Select(a => a.company)
+                .Distinct()
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize).ToListAsync();
+            return new PagingModel<Company>
+            {
+                Count = count,
+                Items = items
+            };
+        }
         public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model)
         {
             var query = Context.Companies.AsQueryable();

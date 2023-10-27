@@ -22,5 +22,9 @@ namespace SEP_JMS.Repository.IRepositories
         public Task UpdateCustomer(Guid id, CustomerAdminUpdateRequestModel model);
         public Task UpdateEmployee(Guid id, EmployeeAdminUpdateRequestModel model);
         public Task<User?> GetUserById(Guid userId, RoleType role);
+        public Task<PagingModel<User>> FindDesigners(UserFilterRequest model);
+        public Task<PagingModel<User>> FindAccounts(UserFilterRequest model);
+        public Task<PagingModel<Tuple<User, User, Company>>> FindCustomers(CustomerFilterRequestModel model);
+        public Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model);
     }
 }

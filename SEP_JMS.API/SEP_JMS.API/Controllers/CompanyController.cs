@@ -5,6 +5,8 @@ using SEP_JMS.Common.Constants;
 using SEP_JMS.Common.Logger;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Request.File;
+using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Model.Api.Response.Company;
 using SEP_JMS.Service.IServices;
 
@@ -49,6 +51,26 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Info($"{logPrefix} Got exception when getting all companies. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [Authorize(Policy = PolicyConstants.AccountAndDesigner)]
+        [HttpPost("related")]
+        public async Task<ActionResult<PagingModel<CompanyDisplayModel>>> GetRelatedCompany(BaseFilterRequest model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get all companies for filter job of account and designer.");
+                var res = await companyService.GetCompanyForFilterJobAccountAndDesigner(model);
+                return new PagingModel<CompanyDisplayModel>
+                {
+                    Count = res.Count,
+                    Items = mapper.Map<List<CompanyDisplayModel>>(res.Items)
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"{logPrefix} Got exception when getting all companies for filter job of account and designer. Error: {ex}");
                 return StatusCode(500);
             }
         }

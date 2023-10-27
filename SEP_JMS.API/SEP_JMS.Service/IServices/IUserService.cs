@@ -24,5 +24,9 @@ namespace SEP_JMS.Service.IServices
         public Task<Guid?> CreateEmployee(EmployeeCreateRequestModel model);
         public Task UpdateEmployee(Guid id, EmployeeAdminUpdateRequestModel model);
         public Task<User?> GetUserById(Guid userId, RoleType role);
+        public Task<PagingModel<EmployeeBasicDisplayModel>> FindDesigners(UserFilterRequest model);
+        public Task<PagingModel<EmployeeBasicDisplayModel>> FindAccounts(UserFilterRequest model);
+        public Task<PagingModel<CustomerFindDisplayModel>> FindCustomers(CustomerFilterRequestModel model);
+        public Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model);
     }
 }

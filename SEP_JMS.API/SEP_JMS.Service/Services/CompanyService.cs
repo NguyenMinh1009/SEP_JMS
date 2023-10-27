@@ -6,6 +6,7 @@ using AutoMapper;
 using SEP_JMS.Common.Logger;
 using SEP_JMS.Repository.IRepositories;
 using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Api.Request.File;
 
 namespace SEP_JMS.Service.Services
 {
@@ -42,6 +43,10 @@ namespace SEP_JMS.Service.Services
             this.logger = logger;
         }
 
+        public async Task<PagingModel<Company>> GetCompanyForFilterJobAccountAndDesigner(BaseFilterRequest model)
+        {
+            return await companyRepository.GetCompanyForFilterJobAccountAndDesigner(model);
+        }
         public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model)
         {
             return await companyRepository.GetCompanies(model);

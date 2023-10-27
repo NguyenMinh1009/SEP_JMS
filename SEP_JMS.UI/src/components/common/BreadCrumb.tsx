@@ -83,6 +83,12 @@ const BreadCrumb = () => {
       clickable: true
     },
     {
+      key: PathString.TYPEOFJOBS,
+      value: "Loại thiết kế",
+      prefix: "report",
+      clickable: true
+    },
+    {
       key: PathString.CREATE_COMPANY,
       value: "Tạo mới company",
       prefix: "report",

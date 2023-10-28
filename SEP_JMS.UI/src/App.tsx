@@ -37,6 +37,8 @@ import EditCompany from "./pages/EditCompany";
 import EditCustomer from "./pages/EditCustomer";
 import EditEmployee from "./pages/EditEmployee";
 import InternalTasksDetail from "./components/InternalTaskDetail";
+import SubTaskDetail from "./components/ProjectManagement/SubTasks/SubTaskDetail";
+import InternalSubTasksDetail from "./components/ProjectManagement/SubTasks/InternalSubTaskDetail";
 import CreatePriceGroups from "./pages/CreatePriceGroups";
 import EditPriceGroup from "./pages/EditPriceGroup";
 import PricesPage from "./pages/Prices";
@@ -227,7 +229,6 @@ function App() {
                         }
                       />
                     </Route>
-
                   )}
                   {/* noi-bo-du-an */}
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
@@ -260,15 +261,22 @@ function App() {
                           />
                         }
                       />
+                      <Route path=":taskId/:subTaskId" element={<InternalSubTasksDetail />} />
                       <Route
-                        path=":taskId/:subTaskId"
+                        path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
                         element={
-                          <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Job} />
+                          <EditTask isInternal isCorrelationJobType={CorrelationJobType.Job} />
                         }
                       />
                       <Route
-                        path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
-                        element={<EditTask isCorrelationJobType={CorrelationJobType.Job} />}
+                        path={`:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`}
+                        element={
+                          <Home
+                            isCorrelationJobType={CorrelationJobType.Job}
+                            isParentId
+                            isInternal
+                          />
+                        }
                       />
                     </Route>
                   )}
@@ -286,7 +294,6 @@ function App() {
                       />
                     </Route>
                   )}
-
 
                   {/* viec-cong-khai/viec-hang-ngay */}
                   <Route path={`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}*`}>
@@ -320,10 +327,7 @@ function App() {
                       element={<Home isCorrelationJobType={CorrelationJobType.Job} isParentId />}
                     />
 
-                    <Route
-                      path=":taskId/:subTaskId"
-                      element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
-                    />
+                    <Route path=":taskId/:subTaskId" element={<SubTaskDetail />} />
 
                     <Route
                       path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
@@ -355,9 +359,12 @@ function App() {
                         <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Project} />
                       }
                     />
+                    <Route path=":taskId/:subTaskId" element={<SubTaskDetail finishOnly />} />
                     <Route
-                      path=":taskId/:subTaskId"
-                      element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
+                      path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
+                      element={
+                        <EditTask finishedOnly isCorrelationJobType={CorrelationJobType.Job} />
+                      }
                     />
 
                     <Route

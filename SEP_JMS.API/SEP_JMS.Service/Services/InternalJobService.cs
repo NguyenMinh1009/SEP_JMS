@@ -57,7 +57,7 @@ namespace SEP_JMS.Service.Services
             if (rs == null) return null;
 
             var internalJobDisplay = mapper.Map<InternalJobDetailsDisplayModel>(rs.Item1);
-            internalJobDisplay.CreatedBy = mapper.Map<UserCommonDisplayModel>(rs.Item2);
+            internalJobDisplay.CreatedBy = mapper.Map<UserCommonDisplayModel>(rs.Item2);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
             internalJobDisplay.Customer = mapper.Map<CustomerBasicDisplayModel>(rs.Item3);
             internalJobDisplay.Account = mapper.Map<EmployeeBasicDisplayModel>(rs.Item4);
             internalJobDisplay.Designer = mapper.Map<EmployeeBasicDisplayModel>(rs.Item5);

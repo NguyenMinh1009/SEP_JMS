@@ -45,8 +45,8 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOn
               <div>
                 <div className="hover:bg-custom-background-90 border-custom-border-100 group relative flex h-full w-full items-center gap-2 border-b px-2 py-1 pl-10 transition-all">
                   <div className="flex w-full cursor-pointer items-center gap-2">
-                    <div className="h-[6px] w-[6px] flex-shrink-0 rounded-full bg-blue-500"></div>
-                    <div className="text-custom-text-200 flex-shrink-0 text-xs">{index + 1}</div>
+                    <div className="mr-3 h-[6px] w-[6px] flex-shrink-0 rounded-full bg-blue-500"></div>
+                    {/* <div className="text-custom-text-200 flex-shrink-0 text-xs">{index + 1}</div> */}
                     <div className="text-custom-text-100 tabindex-0 line-clamp-1 pr-2 text-xs">
                       {task.title}
                     </div>

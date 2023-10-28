@@ -390,7 +390,11 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
       const formData = new FormData();
       finalFiles.forEach(item => formData.append("files", item));
       formData.append("oldFiles", JSON.stringify(finalFilesFromAPI));
-      return AlwayxInstance.post(`job/${taskId}/final`, formData, finalFileConfig);
+      if (subTaskId === undefined) {
+        return AlwayxInstance.post(`job/${taskId}/final`, formData, finalFileConfig);
+      } else {
+        return AlwayxInstance.post(`job/${subTaskId}/final`, formData, finalFileConfig);
+      }
     }
     return Promise.resolve(null);
   };
@@ -400,7 +404,11 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
       const formData = new FormData();
       previewFiles.forEach(item => formData.append("files", item));
       formData.append("oldFiles", JSON.stringify(previewFilesFromAPI));
-      return AlwayxInstance.post(`job/${taskId}/preview`, formData, previewFileConfig);
+      if (subTaskId === undefined) {
+        return AlwayxInstance.post(`job/${taskId}/preview`, formData, previewFileConfig);
+      } else {
+        return AlwayxInstance.post(`job/${subTaskId}/preview`, formData, previewFileConfig);
+      }
     }
     return Promise.resolve(null);
   };

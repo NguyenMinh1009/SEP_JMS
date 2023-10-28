@@ -305,8 +305,8 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
           case VisibleType.Internal:
             {
               correlationJobType === CorrelationJobType.Job
-                ? navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}${jobDetail.jobId}`)
-                : navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}${jobDetail.jobId}`);
+                ? navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${jobDetail.jobId}`)
+                : navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${jobDetail.jobId}`);
             }
 
             break;

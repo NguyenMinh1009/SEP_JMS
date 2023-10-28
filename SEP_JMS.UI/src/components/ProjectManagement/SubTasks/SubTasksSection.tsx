@@ -7,6 +7,8 @@ import { JobStatusType } from "../../../enums/jobStatusType";
 import { isAny } from "tailwind-merge/dist/lib/validators";
 import { useIsFirstRender } from "../../../hooks/useIsFirstRender";
 import { VisibleType } from "../../../enums/visibleType";
+import TablePagination from "../../common/TablePagination";
+import { IComments } from "../../../interface/comment";
 
 interface ISubTasksSection {
   finishedOnly?: boolean;
@@ -57,6 +59,10 @@ ISubTasksSection) => {
       });
     }
   };
+
+  const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
   useEffect(() => {
     getJobs();
     setPageInfo?.({ page: page, pageSize: pageSize });
@@ -75,9 +81,19 @@ ISubTasksSection) => {
     <div>
       {!isLoading ? (
         finishedOnly ? (
-          <SubTasksProps tasks={jobs} visibleType={visibleType} finishedOnly />
+          <div>
+            <SubTasksProps tasks={jobs} visibleType={visibleType} finishedOnly />
+            <div className="mx-auto mt-8 flex items-center justify-center">
+              <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
+            </div>
+          </div>
         ) : (
-          <SubTasksProps tasks={jobs} visibleType={visibleType} />
+          <div>
+            <SubTasksProps tasks={jobs} visibleType={visibleType} />
+            <div className="mx-auto mt-8 flex items-center justify-center">
+              <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
+            </div>
+          </div>
         )
       ) : (
         <CircularProgress size={25} />

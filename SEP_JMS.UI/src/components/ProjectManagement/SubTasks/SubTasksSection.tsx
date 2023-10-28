@@ -8,6 +8,7 @@ import { isAny } from "tailwind-merge/dist/lib/validators";
 import { useIsFirstRender } from "../../../hooks/useIsFirstRender";
 import { VisibleType } from "../../../enums/visibleType";
 import TablePagination from "../../common/TablePagination";
+import { IComments } from "../../../interface/comment";
 
 interface ISubTasksSection {
   finishedOnly?: boolean;

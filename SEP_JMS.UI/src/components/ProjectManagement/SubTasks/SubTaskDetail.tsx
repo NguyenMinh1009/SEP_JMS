@@ -1,42 +1,42 @@
 import { useState, useEffect, useRef } from "react";
-import CommentSection from "../components/CommentSection";
 import { MdOutlineExpandCircleDown } from "react-icons/md";
-import { IComments } from "../interface/comment";
-import { CorrelationJobType } from "../enums/correlationJobType";
-import { useNavigate, useParams } from "react-router-dom";
-import AlwayxInstance from "../api/AxiosInstance";
+import { CorrelationJobType } from "../../../enums/correlationJobType";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import AlwayxInstance from "../../../api/AxiosInstance";
 import CircularProgress from "@mui/material/CircularProgress";
 import "react-quill/dist/quill.snow.css";
 import "react-multi-carousel/lib/styles.css";
-import { VisibleType } from "../enums/visibleType";
-import { Role } from "../enums/role";
-import useCurrentPerson from "../hooks/store/useCurrentPerson";
-import useTitle from "../hooks/store/useCurrentTitle";
-import BasicDetailsSection from "./BasicDetailsSection";
-import { getTaskDetails } from "../utils/getTaskDetails";
+import { VisibleType } from "../../../enums/visibleType";
+import { Role } from "../../../enums/role";
+import useCurrentPerson from "../../../hooks/store/useCurrentPerson";
+import useTitle from "../../../hooks/store/useCurrentTitle";
+import BasicDetailsSection from "../../BasicDetailsSection";
+import { getTaskDetails } from "../../../utils/getTaskDetails";
 import { useInView } from "react-intersection-observer";
-import TaskDetailsDescription from "./TaskDetailsDescription";
-import useSnakeBar from "../hooks/store/useSnakeBar";
-import { InternalJobStatusType } from "../enums/internalJobStatusType";
-import { PathString } from "../enums/MapRouteToBreadCrumb";
-import { cn } from "../utils/className";
-import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
-import { FileResponse } from "../interface/fileResponse";
-import CustomDialog from "./common/CustomDialog";
+import TaskDetailsDescription from "../../TaskDetailsDescription";
+import useSnakeBar from "../../../hooks/store/useSnakeBar";
+import { PathString } from "../../../enums/MapRouteToBreadCrumb";
+import { cn } from "../../../utils/className";
+import { recursiveStructuredClone } from "../../../utils/recursiveStructuredClone";
+import { FileResponse } from "../../../interface/fileResponse";
+import CustomDialog from "../../common/CustomDialog";
+import CommentSection from "../../../components/CommentSection";
+import { IComments } from "../../../interface/comment";
+import SubTasksSection from "./SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
-import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
 
-interface ITaskDetail {
-  isCorrelationJobType: number;
+interface ISubTaskDetail {
+  finishOnly?: boolean;
 }
 
-const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) => {
+const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
   const [jobDetail, setJobDetail] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isOpenDialog, setOpenDialog] = useState<boolean>(false);
   const [isImagesLoading, setImagesLoading] = useState<boolean>(false);
   const [isCommentLoading, setCommentLoading] = useState<boolean>(false);
   const [imgFiles, setImgFiles] = useState<File[]>([]);
+  const [finalFiles, setFinalFiles] = useState<File[]>([]);
   const [docFiles, setDocFiles] = useState<FileResponse[]>([]);
   const [comments, setComments] = useState<{
     items: IComments[];
@@ -46,7 +46,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
   const getCommentTimes = useRef<number>(0);
 
-  const [to, setTo] = useState<number | null>(null);
+  const [to, setTo] = useState<null | number>(null);
   const { ref: observerRef, inView: isObserverVisible } = useInView();
   const commentSectionTopRef = useRef<HTMLDivElement | null>(null);
   // custom hooks
@@ -62,10 +62,10 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
     AlwayxInstance.post("comment/all", {
       pageIndex: 1,
       pageSize: 5,
-      jobId: taskId,
+      jobId: subTaskId,
       from: null,
       to: to,
-      visibleType: VisibleType.Internal
+      visibleType: VisibleType.Public
     })
       .then(res => {
         const data = res.data;
@@ -110,11 +110,17 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
     setComments(commentsClone);
   };
 
-  const handleCloseDialog = () => setOpenDialog(false);
-
   const handleEdit = () => {
-    navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`);
+    finishOnly
+      ? navigate(
+          `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
+        )
+      : navigate(
+          `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
+        );
   };
+
+  const handleCloseDialog = () => setOpenDialog(false);
 
   const getLatestComments = () => {
     setCommentLoading(true);
@@ -122,24 +128,17 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
     AlwayxInstance.post("comment/all", {
       pageIndex: 1,
       pageSize: 1,
-      jobId: taskId,
+      jobId: subTaskId,
       from: firstCommentCreatedTime ? firstCommentCreatedTime + 100 : null,
       to: null,
       correlationJobType: CorrelationJobType.Job,
-      visibleType: VisibleType.Internal
+      visibleType: VisibleType.Public
     })
       .then(res => {
         const data = res.data;
         if (data.count > 0) {
           const listComments = data.items;
           setComments(prev => {
-            if (
-              listComments.some((comment: IComments) =>
-                prev.items.some(prevItem => prevItem.commentId === comment.commentId)
-              )
-            ) {
-              return prev;
-            }
             const temp = recursiveStructuredClone(prev);
             temp.count = data.count;
             temp.items = [...listComments, ...temp.items];
@@ -170,12 +169,12 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
         setDocFiles,
         setImgFiles,
         setOpenDialog,
-        `internal/job/${taskId}`,
-        `file/job/${taskId}`
+        `job/${subTaskId}`,
+        `file/job/${subTaskId}`
       )
         .then()
         .catch(err => err);
-    }, [taskId]);
+    }, [subTaskId]);
   }
 
   useEffect(() => {
@@ -185,9 +184,13 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
   }, [isObserverVisible]);
 
   const handleCreateTask = () => {
-    navigate(
-      `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
-    );
+    finishOnly
+      ? navigate(
+          `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
+        )
+      : navigate(
+          `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
+        );
   };
   return (
     <>
@@ -202,15 +205,15 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
         secondaryBtnCallback={handleCloseDialog}
       />
       <div className="flex items-center justify-between">
-        <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
+        <p className="text-primary mb-6 text-base">Chi tiết dự án</p>
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
-            onClick={() => navigate(`/${PathString.CONG_KHAI}/${taskId}`)}
+            onClick={() => navigate(`/${PathString.NOI_BO}/${taskId}`)}
             className="mr-2 flex cursor-pointer items-center gap-1 text-[#0655a7] hover:opacity-75 xl:mr-0"
           >
             <MdOutlineExpandCircleDown size={16} color="#0655a7" className="-rotate-90" />
             <p>
-              <i className="text-[13px] font-[500]">Chuyển tới chờ khách duyệt</i>
+              <i className="text-[13px] font-[500]">Chuyển tới duyệt nội bộ</i>
             </p>
           </div>
         )}
@@ -243,46 +246,25 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
             >
               <TaskDetailsDescription
                 isImagesLoading={isImagesLoading}
+                finalFiles={finalFiles}
+                setFinalFiles={setFinalFiles}
                 taskDetail={jobDetail}
                 docFiles={docFiles}
                 imgFiles={imgFiles}
               />
-
-              {/*SubtasksSection */}
-
-              {isCorrelationJobType === CorrelationJobType.Project && (
-                <div>
-                  <div className="mb-6 mt-10 flex items-center">
-                    <p className="text-primary //border-r-2 mr-3 w-fit pr-4 text-base leading-5">
-                      Sub công việc
-                    </p>
-                    <button
-                      onClick={handleCreateTask}
-                      className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 "
-                    >
-                      <RiAddCircleLine size={16} color="#0655a7" />
-                      <p>
-                        <i className="text-[13px] font-[500]"> Thêm công việc</i>
-                      </p>
-                    </button>
-                  </div>
-                  <SubTasksSection parentId={taskId} visibleType={VisibleType.Internal} />
-                </div>
-              )}
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
-                <p className="text-primary mr-4 w-fit pr-4 text-base leading-5">
+                <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
                   Comments công việc
                 </p>
-                {/* <p className="text-primary mr-4 w-fit pr-4 text-base font-[400] leading-5">
+                {/* <p className="text-primary mr-4 w-fit  pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
                 </p> */}
               </div>
               <div ref={commentSectionTopRef}></div>
               <CommentSection
                 getComments={getLatestComments}
-                // correlationJobType={CorrelationJobType.Job}
-                visibleType={VisibleType.Internal}
+                visibleType={VisibleType.Public}
                 setComments={setComments}
                 comments={comments?.items}
                 handleHideComment={handleHideComment}
@@ -308,12 +290,8 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
               <BasicDetailsSection
                 setOpenDialog={setOpenDialog}
                 taskDetail={jobDetail}
-                visibleType={VisibleType.Internal}
-                correlationJobType={
-                  isCorrelationJobType === CorrelationJobType.Job
-                    ? CorrelationJobType.Job
-                    : CorrelationJobType.Project
-                }
+                visibleType={VisibleType.Public}
+                correlationJobType={CorrelationJobType.Job}
                 handleClickEdit={handleEdit}
               />
             </div>
@@ -324,4 +302,4 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
   );
 };
 
-export default InternalTasksDetail;
+export default SubTaskDetail;

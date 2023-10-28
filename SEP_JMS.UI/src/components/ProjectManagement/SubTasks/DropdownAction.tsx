@@ -7,12 +7,11 @@ import { useNavigate, useParams, redirect } from "react-router-dom";
 import AlwayxInstance from "../../../api/AxiosInstance";
 import CustomDialog from "../../common/CustomDialog";
 import useSnakeBar from "../../../hooks/store/useSnakeBar";
+import { IComments } from "../../../interface/comment";
 
 interface IDropdownAction {
-  // correlationJobType: CorrelationJobType;
   visibleType: VisibleType;
   finishedOnly?: boolean;
-  // taskId: any;
   subTaskId: any;
   removeSubTask?: (id: any) => void;
 }
@@ -20,7 +19,6 @@ interface IDropdownAction {
 const DropdownAction: React.FC<IDropdownAction> = ({
   visibleType,
   finishedOnly,
-  // taskId,
   subTaskId,
   removeSubTask
 }) => {
@@ -64,7 +62,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
     return getLinkForViewJob() + `/${PathString.CHINH_SUA}`;
   };
   const handleViewClick = () => {
-    location.href = getLinkForViewJob();
+    navigate(getLinkForViewJob());
   };
 
   const handleUpdateClick = () => {

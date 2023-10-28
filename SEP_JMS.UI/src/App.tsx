@@ -37,6 +37,8 @@ import EditCompany from "./pages/EditCompany";
 import EditCustomer from "./pages/EditCustomer";
 import EditEmployee from "./pages/EditEmployee";
 import InternalTasksDetail from "./components/InternalTaskDetail";
+import SubTaskDetail from "./components/ProjectManagement/SubTasks/SubTaskDetail";
+import InternalSubTasksDetail from "./components/ProjectManagement/SubTasks/InternalSubTaskDetail";
 
 const theme = createTheme(
   {
@@ -254,12 +256,7 @@ function App() {
                           />
                         }
                       />
-                      <Route
-                        path=":taskId/:subTaskId"
-                        element={
-                          <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Job} />
-                        }
-                      />
+                      <Route path=":taskId/:subTaskId" element={<InternalSubTasksDetail />} />
                       <Route
                         path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
                         element={
@@ -311,10 +308,7 @@ function App() {
                       element={<Home isCorrelationJobType={CorrelationJobType.Job} isParentId />}
                     />
 
-                    <Route
-                      path=":taskId/:subTaskId"
-                      element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
-                    />
+                    <Route path=":taskId/:subTaskId" element={<SubTaskDetail />} />
 
                     <Route
                       path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
@@ -346,9 +340,12 @@ function App() {
                         <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Project} />
                       }
                     />
+                    <Route path=":taskId/:subTaskId" element={<SubTaskDetail finishOnly />} />
                     <Route
-                      path=":taskId/:subTaskId"
-                      element={<TasksDetail isCorrelationJobType={CorrelationJobType.Job} />}
+                      path={`:taskId/:subTaskId/${PathString.CHINH_SUA}`}
+                      element={
+                        <EditTask finishedOnly isCorrelationJobType={CorrelationJobType.Job} />
+                      }
                     />
 
                     <Route

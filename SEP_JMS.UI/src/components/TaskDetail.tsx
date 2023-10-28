@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MdOutlineExpandCircleDown } from "react-icons/md";
 import { CorrelationJobType } from "../enums/correlationJobType";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AlwayxInstance from "../api/AxiosInstance";
 import CircularProgress from "@mui/material/CircularProgress";
 import "react-quill/dist/quill.snow.css";
@@ -57,13 +57,29 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   const navigate = useNavigate();
   const { taskId, subTaskId } = useParams();
 
+  // ham reset
+  // interface CommentsState {
+  //   items: IComments[];
+  //   count: number;
+  // }
+  // const initialToState = null;
+  // const initialCommentsState: CommentsState = {
+  //   items: [],
+  //   count: 0
+  // };
+
+  // const resetStates = () => {
+  //   setComments(initialCommentsState);
+  //   setTo(initialToState);
+  // };
+
   const getComments = () => {
     setCommentLoading(true);
     getCommentTimes.current += 1;
     AlwayxInstance.post("comment/all", {
       pageIndex: 1,
       pageSize: 5,
-      jobId: subTaskId === undefined ? taskId : subTaskId,
+      jobId: taskId,
       from: null,
       to: to,
       visibleType: VisibleType.Public
@@ -112,38 +128,27 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   };
 
   const handleEdit = () => {
-    if (subTaskId === undefined) {
-      // xử lý job và project
-      if (finishOnly) {
-        {
-          isCorrelationJobType === CorrelationJobType.Job
-            ? navigate(
-                `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
-              )
-            : navigate(
-                `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
-              );
-        }
-      } else {
-        {
-          isCorrelationJobType === CorrelationJobType.Job
-            ? navigate(
-                `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
-              )
-            : navigate(
-                `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
-              );
-        }
+    // xử lý job và project
+    if (finishOnly) {
+      {
+        isCorrelationJobType === CorrelationJobType.Job
+          ? navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+            )
+          : navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+            );
       }
     } else {
-      // xu ly subtasks
-      finishOnly
-        ? navigate(
-            `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
-          )
-        : navigate(
-            `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}/${PathString.CHINH_SUA}`
-          );
+      {
+        isCorrelationJobType === CorrelationJobType.Job
+          ? navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+            )
+          : navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+            );
+      }
     }
   };
 
@@ -187,37 +192,21 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   };
 
   {
-    subTaskId === undefined
-      ? useEffect(() => {
-          getTaskDetails(
-            setLoading,
-            setImagesLoading,
-            setJobDetail,
-            breadCrumbTitle,
-            setDocFiles,
-            setImgFiles,
-            setOpenDialog,
-            `job/${taskId}`,
-            `file/job/${taskId}`
-          )
-            .then()
-            .catch(err => err);
-        }, [taskId])
-      : useEffect(() => {
-          getTaskDetails(
-            setLoading,
-            setImagesLoading,
-            setJobDetail,
-            breadCrumbTitle,
-            setDocFiles,
-            setImgFiles,
-            setOpenDialog,
-            `job/${subTaskId}`,
-            `file/job/${subTaskId}`
-          )
-            .then()
-            .catch(err => err);
-        }, [subTaskId]);
+    useEffect(() => {
+      getTaskDetails(
+        setLoading,
+        setImagesLoading,
+        setJobDetail,
+        breadCrumbTitle,
+        setDocFiles,
+        setImgFiles,
+        setOpenDialog,
+        `job/${taskId}`,
+        `file/job/${taskId}`
+      )
+        .then()
+        .catch(err => err);
+    }, [taskId]);
   }
 
   useEffect(() => {
@@ -225,12 +214,6 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
       getComments();
     }
   }, [isObserverVisible]);
-
-  // useEffect(() => {
-  //   setComments({ items: [], count: 0 });
-  //   setTo(0);
-  //   getComments();
-  // }, [isCorrelationJobType]);
 
   const handleCreateTask = () => {
     finishOnly

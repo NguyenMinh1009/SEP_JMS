@@ -27,6 +27,7 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
   
   const [value, setValue] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
+  const [timeRefresh, setTimeRefresh] = useState<number>(Date.now());
   const [selectedStatus, setSelectedStatus] = useState<NotificationStatus>(NotificationStatus.ALL);
 
   const snakeBar = useSnakeBar();
@@ -37,7 +38,8 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
     )
     .then(() => {
       snakeBar.setSnakeBar("Successfully", "success", true);
-      setSelectedStatus(NotificationStatus.ALL);
+      // setSelectedStatus(NotificationStatus.ALL);
+      setTimeRefresh(Date.now());
     })
     .catch(err => {
       console.log(err);
@@ -90,7 +92,7 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
       </p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
-			<NotificationTable status={selectedStatus as unknown as NotificationStatus} searchValue={searchValue}/>
+			<NotificationTable key={timeRefresh} status={selectedStatus as unknown as NotificationStatus} searchValue={searchValue}/>
 		</div>
       </div>
     </>

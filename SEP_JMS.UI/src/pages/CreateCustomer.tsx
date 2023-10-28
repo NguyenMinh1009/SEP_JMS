@@ -20,7 +20,7 @@ import { DatePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
 import { GenderType } from "../enums/genderType";
 import { commonRegex, genderOptions } from "../constants";
-import { BasicCompanyType } from "../interface/company";
+import { BasicCompanyType, CompanyResponseType } from "../interface/company";
 import { dateToTicks } from "../utils/Datetime";
 
 const CreateCustomer = () => {
@@ -33,8 +33,8 @@ const CreateCustomer = () => {
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [gender, setGender] = useState<GenderType>(GenderType.Male);
-  const [selectedCompany, setSelectedCompany] = useState<BasicCompanyType | null>(null);
-  const [companies, setCompanies] = useState<BasicCompanyType[]>([]);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyResponseType | null>(null);
+  const [companies, setCompanies] = useState<CompanyResponseType[]>([]);
   const [showPrice, setShowPrice] = useState<boolean>(false);
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
   const [focusPassword, setFocusPassword] = useState<boolean>(false);
@@ -72,11 +72,11 @@ const CreateCustomer = () => {
   };
 
   const getCompanies = async () => {
-    const companiesRes = await APIClientInstance.post("company/all", {
+    const companiesRes = await APIClientInstance.post("admin/company/all", {
       pageIndex: 1,
       pageSize: 2147483647
     });
-    const companyList: BasicCompanyType[] | undefined = companiesRes.data?.items;
+    const companyList: CompanyResponseType[] | undefined = companiesRes.data?.items;
     if (companyList) {
       setCompanies(companyList);
     }
@@ -94,7 +94,7 @@ const CreateCustomer = () => {
       phone: phone.trim(),
       dob: dob ? dateToTicks(dob.toDate()) : undefined,
       gender: gender,
-      companyId: selectedCompany?.companyId,
+      companyId: selectedCompany?.company.companyId,
       hiddenPrice: !showPrice
     })
       .then(() => {
@@ -155,6 +155,14 @@ const CreateCustomer = () => {
   return (
     <div>
       <div className="mb-6 flex items-center gap-6">
+      
+        <p
+          onClick={() => navigate(`/${PathString.USERS}/${PathString.CREATE_EMPLOYEE}`)}
+          className="text-primary cursor-pointer text-xs opacity-30 transition-all hover:opacity-60"
+        >
+          Tạo mới nhân viên
+        </p>
+        <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <p
           onClick={() => navigate(`/${PathString.USERS}/${PathString.CREATE_COMPANY}`)}
           className="text-primary cursor-pointer text-xs opacity-30 transition-all hover:opacity-60"
@@ -164,13 +172,7 @@ const CreateCustomer = () => {
         <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <p className="text-primary text-base">Tạo mới khách hàng</p>
 
-        <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
-        <p
-          onClick={() => navigate(`/${PathString.USERS}/${PathString.CREATE_EMPLOYEE}`)}
-          className="text-primary cursor-pointer text-xs opacity-30 transition-all hover:opacity-60"
-        >
-          Tạo mới nhân viên
-        </p>
+        
       </div>
       <Divider />
       <div className="flex max-w-[550px] grid-cols-2 flex-col gap-x-12 gap-y-4 py-6 md:grid md:max-w-[1000px] xl:gap-x-24">
@@ -418,7 +420,7 @@ const CreateCustomer = () => {
             onChange={(_, newValue) => {
               if (newValue) setSelectedCompany(newValue);
             }}
-            getOptionLabel={option => option.companyName}
+            getOptionLabel={option => option.company?.companyName}
             size="small"
             options={companies}
             fullWidth

@@ -148,6 +148,8 @@ const CreateEmployee = () => {
   return (
     <div>
       <div className="mb-6 flex items-center gap-6">
+        <p className="text-primary text-base">Tạo mới nhân viên</p>
+        <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <p
           onClick={() => navigate(`/${PathString.USERS}/${PathString.CREATE_COMPANY}`)}
           className="text-primary cursor-pointer text-xs opacity-30 transition-all hover:opacity-60"
@@ -161,8 +163,8 @@ const CreateEmployee = () => {
         >
           Tạo mới khách hàng
         </p>
-        <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
-        <p className="text-primary text-base">Tạo mới nhân viên</p>
+
+
       </div>
       <Divider />
       <div className="flex max-w-[550px] grid-cols-2 flex-col gap-x-12 gap-y-4 py-6 md:grid md:max-w-[1000px] xl:gap-x-24">

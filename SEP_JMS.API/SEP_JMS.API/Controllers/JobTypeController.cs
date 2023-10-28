@@ -47,5 +47,69 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> CreateJobType(string name)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to create job type.");
+                var success = await jobTypeService.CreateJobType(name);
+                return success ? Ok(): StatusCode(500);
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"{logPrefix} Got exception when creating job type. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [Authorize]
+        [HttpPost("{id}")]
+        public async Task<IActionResult> UpdateJobType([FromRoute] Guid id, string name)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update job type {name}.");
+                var success = await jobTypeService.UpdateJobType(id,name);
+                return success ? Ok() : StatusCode(500);
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"{logPrefix} Got exception when updating job type {name}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [Authorize]
+        [HttpPost("duplicatename")]
+        public async Task<ActionResult<bool>> CheckDuplicateName(string name)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to check whether duplicate name of job type {name}.");
+                return await jobTypeService.IsExistName(name);
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"{logPrefix} Got exception when checking whether duplicate name of job type {name}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteJobType([FromRoute] Guid id)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to delete job type {id}.");
+                var success =  await jobTypeService.DeleteJobType(id);
+                return success ? Ok() : StatusCode(500);
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"{logPrefix} Got exception when deleting job type {id}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
     }
 }

@@ -136,6 +136,153 @@ namespace SEP_JMS.Repository.Repositories
         {
             return await Context.Users.AsNoTracking().SingleOrDefaultAsync(user => user.UserId == userId && user.RoleType == role);
         }
+        public async Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model)
+        {
+            var userId = ApiContext.Current.UserId;
+
+            var query = from customer in Context.Users
+                        join job in Context.Jobs
+                        on customer.UserId equals job.CustomerId
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+
+                        select new { customer, company, job };
+            if (ApiContext.Current.Role == RoleType.Account)
+            {
+                query = from data in query
+                        where data.job.AccountId == userId
+                        select data;
+            }
+            else if (ApiContext.Current.Role == RoleType.Designer)
+            {
+                query = from data in query
+                        where data.job.DesignerId == userId
+                        select data;
+            }
+            else throw new Exception("Not supported role");
+
+            if (model.CompanyId.HasValue)
+            {
+                query = from data in query
+                        where data.company.CompanyId == model.CompanyId.Value
+                        select data;
+            }
+            var count = await query.Select(a => a.customer).Distinct().CountAsync();
+            var items = await query.Select(a => a.customer)
+                .Distinct()
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize).ToListAsync();
+
+            return new PagingModel<User>
+            {
+                Count = count,
+                Items = items
+            };
+        }
+        public async Task<PagingModel<Tuple<User, User, Company>>> FindCustomers(CustomerFilterRequestModel model)
+        {
+            var query = from customer in Context.Users
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+                        into companies
+                        from company in companies.DefaultIfEmpty()
+
+                        join account in Context.Users
+                        on company.AccountId equals account.UserId
+                        into accounts
+                        from account in accounts.DefaultIfEmpty()
+
+                        where customer.RoleType == RoleType.Customer
+                        && customer.AccountStatus == AccountStatus.Active
+
+                        select new { customer, account, company };
+            if (model.CompanyId == Guid.Empty)
+            {
+                query = from data in query
+                        where data.customer.CompanyId == null
+                        select data;
+            }
+            else if (model.CompanyId != null)
+            {
+                query = from data in query
+                        where data.customer.CompanyId == model.CompanyId.Value
+                        select data;
+            }
+            if (!string.IsNullOrEmpty(model.SearchText))
+            {
+                query = from data in query
+                        where data.customer.Fullname.ToLower().Contains(model.SearchText.ToLower()) ||
+                        (data.customer.Email != null && data.customer.Email.ToLower().Contains(model.SearchText.ToLower()))
+                        select data;
+            }
+            var customers = await query.OrderBy(data => data.customer.Email)
+                .ThenBy(data => data.customer.Fullname)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .Select(data => Tuple.Create(data.customer, data.account, data.company))
+                .AsNoTracking()
+                .ToListAsync();
+            var count = await query.CountAsync();
+            return new PagingModel<Tuple<User, User, Company>>
+            {
+                Items = customers,
+                Count = count
+            };
+        }
+        public async Task<PagingModel<User>> FindAccounts(UserFilterRequest model)
+        {
+            var query = from account in Context.Users
+                        where account.AccountStatus == AccountStatus.Active
+                        && account.RoleType == RoleType.Account
+                        select account;
+            if (!string.IsNullOrEmpty(model.SearchText))
+            {
+                query = from account in query
+                        where (account.Email != null && account.Email.ToLower().Contains(model.SearchText.ToLower()))
+                        || account.Fullname.ToLower().Contains(model.SearchText.ToLower())
+                        select account;
+            }
+            var accounts = await query.OrderBy(account => account.Fullname)
+                .ThenBy(account => account.Email)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .AsNoTracking()
+                .ToListAsync();
+            var count = await query.CountAsync();
+            return new PagingModel<User>
+            {
+                Items = accounts,
+                Count = count
+            };
+        }
+        public async Task<PagingModel<User>> FindDesigners(UserFilterRequest model)
+        {
+            var query = from designer in Context.Users
+                        where designer.AccountStatus == AccountStatus.Active
+                        && designer.RoleType == RoleType.Designer
+                        select designer;
+            if (!string.IsNullOrEmpty(model.SearchText))
+            {
+                query = from designer in query
+                        where (designer.Email != null && designer.Email.ToLower().Contains(model.SearchText.ToLower()))
+                        || designer.Fullname.ToLower().Contains(model.SearchText.ToLower())
+                        select designer;
+            }
+            var designers = await query.OrderBy(designer => designer.Fullname)
+                .ThenBy(designer => designer.Email)
+                .Skip((model.PageIndex - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .AsNoTracking()
+                .ToListAsync();
+            var count = await query.CountAsync();
+            return new PagingModel<User>
+            {
+                Items = designers,
+                Count = count
+            };
+        }
 
         public async Task<PagingModel<User>> GetUsers(UserFilterRequest model)
         {

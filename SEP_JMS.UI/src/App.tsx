@@ -39,6 +39,11 @@ import EditEmployee from "./pages/EditEmployee";
 import InternalTasksDetail from "./components/InternalTaskDetail";
 import SubTaskDetail from "./components/ProjectManagement/SubTasks/SubTaskDetail";
 import InternalSubTasksDetail from "./components/ProjectManagement/SubTasks/InternalSubTaskDetail";
+import CreatePriceGroups from "./pages/CreatePriceGroups";
+import EditPriceGroup from "./pages/EditPriceGroup";
+import PricesPage from "./pages/Prices";
+import PriceList from "./pages/PriceList";
+import EditTypeOfJobs from "./pages/EditTypeOfJobs";
 
 const theme = createTheme(
   {
@@ -272,6 +277,20 @@ function App() {
                             isInternal
                           />
                         }
+                      />
+                    </Route>
+                  )}
+
+                  {/* Manage Prices */}
+                  {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
+                    <Route path={`/${PathString.PRICES}/*`}>
+                      <Route index element={<PricesPage />} />
+                      <Route path={PathString.THEM_MOI} element={<CreatePriceGroups />} />
+                      <Route path={PathString.TYPEOFJOBS} element={<EditTypeOfJobs />} />
+                      <Route path=":priceGroupId" element={<PriceList />} />
+                      <Route
+                        path={`:priceGroupId/${PathString.CHINH_SUA}`}
+                        element={<EditPriceGroup />}
                       />
                     </Route>
                   )}

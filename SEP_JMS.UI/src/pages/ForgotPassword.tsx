@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import Images from "../img";
 import useCurrentCustomer from "../hooks/store/useCurrentCustomer";
-import { FormControl, MenuItem, Select } from "@mui/material";
+import { FormControl, Link, MenuItem, Select } from "@mui/material";
 import useSnakeBar from "../hooks/store/useSnakeBar";
 import useCurrentEmployee from "../hooks/store/useCurrentEmployee";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
+import { useNavigate } from "react-router-dom";
 // API
 import CircularProgress from "@mui/material/CircularProgress";
 import { commonForgot, commonLogin, customerLogin, employeeLogin } from "../api/Auth";
+import { PathString } from "../enums/MapRouteToBreadCrumb";
 
 
 const ForgotPassword: React.FC = () => {
@@ -21,6 +23,7 @@ const ForgotPassword: React.FC = () => {
   const currentEmployee = useCurrentEmployee();
   const currentPerson = useCurrentPerson();
   const snakeBar = useSnakeBar();
+  const navigate = useNavigate();
 
   const handleSignIn = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
@@ -95,9 +98,19 @@ const ForgotPassword: React.FC = () => {
                 className="submit group relative mx-auto mb-2 mt-10 flex h-[44px] w-[145px] select-none items-center justify-center overflow-hidden rounded-md bg-accent px-8 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#29639e] focus:outline-none focus:ring-2 focus:ring-[#2765a3] focus:ring-opacity-50"
               >
                 <div className="absolute -left-3 bottom-0 top-0 w-1 rotate-12 bg-[#fff] opacity-80 transition-all duration-300 group-hover:left-[calc(100%+10px)]"></div>
-                <span className="absolute">Submit</span>
+                <span className="absolute">Lấy lại mật khẩu</span>
               </button>
               {isLoading && <CircularProgress size={15} />}
+              <br></br>
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  navigate(`/${PathString.DANG_NHAP}`)
+                }}
+              >
+                Đăng nhập ?
+              </Link>
             </form>
           </div>
         </div>

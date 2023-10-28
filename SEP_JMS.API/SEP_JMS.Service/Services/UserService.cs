@@ -173,5 +173,56 @@ namespace SEP_JMS.Service.Services
         {
             return await userRepository.GetUserById(userId, role);
         }
+        public async Task<PagingModel<EmployeeBasicDisplayModel>> FindDesigners(UserFilterRequest model)
+        {
+            var designersInfo = await userRepository.FindDesigners(model);
+            var designers = new List<EmployeeBasicDisplayModel>();
+            foreach (var designerInfo in designersInfo.Items)
+            {
+                var designer = mapper.Map<EmployeeBasicDisplayModel>(designerInfo);
+                designers.Add(designer);
+            }
+            return new PagingModel<EmployeeBasicDisplayModel>
+            {
+                Items = designers,
+                Count = designersInfo.Count
+            };
+        }
+        public async Task<PagingModel<EmployeeBasicDisplayModel>> FindAccounts(UserFilterRequest model)
+        {
+            var accountsInfo = await userRepository.FindAccounts(model);
+            var accounts = new List<EmployeeBasicDisplayModel>();
+            foreach (var accountInfo in accountsInfo.Items)
+            {
+                var account = mapper.Map<EmployeeBasicDisplayModel>(accountInfo);
+                accounts.Add(account);
+            }
+            return new PagingModel<EmployeeBasicDisplayModel>
+            {
+                Items = accounts,
+                Count = accountsInfo.Count
+            };
+        }
+        public async Task<PagingModel<CustomerFindDisplayModel>> FindCustomers(CustomerFilterRequestModel model)
+        {
+            var customersInfo = await userRepository.FindCustomers(model);
+            var customers = new List<CustomerFindDisplayModel>();
+            foreach (var customerInfo in customersInfo.Items)
+            {
+                var customer = mapper.Map<CustomerFindDisplayModel>(customerInfo.Item1);
+                customer.Account = mapper.Map<AccountFindDisplayModel>(customerInfo.Item2);
+                customer.Company = mapper.Map<CompanyDisplayModel>(customerInfo.Item3);
+                customers.Add(customer);
+            }
+            return new PagingModel<CustomerFindDisplayModel>
+            {
+                Items = customers,
+                Count = customersInfo.Count
+            };
+        }
+        public async Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model)
+        {
+            return await userRepository.GetCustomerForFilterJobAccountAndDesigner(model);
+        }
     }
 }

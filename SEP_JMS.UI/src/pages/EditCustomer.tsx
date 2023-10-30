@@ -21,7 +21,7 @@ import { DatePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
 import { GenderType } from "../enums/genderType";
 import { accountStatusOptions, commonRegex, genderOptions } from "../constants";
-import { BasicCompanyType } from "../interface/company";
+import { BasicCompanyType, CompanyResponseType } from "../interface/company";
 import { dateToTicks, ticksToDate } from "../utils/Datetime";
 import { UsersPreviewData } from "../interface/usersPreviewData";
 import useTitle from "../hooks/store/useCurrentTitle";
@@ -40,8 +40,8 @@ const EditCustomer = () => {
   const [phone, setPhone] = useState<string>("");
   const [gender, setGender] = useState<GenderType>(GenderType.Male);
   const [status, setStatus] = useState<AccountStatusType>(AccountStatusType.Active);
-  const [selectedCompany, setSelectedCompany] = useState<BasicCompanyType | null>(null);
-  const [companies, setCompanies] = useState<BasicCompanyType[]>([]);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyResponseType | null>(null);
+  const [companies, setCompanies] = useState<CompanyResponseType[]>([]);
   const [showPrice, setShowPrice] = useState<boolean>(false);
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -85,11 +85,11 @@ const EditCustomer = () => {
   };
 
   const getCompanies = async () => {
-    const companiesRes = await APIClientInstance.post("company/all", {
+    const companiesRes = await APIClientInstance.post("admin/company/all", {
       pageIndex: 1,
       pageSize: 2147483647
     });
-    const companyList: BasicCompanyType[] | undefined = companiesRes.data?.items;
+    const companyList: CompanyResponseType[] | undefined = companiesRes.data?.items;
     if (companyList) {
       setCompanies(companyList);
     }
@@ -125,7 +125,7 @@ const EditCustomer = () => {
       phone: phone.trim(),
       dob: dob ? dateToTicks(dob.toDate()) : undefined,
       gender: gender,
-      companyId: selectedCompany?.companyId,
+      companyId: selectedCompany?.company.companyId,
       hiddenPrice: !showPrice,
       accountStatus: status
     })
@@ -156,7 +156,7 @@ const EditCustomer = () => {
       snakeBar.setSnakeBar("Nhập lại mật khẩu không khớp!", "warning", true);
       return false;
     }
-    if (email.trim() && !commonRegex.email.test(email)) {
+    if (email && email.trim() && !commonRegex.email.test(email)) {
       snakeBar.setSnakeBar("Email sai định dạng!", "warning", true);
       return false;
     }
@@ -484,7 +484,7 @@ const EditCustomer = () => {
             onChange={(_, newValue) => {
               if (newValue) setSelectedCompany(newValue);
             }}
-            getOptionLabel={option => option.companyName}
+            getOptionLabel={option => option.company?.companyName}
             size="small"
             options={companies}
             fullWidth

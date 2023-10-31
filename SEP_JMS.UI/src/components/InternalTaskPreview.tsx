@@ -43,7 +43,8 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
       correlationType:
         isCorrelationJobType === CorrelationJobType.Job
           ? CorrelationJobType.Job
-          : CorrelationJobType.Project
+          : CorrelationJobType.Project,
+      jobStatus: filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);

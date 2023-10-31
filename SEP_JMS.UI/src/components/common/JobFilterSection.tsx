@@ -15,6 +15,7 @@ import useFilterInfo from "../../hooks/store/useFilterInfo";
 import CustomButton from "./CustomButton";
 import { useLocation } from "react-router-dom";
 import AlwayxInstance from "../../api/AxiosInstance";
+import useSnakeBar from "../../hooks/store/useSnakeBar";
 
 interface JobFilterSectionProps {
   isInternal?: boolean;
@@ -51,6 +52,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const currentPerson = useCurrentPerson();
   const filterInfoController = useFilterInfo();
   const location = useLocation();
+  const snakeBar = useSnakeBar();
 
   useEffect(() => {
     getCompanyList();
@@ -130,19 +132,34 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       .catch(err => console.error(err));
   };
 
+  const checkInputDateFilter = () => {
+    let fromInput: number;
+    let toInput: number;
+    fromInput = from ? dateToTicks(from.toDate()) : 0;
+    toInput = to ? dateToTicks(to.toDate()) : 0;
+
+    if (fromInput && toInput !== 0 && toInput < fromInput) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleApply = () => {
-    filterInfoController.setContent?.({
-      from: from ? dateToTicks(from.toDate()) : 0,
-      to: to ? dateToTicks(to.toDate()) : null,
-      jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
-      jobType: selectedJobType?.key ?? undefined,
-      accountId: selectedAccount?.userId ?? undefined,
-      designerId: selectedDesigner?.userId ?? undefined,
-      companyId: selectedCompany?.companyId ?? undefined,
-      correlationType:
-        selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
-      customerId: selectedCustomer?.userId ?? undefined
-    });
+    checkInputDateFilter()
+      ? filterInfoController.setContent?.({
+          from: from ? dateToTicks(from.toDate()) : 0,
+          to: to ? dateToTicks(to.toDate()) : null,
+          jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
+          jobType: selectedJobType?.key ?? undefined,
+          accountId: selectedAccount?.userId ?? undefined,
+          designerId: selectedDesigner?.userId ?? undefined,
+          companyId: selectedCompany?.companyId ?? undefined,
+          correlationType:
+            selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
+          customerId: selectedCustomer?.userId ?? undefined
+        })
+      : snakeBar.setSnakeBar("Tìm kiếm không hợp lệ!", "warning", true);
   };
 
   return (

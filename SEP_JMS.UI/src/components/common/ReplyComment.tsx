@@ -61,7 +61,7 @@ const ReplyComment = ({
     ".reply-btn"
   );
 
-  const { taskId } = useParams();
+  const { taskId, subTaskId } = useParams();
   const currentPerson = useCurrentPerson();
   const overflowingText = useRef<HTMLDivElement | null>(null);
 
@@ -83,7 +83,9 @@ const ReplyComment = ({
       });
       for (const img of imgList) {
         const response = await AlwayxInstance.post(
-          `${getLinkForJobType() + taskId}`,
+          subTaskId === undefined
+            ? `${getLinkForJobType() + taskId}`
+            : `${getLinkForJobType() + subTaskId}`,
           {
             commentId: commentId,
             fileName: img.fileName,

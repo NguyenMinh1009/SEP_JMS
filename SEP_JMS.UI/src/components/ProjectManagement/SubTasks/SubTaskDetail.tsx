@@ -208,7 +208,9 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
         <p className="text-primary mb-6 text-base">Chi tiết dự án</p>
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
-            onClick={() => navigate(`/${PathString.NOI_BO}/${taskId}`)}
+            onClick={() =>
+              navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`)
+            }
             className="mr-2 flex cursor-pointer items-center gap-1 text-[#0655a7] hover:opacity-75 xl:mr-0"
           >
             <MdOutlineExpandCircleDown size={16} color="#0655a7" className="-rotate-90" />

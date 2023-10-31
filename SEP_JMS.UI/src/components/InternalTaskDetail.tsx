@@ -205,7 +205,11 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
         <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
-            onClick={() => navigate(`/${PathString.CONG_KHAI}/${taskId}`)}
+          onClick={() =>
+            isCorrelationJobType === CorrelationJobType.Job
+              ? navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`)
+              : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`)
+          }
             className="mr-2 flex cursor-pointer items-center gap-1 text-[#0655a7] hover:opacity-75 xl:mr-0"
           >
             <MdOutlineExpandCircleDown size={16} color="#0655a7" className="-rotate-90" />

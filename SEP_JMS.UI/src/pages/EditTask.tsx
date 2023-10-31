@@ -38,6 +38,7 @@ import { FileResponse } from "../interface/fileResponse";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { AxiosRequestConfig } from "axios";
 import { InternalJobStatusType } from "../enums/internalJobStatusType";
+import { checkInputEditJob } from "../utils/checkInputJob";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -280,7 +281,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               disabled={currentPerson.roleType === Role.DESIGNER}
               type="number"
               value={quantity}
-              min={0}
+              min={1}
               onChange={e => setQuantity(Number(e.target.value))}
               className="w-full rounded-md border-2 p-2 leading-5 shadow-sm"
             />
@@ -432,6 +433,13 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
       snakeBar.setSnakeBar("Tổng file vượt quá 100MB!", "warning", true);
       return;
     }
+    //check validate input edit job
+    var errors = checkInputEditJob(quantity, deadline, taskDetail.createdTime);
+    errors.forEach(error => {
+      snakeBar.setSnakeBar(error, "warning", true);
+    });
+    if (errors.length !== 0) return;
+
     setButtonLoading(true);
     Promise.all([
       editBasicInfoPromise(),

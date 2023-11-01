@@ -5,6 +5,7 @@ using SEP_JMS.Common.Converters;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Request.Job;
+using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model.Models.ExtensionModels;
@@ -43,6 +44,20 @@ namespace SEP_JMS.Repository.Repositories
             {
                 Items = jobs,
                 Count = count
+            };
+        }
+
+        public async Task<ProjectDetailStatistics> GetProjectDetailStatistics(Guid id)
+        {
+            var query = from job in Context.Jobs
+                        where job.ParentId == id 
+                        select job;
+            var total = await query.CountAsync();
+            var success = await query.Where(x => x.JobStatus == JobStatus.Completed).CountAsync();
+            return new ProjectDetailStatistics()
+            {
+                TotalJob = total,
+                SuccessJob = success
             };
         }
 

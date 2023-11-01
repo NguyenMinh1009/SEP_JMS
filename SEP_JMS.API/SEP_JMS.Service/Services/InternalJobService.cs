@@ -71,7 +71,11 @@ namespace SEP_JMS.Service.Services
         {
             var job = await jobRepository.GetBasicJob(internalJobId);
             if (job == null) return false;
-
+            if(job.CorrelationType == CorrelationJobType.Project && internalJobStatus == InternalJobStatus.Completed)
+            {
+                var projectDetail = await jobRepository.GetProjectDetailStatistics(internalJobId);
+                if(projectDetail.SuccessJob != projectDetail.TotalJob) return false;
+            }
             var currentStatus = job.InternalJobStatus;
 
             switch (ApiContext.Current.Role)

@@ -8,6 +8,7 @@ using SEP_JMS.Common.Logger;
 using SEP_JMS.Common.Utils;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request.Job;
+using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Model.Api.Response.Company;
 using SEP_JMS.Model.Api.Response.Job;
 using SEP_JMS.Model.Api.Response.JobType;
@@ -305,6 +306,10 @@ namespace SEP_JMS.Service.Services
                 response.Add(statistics);
             }
             return response;
+        }
+        public async Task<ProjectDetailStatistics> GetProjectDetailStatistics(Guid id)
+        {
+            return await jobRepository.GetProjectDetailStatistics(id);
         }
     }
 }

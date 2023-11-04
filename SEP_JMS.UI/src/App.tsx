@@ -44,6 +44,7 @@ import EditPriceGroup from "./pages/EditPriceGroup";
 import PricesPage from "./pages/Prices";
 import PriceList from "./pages/PriceList";
 import EditTypeOfJobs from "./pages/EditTypeOfJobs";
+import ReportPage from "./pages/ReportPage";
 
 const theme = createTheme(
   {
@@ -293,6 +294,12 @@ function App() {
                         element={<EditPriceGroup />}
                       />
                     </Route>
+                  )}
+                  {/* Report page */}
+                  {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
+                    <Route path={`/${PathString.REPORT}/*`}>
+                    <Route index element={<ReportPage />} />
+                  </Route>
                   )}
 
                   {/* viec-cong-khai/viec-hang-ngay */}

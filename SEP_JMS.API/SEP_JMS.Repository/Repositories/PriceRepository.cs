@@ -47,6 +47,7 @@ namespace SEP_JMS.Repository.Repositories
             {
                 var priceGr = new PriceGroup
                 {
+                    PriceGroupId = Guid.NewGuid(),
                     Name = model.Name,
                     Description = model.Description
                 };

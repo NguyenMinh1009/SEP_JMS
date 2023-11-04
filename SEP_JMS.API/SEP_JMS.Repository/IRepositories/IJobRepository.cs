@@ -4,6 +4,7 @@ using SEP_JMS.Model.Models.ExtensionModels;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Response;
 
 namespace SEP_JMS.Repository.IRepositories
 {
@@ -41,5 +42,6 @@ namespace SEP_JMS.Repository.IRepositories
 
         public Task<List<Tuple<Company, long, int>>> GetJobStatistics(StatisticsJobRequest model, JobStatus? jobStatus);
         public Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(InternalJobFilterRequestModel model);
+        public Task<ProjectDetailStatistics> GetProjectDetailStatistics(Guid id);
     }
 }

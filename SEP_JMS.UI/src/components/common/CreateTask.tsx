@@ -32,6 +32,7 @@ import { cn } from "../../utils/className";
 import { MdOutlineExpandCircleDown } from "react-icons/md";
 import { DateTimePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
+import { checkInputCreateJob } from "../../utils/checkInputJob";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -259,6 +260,14 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
       snakeBar.setSnakeBar("Tổng file vượt quá 100MB!", "warning", true);
       return;
     }
+
+    //check validate input create job
+    var errors = checkInputCreateJob(quantity, deadline);
+    errors.forEach(error => {
+      snakeBar.setSnakeBar(error, "warning", true);
+    });
+    if (errors.length !== 0) return;
+
     setLoading(true);
     const formData = new FormData();
     const jobPayloadData = {

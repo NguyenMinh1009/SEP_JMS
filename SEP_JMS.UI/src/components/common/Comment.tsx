@@ -65,12 +65,12 @@ const Comment = ({
     ".reply-btn"
   );
 
-  const { taskId } = useParams();
+  const { taskId, subTaskId } = useParams();
   const currentPerson = useCurrentPerson();
 
   const getFileForJobType = (img: string, link: string) => {
     return AlwayxInstance.post(
-      `${link + taskId}`,
+      subTaskId === undefined ? `${link + taskId}` : `${link + subTaskId}`,
       {
         commentId: commentId,
         fileName: img,

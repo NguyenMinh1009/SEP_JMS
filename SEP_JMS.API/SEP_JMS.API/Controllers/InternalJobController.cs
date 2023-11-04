@@ -7,6 +7,7 @@ using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Request.InternalJob;
 using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Service.IServices;
 using System.Net;
 

@@ -19,6 +19,7 @@ using SEP_JMS.Model.Api.Response.Company;
 using SEP_JMS.Model.Api.Response.JobType;
 using SEP_JMS.Model.Api.Request.File;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Response;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -151,6 +152,11 @@ namespace SEP_JMS.API.Controllers
                 {
                     model.DesignerId = null;
                     model.AccountId = null;
+                }
+                if(model.JobStatus == JobStatus.Completed && model.CorrelationType == CorrelationJobType.Project)
+                {
+                    var projectDetail = await jobService.GetProjectDetailStatistics(jobId);
+                    if(projectDetail.SuccessJob != projectDetail.TotalJob) return BadRequest();
                 }
                 var success = await jobService.UpdateJob(jobId, model);
                 return success ? Ok() : BadRequest();
@@ -331,6 +337,21 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when getting job statistics. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+        [Authorize]
+        [HttpGet("{id}/projectdetailstatistics")]
+        public async Task<ActionResult<ProjectDetailStatistics>> GetProjectDetailStatistics([FromRoute] Guid id)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get project detail statistics.");
+                return await jobService.GetProjectDetailStatistics(id);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when getting project detail statistics. Error: {ex}");
                 return StatusCode(500);
             }
         }

@@ -14,6 +14,8 @@ namespace SEP_JMS.Service.IServices
         public Task<User?> Login(UserLoginRequest model);
         public Task<int> ChangePassword(ChangePasswordRequest model);
         public Task<User?> UpdateProfile(UpdateProfileRequest model);
+        public Task<bool> UpdateAvatar(Guid userId, string path);
+        public Task<string> GetAvatar(Guid userId);
         public Task ForgotPassword(ForgotPasswordRequest model);
         public Task<User?> GetUserByIdWithoutRole(Guid userId);
         public Task<bool> IsValidUsername(string username);

@@ -224,5 +224,15 @@ namespace SEP_JMS.Service.Services
         {
             return await userRepository.GetCustomerForFilterJobAccountAndDesigner(model);
         }
+
+        public async Task<bool> UpdateAvatar(Guid userId, string path)
+        {
+            return await userRepository.UpdateAvatar(userId, path);
+        }
+
+        public async Task<string> GetAvatar(Guid userId)
+        {
+            return await userRepository.GetAvatar(userId);
+        }
     }
 }

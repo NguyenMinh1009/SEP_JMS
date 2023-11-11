@@ -16,5 +16,6 @@
         public const long commentFileSize = 50L * 1024L * 1024L; //50MB
         public const long requirementFileSize = 100L * 1024L * 1024L; //100MB
         public const long previewFileSize = 5 * 1024L * 1024L; //1MB
+        public const long avatarFileSize = 1 * 1024L * 1024L; //1MB
     }
 }

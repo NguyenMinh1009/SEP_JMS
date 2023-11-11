@@ -526,5 +526,23 @@ namespace SEP_JMS.Repository.Repositories
             return await Context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() ==  model.Username.ToLower()
                 && u.Password == model.Password);
         }
+
+        public async Task<bool> UpdateAvatar(Guid userId, string path)
+        {
+            var user = await Context.Users.FirstAsync(x => x.UserId == userId);
+           
+            user.AvatarUrl = path;
+            
+            Context.Users.Update(user);
+            var rs = await Context.SaveChangesAsync();
+            Context.Entry(user).State = EntityState.Detached;
+            return rs != 0;
+        }
+
+        public async Task<string> GetAvatar(Guid userId)
+        {
+            var rs = await GetUserByIdWithoutRole(userId);
+            return rs?.AvatarUrl ?? "";
+        }
     }
 }

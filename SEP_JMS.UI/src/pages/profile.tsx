@@ -138,13 +138,13 @@ const Profile = () => {
       //element: <TaskPreview />
     },
     {
-      text: "Đổi mật khẩu",
-      icon: <FaLock size={14} />
+      text: "Cập nhật thông tin",
+      icon: <AiFillEdit size={14} />
       //element: <TaskPreview />
     },
     {
-      text: "Cập nhật thông tin",
-      icon: <AiFillEdit size={14} />
+      text: "Đổi mật khẩu",
+      icon: <FaLock size={14} />
       //element: <TaskPreview />
     },
     {

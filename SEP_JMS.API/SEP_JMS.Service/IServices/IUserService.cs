@@ -30,5 +30,6 @@ namespace SEP_JMS.Service.IServices
         public Task<PagingModel<EmployeeBasicDisplayModel>> FindAccounts(UserFilterRequest model);
         public Task<PagingModel<CustomerFindDisplayModel>> FindCustomers(CustomerFilterRequestModel model);
         public Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model);
+        public Task<int> CountUserByRole(RoleType role);
     }
 }

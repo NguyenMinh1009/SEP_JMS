@@ -311,5 +311,15 @@ namespace SEP_JMS.Service.Services
         {
             return await jobRepository.GetProjectDetailStatistics(id);
         }
+
+        public async Task<int> GetTotalJob()
+        {
+            return await jobRepository.Count(c => c.CorrelationType == CorrelationJobType.Job);
+        }
+
+        public async Task<int> GetTotalProject()
+        {
+            return await jobRepository.Count(c => c.CorrelationType == CorrelationJobType.Project);
+        }
     }
 }

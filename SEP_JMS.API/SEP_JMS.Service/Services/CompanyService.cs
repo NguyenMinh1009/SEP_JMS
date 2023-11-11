@@ -69,5 +69,10 @@ namespace SEP_JMS.Service.Services
         {
             await companyRepository.UpdateCompany(id, model);
         }
+        
+        public async Task<int> GetTotalComapy()
+        {
+            return await companyRepository.Count(c => true);
+        }
     }
 }

@@ -234,5 +234,10 @@ namespace SEP_JMS.Service.Services
         {
             return await userRepository.GetAvatar(userId);
         }
+
+        public async Task<int> CountUserByRole(RoleType role)
+        {
+            return await userRepository.Count(u => u.RoleType == role);
+        }
     }
 }

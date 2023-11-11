@@ -14,5 +14,6 @@ namespace SEP_JMS.Service.IServices
         public Task<Company?> GetCompanyById(Guid id);
         public Task<CompanyDisplayModel> CreateCompany(CompanyCreateRequestModel model);
         public Task UpdateCompany(Guid id, CompanyUpdateRequestModel model);
+        public Task<int> GetTotalComapy();
     }
 }

@@ -3,15 +3,17 @@ import Images from "../img";
 import { cn } from "../utils/className";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import { Divider } from "@mui/material";
-import { roleOptions } from "../constants";
+import { APIUrlHost, roleOptions } from "../constants";
 import { MdOutlineLogout } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import { useClickOutside } from "../utils/useClickOutside";
+import useAvtRef from "../hooks/store/useCurrentAvatar";
 
 const Avatar = () => {
   const [isExpand, setExpand] = useState<boolean>(false);
   const currentPerson = useCurrentPerson();
+  const avtRef = useAvtRef();
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +43,7 @@ const Avatar = () => {
         )}
       >
         <img
-          src={Images.avtPlaceHolder}
+          src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content ?? Images.avtPlaceHolder}
           className="h-full w-full rounded-full object-cover"
           alt=""
         />
@@ -63,7 +65,7 @@ const Avatar = () => {
               {roleOptions.find(item => item.key === currentPerson.roleType)?.text}
             </p>
             <div className="h-16 w-16 overflow-hidden rounded-full">
-              <img src={Images.avtPlaceHolder} alt="" />
+              <img src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content ?? Images.avtPlaceHolder} alt="" />
             </div>
           </div>
         </div>

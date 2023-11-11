@@ -152,3 +152,5 @@ export const commonRegex = {
   password: /^(?=.*\d)(?=.*[!@#$%^&*()_+]).{8,}$/,
   username: /^[a-zA-Z0-9_-]{3,20}$/
 };
+
+export const APIUrlHost = "http://localhost:5206"

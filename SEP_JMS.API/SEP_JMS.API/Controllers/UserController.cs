@@ -169,7 +169,7 @@ namespace SEP_JMS.API.Controllers
                 var fileModel = await FileUtility.SaveOneFile(ApiConstants.AvatarUploadFolder, ApiContext.Current.UserId.ToString(), file);
                 if (fileModel != null)
                 {
-                    await userService.UpdateAvatar(ApiContext.Current.UserId, fileModel.FileName);
+                    await userService.UpdateAvatar(ApiContext.Current.UserId, "api/user/avatar/" + fileModel.FileName);
                 }
                 return fileModel == null ? BadRequest() : Ok();
             }
@@ -180,14 +180,15 @@ namespace SEP_JMS.API.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet("avatar")]
-        public async Task<IActionResult> GetAvatar()
+        [HttpGet("avatar/{payload}")]
+        public async Task<IActionResult> GetAvatar(string payload)
         {
             try
             {
-                logger.Info($"{logPrefix} Start to get avatar for user {ApiContext.Current.UserId}.");
-                var fPath = await userService.GetAvatar(ApiContext.Current.UserId);
+                var fPath = payload.Split("?").First();
+                logger.Info($"{logPrefix} Start to get avatar for user {fPath}.");
+                // var fPath = await userService.GetAvatar(userId);
+                // if (!String.IsNullOrEmpty(fPath)) fPath = fPath.Split("/").Last().Split("?").First();
                 var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ApiConstants.AvatarUploadFolder, fPath);
                 if (!System.IO.File.Exists(filePath)) return StatusCode(404);
                 _ = new FileExtensionContentTypeProvider().TryGetContentType(filePath, out string? mediaType);

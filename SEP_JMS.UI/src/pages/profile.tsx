@@ -231,9 +231,9 @@ const Profile = () => {
             alt=""
             className="w-full object-cover"
           />
-          <div className="absolute left-0 top-full flex h-2/5 w-full flex-col items-center justify-center gap-2 bg-black bg-opacity-30 transition-all group-hover:top-[60%]">
+          <div className="absolute left-0 top-full flex h-2/5 w-full flex-col items-center justify-center gap-2 bg-black bg-opacity-30 transition-all group-hover:top-[60%]" onClick={avatarHandler}>
             <MdPhotoCamera size={26} className="text-white" />
-            <p className="font-semibold text-white" onClick={avatarHandler}>Thay ảnh đại diện</p>
+            <p className="font-semibold text-white">Thay ảnh đại diện</p>
           </div>
         </div>
         <div className="w-full">

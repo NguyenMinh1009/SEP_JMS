@@ -83,7 +83,8 @@ namespace SEP_JMS.API.Controllers
                 var notiCreationRequest = new NotiCreationRequest()
                 {
                     EntityIdentifier = (Guid)jobId,
-                    EntityName = "CreateJob",
+                    EntityName = model.CorrelationType == CorrelationJobType.Job ? "CreateJob" : "CreateProject",
+                    Title = model.Title,
                     NotiType = NotiType.FromJob,
                     Receivers = receivers,
                 };

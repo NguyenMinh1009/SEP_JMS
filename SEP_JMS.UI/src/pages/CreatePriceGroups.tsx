@@ -10,6 +10,7 @@ import useSnakeBar from "../hooks/store/useSnakeBar";
 import { useNavigate } from "react-router-dom";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import { IoCreateOutline } from "react-icons/io5";
+import moment from "moment";
 
 interface ICompanyPreview {
   searchValue?: string;
@@ -77,6 +78,33 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
       });
   };
 
+  const handleGetTemplate = () => {
+    APIClientInstance.post(
+      "price/export_template",
+      null,
+      { responseType: "blob" }
+    )
+      .then(response => {
+        const docFile = new File(
+          [response.data],
+          "Template_Price_" + moment(new Date()).format("DD-MM-YYYY - hhhmm"),
+          {
+            type: response.data.type
+          }
+        );
+        const fileLink = document.createElement("a");
+        fileLink.href = URL.createObjectURL(docFile);
+        fileLink.setAttribute(
+          "download",
+          "Template_Price_" + moment(new Date()).format("DD-MM-YYYY - hgmm")
+        );
+        fileLink.click();
+      })
+      .finally(() => {
+        // setIsExporting(false);
+      });
+  };
+
   const getJobTypes = async () => {
     setLoading(true);
     await APIClientInstance.get(`jobtype/all`)
@@ -91,7 +119,7 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
             priceGroupName: "",
             unitPrice: 0
           })));
-        
+
       })
       .finally(() => {
         setLoading(false);
@@ -144,17 +172,26 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
             />
           </div>
         </div>
-        <div
-          onClick={handleCreatePriceGroup}
-          className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75"
-        >
-          {isLoading ? (
-            <CircularProgress size={20} className="text-white" />
-          ) : (
-            <IoCreateOutline size={20} className="text-white" />
-          )}
-          <span>Lưu thông tin</span>
+        <div className="flex items-start gap-3">
+          <div
+            onClick={handleGetTemplate}
+            className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75"
+          >
+            <span>Nhập từ file</span>
+          </div>
+          <div
+            onClick={handleCreatePriceGroup}
+            className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75"
+          >
+            {isLoading ? (
+              <CircularProgress size={20} className="text-white" />
+            ) : (
+              <IoCreateOutline size={20} className="text-white" />
+            )}
+            <span>Lưu thông tin</span>
+          </div>
         </div>
+
       </div>
       <p className="text-primary mb-6 text-base">Danh sách đơn giá</p>
       <Box

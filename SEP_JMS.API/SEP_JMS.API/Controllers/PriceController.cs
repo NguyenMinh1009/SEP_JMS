@@ -9,6 +9,9 @@ using SEP_JMS.Service.IServices;
 using System.Data;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Response;
+using Microsoft.AspNetCore.StaticFiles;
+using SEP_JMS.Common.Utils;
+using SEP_JMS.Service.Services;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -108,6 +111,36 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Error($"{logPrefix} Got exception when deleting price group {id}. Error: {ex}");
                 return StatusCode(500);
+            }
+        }
+
+        [HttpPost("export_template")]
+        public async Task<IActionResult> ExportTemplate()
+        {
+            var filePath = string.Empty;
+            try
+            {
+                logger.Info($"{logPrefix} Start to export template.");
+                filePath = await priceService.ExportTemplate();
+                if (string.IsNullOrEmpty(filePath)) return BadRequest();
+                _ = new FileExtensionContentTypeProvider().TryGetContentType(filePath, out string? mediaType);
+                return new FileStreamResult(new FileStream(filePath, FileMode.Open), mediaType ?? "application/octet-stream");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when exporting template. Error: {ex}");
+                return StatusCode(500);
+            }
+            finally
+            {
+                try
+                {
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+                catch { }
             }
         }
     }

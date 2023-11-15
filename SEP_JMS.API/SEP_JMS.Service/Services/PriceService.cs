@@ -72,6 +72,7 @@ namespace SEP_JMS.Service.Services
             using var worksheet = package.Workbook.Worksheets.Add("Template for create new Group Price");
            // worksheet.Rows.Height = 60;
             worksheet.Columns.Width = 15;
+            worksheet.Column(1).Width = 20;
             worksheet.Column(2).Width = 30;
             worksheet.Column(3).Width = 30;
             worksheet.Column(4).Width = 30;
@@ -80,7 +81,7 @@ namespace SEP_JMS.Service.Services
             worksheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-            worksheet.Column(1).Width = 4;
+            worksheet.Column(1).Width = 15;
             worksheet.Column(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
             worksheet.Row(1).Height = 30;
 
@@ -91,7 +92,7 @@ namespace SEP_JMS.Service.Services
             worksheet.Cells["C4"].Value = "Mô tả";
             worksheet.Cells["D4"].Value = "Đơn giá";
             
-            worksheet.Cells["A1:B1"].Style.Font.Bold = true;
+            worksheet.Cells["A1:A2"].Style.Font.Bold = true;
             worksheet.Cells["A4:D4"].Style.Font.Bold = true;
 
             var index = 5;

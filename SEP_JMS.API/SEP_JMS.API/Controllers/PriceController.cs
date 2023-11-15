@@ -12,6 +12,7 @@ using SEP_JMS.Model.Api.Response;
 using Microsoft.AspNetCore.StaticFiles;
 using SEP_JMS.Common.Utils;
 using SEP_JMS.Service.Services;
+using OfficeOpenXml;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -22,11 +23,13 @@ namespace SEP_JMS.API.Controllers
     {
         private readonly string logPrefix = "[PriceController]";
         private readonly IPriceService priceService;
+        private readonly IJobTypeService jobTypeService;
         private readonly IJMSLogger logger;
 
-        public PriceController(IPriceService priceService, IJMSLogger logger)
+        public PriceController(IPriceService priceService, IJobTypeService jobTypeService, IJMSLogger logger)
         {
             this.priceService = priceService;
+            this.jobTypeService = jobTypeService;
             this.logger = logger;
         }
         [HttpPost("all")]
@@ -141,6 +144,69 @@ namespace SEP_JMS.API.Controllers
                     }
                 }
                 catch { }
+            }
+        }
+
+        [HttpPost("import_template_file")]
+        public async Task<IActionResult> ImportTemplateFile(IFormFile file)
+        {
+            var filePath = string.Empty;
+            try
+            {
+                logger.Info($"{logPrefix} Start to import template.");
+                if (file == null || file.Length == 0 || file.Length > PolicyConstants.maxFileSizeDrive)
+                {
+                    throw new Exception("Invalid file!");
+                }
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream).ConfigureAwait(false);
+
+                    using (var package = new ExcelPackage(memoryStream))
+                    {
+                        var worksheet = package.Workbook.Worksheets[0];
+                        // parse worksheet
+                        var result = new PriceListDisplayModel();
+                        result.Group = new PriceGroup();
+                        result.Prices = new List<Price>();
+
+                        result.Group.Name = worksheet.Cells["B1"].Value.ToString() ?? "";
+                        result.Group.Description = worksheet.Cells["B2"].Value.ToString() ?? "";
+
+                        var index = 5;
+                        var jtAll = await jobTypeService.GetJobTypes();
+                        for (var i = 0; i < jtAll.Count; i++)
+                        {
+                            var tName = worksheet.Cells[$"B{index}"].Value.ToString();
+                            if (!String.IsNullOrEmpty(tName) )
+                            {
+                                var jobType = jtAll.Where(e => e.TypeName.Equals(tName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                                if (jobType != null )
+                                {
+                                    result.Prices.Add(new Price()
+                                    {
+                                        JobTypeId = jobType.TypeId,
+                                        Description = worksheet.Cells[$"C{index}"].Value.ToString(),
+                                        UnitPrice = Convert.ToInt32(worksheet.Cells[$"D{index}"].Value)
+                                    }) ;
+                                }
+                                
+                            }
+                            index++;
+                        }
+
+                        return Ok(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when importing template. Error: {ex}");
+                return StatusCode(500);
+            }
+            finally
+            {
+                
             }
         }
     }

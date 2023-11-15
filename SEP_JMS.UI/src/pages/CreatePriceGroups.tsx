@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { styled, alpha } from '@mui/material/styles';
 import APIClientInstance from "../api/AxiosInstance";
-import { Box, CircularProgress, Table, TableBody, TableContainer } from "@mui/material";
+import { Box, CircularProgress, Menu, MenuItem, MenuProps, Table, TableBody, TableContainer } from "@mui/material";
 import { PriceItem } from "../interface/price";
 import PriceListTableHead from "../components/price/priceList/PriceListHead";
 import PriceListPreviewRow from "../components/price/priceList/PriceListPreviewRow";
@@ -11,15 +12,58 @@ import { useNavigate } from "react-router-dom";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import { IoCreateOutline } from "react-icons/io5";
 import moment from "moment";
+import { FaFileImport } from "react-icons/fa";
 
 interface ICompanyPreview {
   searchValue?: string;
 }
 
+const StyledMenu = styled((props: MenuProps) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 180,
+    color:
+      theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    '& .MuiMenu-list': {
+      padding: '4px 0',
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      '&:active': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity,
+        ),
+      },
+    },
+  },
+}));
+
 const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
   const [priceGroupName, setPriceGroupName] = useState<string>("");
   const [priceGroupDescription, setPriceGroupDescription] = useState<string>("");
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [isProcessing, setProcessing] = useState<boolean>(false);
   const [jobTypes, setJobTypes] = useState<any[]>([]);
   const [priceList, setPriceList] = useState<Partial<PriceItem>[]>(
     jobOptions.map(item => ({
@@ -29,6 +73,17 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
       unitPrice: 0
     }))
   );
+
+  // custom drop menu
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
 
   const snakeBar = useSnakeBar();
   const navigate = useNavigate();
@@ -79,6 +134,8 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
   };
 
   const handleGetTemplate = () => {
+    handleMenuClose();
+    setProcessing(true);
     APIClientInstance.post(
       "price/export_template",
       null,
@@ -101,8 +158,47 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
         fileLink.click();
       })
       .finally(() => {
-        // setIsExporting(false);
+        setProcessing(false);
       });
+  };
+
+  const handleImportTemplate = () => {
+    handleMenuClose();
+    setProcessing(true);
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    input.click();
+    input.onchange = (e: any) => {
+      console.log(input.files);
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
+      APIClientInstance.post("price/import_template_file", formData)
+        .then(response => {
+          const data = response.data;
+          console.log(data);
+          setPriceGroupName(data.group.name);
+          setPriceGroupDescription(data.group.description);
+
+          // price list
+          const cloneList = recursiveStructuredClone(priceList);
+          for (const pr of data.prices) {
+            const index = cloneList.findIndex(item => item.jobTypeId === pr.jobTypeId);
+            if (index > -1) {
+              cloneList[index].unitPrice = pr.unitPrice;
+              cloneList[index].description = pr.description;
+            }
+          }
+          setPriceList(cloneList);
+          console.log(cloneList);
+
+        })
+        .catch(err => {
+          console.log(err);
+          snakeBar.setSnakeBar("Có lỗi xảy ra khi import", "error", true);
+        })
+        .finally(() => setProcessing(false));
+    };
   };
 
   const getJobTypes = async () => {
@@ -173,12 +269,36 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
           </div>
         </div>
         <div className="flex items-start gap-3">
+          <StyledMenu
+            id="demo-customized-menu"
+            MenuListProps={{
+              'aria-labelledby': 'demo-customized-button',
+            }}
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleImportTemplate} disableRipple>
+              Nhập từ file trên máy
+            </MenuItem>
+            <MenuItem onClick={handleGetTemplate} disableRipple>
+              
+              Tải về Template
+            </MenuItem>
+          
+          </StyledMenu>
           <div
-            onClick={handleGetTemplate}
+            onClick={handleMenuClick}
             className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75"
           >
+            {isProcessing ? (
+              <CircularProgress size={20} className="text-white" />
+            ) : (
+              <FaFileImport size={20} className="text-white" />
+            )}
             <span>Nhập từ file</span>
           </div>
+          
           <div
             onClick={handleCreatePriceGroup}
             className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75"

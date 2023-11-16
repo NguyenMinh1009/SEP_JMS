@@ -1,4 +1,5 @@
 export enum PathString {
+  HOMEPAGE = "homepage",
   DANG_NHAP = "dang-nhap",
   QUEN_MAT_KHAU = "quen-mat-khau",
   CONG_KHAI = "viec-dang-lam",

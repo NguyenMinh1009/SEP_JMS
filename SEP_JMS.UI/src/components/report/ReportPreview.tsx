@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import {
   Box,
   CircularProgress,
@@ -27,7 +27,7 @@ const ReportPreview: React.FC<IReportPreview> = () => {
 
   const getReportInfo = () => {
     setLoading(true);
-    AlwayxInstance.post("job/statistics", {
+    APIClientInstance.post("job/statistics", {
       ...filterInfoController.content
     })
       .then(res => {

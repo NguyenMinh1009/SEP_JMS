@@ -170,8 +170,8 @@ namespace SEP_JMS.API.Controllers
                         result.Group = new PriceGroup();
                         result.Prices = new List<Price>();
 
-                        result.Group.Name = worksheet.Cells["B1"].Value.ToString() ?? "";
-                        result.Group.Description = worksheet.Cells["B2"].Value.ToString() ?? "";
+                        result.Group.Name = worksheet.Cells["B1"].Value?.ToString() ?? "";
+                        result.Group.Description = worksheet.Cells["B2"].Value?.ToString() ?? "";
 
                         var index = 5;
                         var jtAll = await jobTypeService.GetJobTypes();
@@ -186,8 +186,8 @@ namespace SEP_JMS.API.Controllers
                                     result.Prices.Add(new Price()
                                     {
                                         JobTypeId = jobType.TypeId,
-                                        Description = worksheet.Cells[$"C{index}"].Value.ToString(),
-                                        UnitPrice = Convert.ToInt32(worksheet.Cells[$"D{index}"].Value)
+                                        Description = worksheet.Cells[$"C{index}"].Value?.ToString(),
+                                        UnitPrice = Convert.ToInt32(worksheet.Cells[$"D{index}"].Value?.ToString() ?? "0")
                                     }) ;
                                 }
                                 

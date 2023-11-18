@@ -271,7 +271,7 @@ function App() {
                           <EditTask isInternal isCorrelationJobType={CorrelationJobType.Job} />
                         }
                       />
-                      <Route
+                      {/* <Route
                         path={`:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`}
                         element={
                           <Home
@@ -280,7 +280,7 @@ function App() {
                             isInternal
                           />
                         }
-                      />
+                      /> */}
                     </Route>
                   )}
 
@@ -300,8 +300,8 @@ function App() {
                   {/* Report page */}
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
                     <Route path={`/${PathString.REPORT}/*`}>
-                    <Route index element={<ReportPage />} />
-                  </Route>
+                      <Route index element={<ReportPage />} />
+                    </Route>
                   )}
 
                   {/* viec-cong-khai/viec-hang-ngay */}

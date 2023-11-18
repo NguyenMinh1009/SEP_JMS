@@ -66,7 +66,7 @@ interface RouteRule {
   path: string;
   roles?: Role[];
   element: any;
-  sub_routes?: RouteRule[]
+  sub_routes?: RouteRule[];
 }
 
 const PathRules: RouteRule[] = [
@@ -106,28 +106,28 @@ const PathRules: RouteRule[] = [
     sub_routes: [
       {
         path: `${PathString.CREATE_COMPANY}`,
-        element: <CreateCompany />,
+        element: <CreateCompany />
       },
       {
         path: `${PathString.CREATE_CUSTOMER}`,
-        element: <CreateCustomer />,
+        element: <CreateCustomer />
       },
       {
         path: `${PathString.CREATE_EMPLOYEE}`,
-        element: <CreateEmployee />,
+        element: <CreateEmployee />
       },
       {
         path: `${PathString.KHACH_HANG}/:userId/${PathString.CHINH_SUA}`,
-        element: <EditCustomer />,
+        element: <EditCustomer />
       },
       {
         path: `${PathString.COMPANY}/:companyId/${PathString.CHINH_SUA}`,
-        element: <EditCompany />,
+        element: <EditCompany />
       },
       {
         path: `${PathString.NHAN_VIEN}/:userId/${PathString.CHINH_SUA}`,
-        element: <EditEmployee />,
-      },
+        element: <EditEmployee />
+      }
     ]
   },
   {
@@ -137,28 +137,185 @@ const PathRules: RouteRule[] = [
     sub_routes: [
       {
         path: `${PathString.THEM_MOI}`,
-        element: <CreatePriceGroups />,
+        element: <CreatePriceGroups />
       },
       {
         path: `${PathString.TYPEOFJOBS}`,
-        element: <EditTypeOfJobs />,
+        element: <EditTypeOfJobs />
       },
       {
         path: `:priceGroupId`,
-        element: <PriceList />,
+        element: <PriceList />
       },
       {
         path: `:priceGroupId/${PathString.CHINH_SUA}`,
-        element: <EditPriceGroup />,
-      },
+        element: <EditPriceGroup />
+      }
     ]
   },
   {
     path: `${PathString.REPORT}/*`,
     roles: [Role.ADMIN],
     element: <ReportPage />
+  },
+  //duyet-noi-bo-viec-hang-ngay
+  {
+    path: `${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/*`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <Jobs isInternal isCorrelationJobType={CorrelationJobType.Job} />,
+    sub_routes: [
+      {
+        //detail
+        path: `:taskId`,
+        element: <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Job} />
+      },
+      {
+        //edit
+        path: `:taskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Job} isInternal />
+      }
+    ]
+  },
+
+  //duyet-noi-bo-viec-du-an
+  {
+    path: `${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/*`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <Jobs isInternal isCorrelationJobType={CorrelationJobType.Project} />,
+    sub_routes: [
+      {
+        //detail project
+        path: `:taskId`,
+        element: <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Project} />
+      },
+      {
+        //edit project
+        path: `:taskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Project} isInternal />
+      },
+      {
+        //add sub task
+        path: `:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`,
+        element: <Home isCorrelationJobType={CorrelationJobType.Job} isParentId isInternal />
+      },
+      {
+        //detail sub task
+        path: `:taskId/:subTaskId`,
+        element: <InternalSubTasksDetail />
+      },
+      {
+        //edit sub task
+        path: `:taskId/:subTaskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isInternal isCorrelationJobType={CorrelationJobType.Job} />
+      }
+    ]
+  },
+
+  //cong-khai-viec-hang-ngay
+  {
+    path: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/*`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <Jobs isCorrelationJobType={CorrelationJobType.Job} />,
+    sub_routes: [
+      {
+        //detail
+        path: `:taskId`,
+        element: <TasksDetail isCorrelationJobType={CorrelationJobType.Job} />
+      },
+      {
+        //edit
+        path: `:taskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Job} />
+      }
+    ]
+  },
+  //cong-khai-viec-du-an
+  {
+    path: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/*`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <Jobs isCorrelationJobType={CorrelationJobType.Project} />,
+    sub_routes: [
+      {
+        //detail project
+        path: `:taskId`,
+        element: <TasksDetail isCorrelationJobType={CorrelationJobType.Project} />
+      },
+      {
+        //edit project
+        path: `:taskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Project} />
+      },
+      {
+        //add sub task
+        path: `:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`,
+        element: <Home isCorrelationJobType={CorrelationJobType.Job} isParentId />
+      },
+      {
+        //detail sub task
+        path: `:taskId/:subTaskId`,
+        element: <SubTaskDetail />
+      },
+      {
+        //edit sub task
+        path: `:taskId/:subTaskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Job} />
+      }
+    ]
+  },
+
+  //viec-da-xong-viec-hang-ngay
+  {
+    path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/*`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <FinishedTasks />,
+    sub_routes: [
+      {
+        //detail
+        path: `:taskId`,
+        element: <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Job} />
+      },
+      {
+        //edit
+        path: `:taskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Job} />
+      }
+    ]
+  },
+
+  //viec-da-xong-viec-du-an
+  {
+    path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/*`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <FinishedProjects />,
+    sub_routes: [
+      {
+        //detail project
+        path: `:taskId`,
+        element: <TasksDetail finishOnly isCorrelationJobType={CorrelationJobType.Project} />
+      },
+      {
+        //edit project
+        path: `:taskId/${PathString.CHINH_SUA}`,
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Project} />
+      },
+      {
+        //add sub task
+        path: `:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`,
+        element: <Home isCorrelationJobType={CorrelationJobType.Job} isParentId finishedOnly />
+      },
+      {
+        //detail sub task
+        path: `:taskId/:subTaskId`,
+        element: <SubTaskDetail finishOnly />
+      },
+      {
+        //edit sub task
+        path: `:taskId/:subTaskId/${PathString.CHINH_SUA}`,
+        element: <EditTask finishedOnly isCorrelationJobType={CorrelationJobType.Job} />
+      }
+    ]
   }
-]
+];
 
 function AppFx() {
   const [localStorageUser, setLocalStorageUser] = useState<string | null>(
@@ -186,7 +343,7 @@ function AppFx() {
 
   const isAuth = () => {
     return !(!localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired());
-  }
+  };
 
   useEffect(() => {
     if (localStorageUser) {
@@ -248,79 +405,53 @@ function AppFx() {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            {PathRules.map((e) => {
-              const currentRole = !localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired() ? Role.GUEST : JSON.parse(localStorageUser).roleType;
+            {PathRules.map(e => {
+              const currentRole =
+                !localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired()
+                  ? Role.GUEST
+                  : JSON.parse(localStorageUser).roleType;
               // access
-              if (e.roles?.includes(currentRole) || currentRole !== Role.GUEST && e.roles?.includes(Role.HAS_AUTH)) {
+              if (
+                e.roles?.includes(currentRole) ||
+                (currentRole !== Role.GUEST && e.roles?.includes(Role.HAS_AUTH))
+              ) {
                 if (currentRole === Role.GUEST) {
-                  return (<Route path={`/${e.path}`} element={e.element} />)
+                  return <Route path={`/${e.path}`} element={e.element} />;
                 } else {
                   console.log(e.sub_routes);
 
                   return (
                     <Route element={<MainContent />}>
-                      {
-                        !e.path.includes("*") ?
-                          (
-                            <Route
-                              path={`/${e.path}`}
-                              element={e.element}
-                            />
-                          ) : (
-                            <Route path={`/${e.path}`}>
-                              <Route index element={e.element} />
-                              {e.sub_routes?.map(se =>
-                              (
-                                <Route
-                                  path={`${se.path}`}
-                                  element={se.element}
-                                />
-                              )
-
-                              )}
-                            </Route>
-                          )
-                      }
-
+                      {!e.path.includes("*") ? (
+                        <Route path={`/${e.path}`} element={e.element} />
+                      ) : (
+                        <Route path={`/${e.path}`}>
+                          <Route index element={e.element} />
+                          {e.sub_routes?.map(se => (
+                            <Route path={`${se.path}`} element={se.element} />
+                          ))}
+                        </Route>
+                      )}
                     </Route>
-                  )
-
+                  );
                 }
               }
               // not access and auth
-              if (!isAuth()||e.roles?.includes(Role.GUEST))
-                return (
-                  <Route
-                    path={`/${e.path}`}
-                    element={
-                      <Navigate
-                        to={
-                          `/`
-                        }
-                      />
-                    }
-                  />
-                )
-              else return (<Route path={`/${e.path}`} element={<_401Page />} />)
+              if (!isAuth() || e.roles?.includes(Role.GUEST))
+                return <Route path={`/${e.path}`} element={<Navigate to={`/`} />} />;
+              else return <Route path={`/${e.path}`} element={<_401Page />} />;
             })}
             <Route
               path="/"
               element={
-                !localStorageUser || JSON.parse(localStorageUser ?? "").roleType === Role.GUEST ?
+                !localStorageUser || JSON.parse(localStorageUser ?? "").roleType === Role.GUEST ? (
                   <LandingPage />
-                  : <Navigate
-                    to={
-                      `/${PathString.THONG_BAO}`
-                    }
-                  />
+                ) : (
+                  <Navigate to={`/${PathString.THONG_BAO}`} />
+                )
               }
             />
-            <Route
-              path="*"
-              element={
-                <_404Page />
-              }
-            />
+            <Route path="*" element={<_404Page />} />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

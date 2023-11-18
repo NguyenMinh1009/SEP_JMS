@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
       dateAdapter={AdapterMoment}
     >
-      <App />
+      <AppFx />
     </LocalizationProvider>
   </StyledEngineProvider>
   // </React.StrictMode>

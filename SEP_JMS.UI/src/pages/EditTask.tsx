@@ -38,7 +38,8 @@ import { FileResponse } from "../interface/fileResponse";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { AxiosRequestConfig } from "axios";
 import { InternalJobStatusType } from "../enums/internalJobStatusType";
-import { checkInputEditJob } from "../utils/checkInputJob";
+import { checkInputEditJob, checkStatusCompletedProjectEdit } from "../utils/checkInputJob";
+import { Error } from "../enums/validateInput";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -295,22 +296,35 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
     if (isInternal) {
       return currentPerson.roleType !== Role.DESIGNER
         ? subTaskId === undefined
-          ? AlwayxInstance.put(`job/${taskId}`, {
-              title: title,
-              description: getSanitizeText(value),
-              designerId: selectedDesigner?.userId,
-              accountId: selectedAccount?.userId,
-              quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
-              jobType: selectedJobType.typeId,
-              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-              priority: selectedPriority,
-              jobStatus: selectedInternalStatus,
-              correlationType:
-                isCorrelationJobType === CorrelationJobType.Job
-                  ? CorrelationJobType.Job
-                  : CorrelationJobType.Project
-            })
-          : AlwayxInstance.put(`job/${subTaskId}`, {
+          ? isCorrelationJobType === CorrelationJobType.Job
+            ? // edit noi bo viec hang ngay
+              AlwayxInstance.put(`job/${taskId}`, {
+                title: title,
+                description: getSanitizeText(value),
+                designerId: selectedDesigner?.userId,
+                accountId: selectedAccount?.userId,
+                quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+                jobType: selectedJobType.typeId,
+                deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+                priority: selectedPriority,
+                jobStatus: selectedInternalStatus,
+                correlationType: CorrelationJobType.Job
+              })
+            : // edit noi bo du an
+              AlwayxInstance.put(`job/${taskId}`, {
+                title: title,
+                description: getSanitizeText(value),
+                designerId: selectedDesigner?.userId,
+                accountId: selectedAccount?.userId,
+                quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+                jobType: selectedJobType.typeId,
+                deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+                priority: selectedPriority,
+                jobStatus: selectedInternalStatus,
+                correlationType: CorrelationJobType.Project
+              })
+          : // edit noi bo sub task
+            AlwayxInstance.put(`job/${subTaskId}`, {
               parentId: taskId,
               title: title,
               description: getSanitizeText(value),
@@ -439,6 +453,17 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
       snakeBar.setSnakeBar(error, "warning", true);
     });
     if (errors.length !== 0) return;
+
+    if (subTaskId === undefined && isCorrelationJobType === CorrelationJobType.Project) {
+      var checkStatusProjectEdit = checkStatusCompletedProjectEdit(
+        taskId,
+        selectedStatus || selectedInternalStatus
+      );
+      if (!checkStatusProjectEdit) {
+        snakeBar.setSnakeBar(Error.EDIT_STATUS_PROJECT_COMPLETE, "warning", true);
+        return;
+      }
+    }
 
     setButtonLoading(true);
     Promise.all([

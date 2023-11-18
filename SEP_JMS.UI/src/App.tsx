@@ -298,8 +298,8 @@ function App() {
                   {/* Report page */}
                   {JSON.parse(localStorageUser).roleType !== Role.CUSTOMER && (
                     <Route path={`/${PathString.REPORT}/*`}>
-                    <Route index element={<ReportPage />} />
-                  </Route>
+                      <Route index element={<ReportPage />} />
+                    </Route>
                   )}
 
                   {/* viec-cong-khai/viec-hang-ngay */}

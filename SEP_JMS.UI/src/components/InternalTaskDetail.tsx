@@ -113,7 +113,13 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
   const handleCloseDialog = () => setOpenDialog(false);
 
   const handleEdit = () => {
-    navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`);
+    isCorrelationJobType === CorrelationJobType.Job
+      ? navigate(
+          `/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${taskId}/${PathString.CHINH_SUA}`
+        )
+      : navigate(
+          `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.CHINH_SUA}`
+        );
   };
 
   const getLatestComments = () => {
@@ -205,11 +211,11 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
         <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
-          onClick={() =>
-            isCorrelationJobType === CorrelationJobType.Job
-              ? navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`)
-              : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`)
-          }
+            onClick={() =>
+              isCorrelationJobType === CorrelationJobType.Job
+                ? navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`)
+                : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`)
+            }
             className="mr-2 flex cursor-pointer items-center gap-1 text-[#0655a7] hover:opacity-75 xl:mr-0"
           >
             <MdOutlineExpandCircleDown size={16} color="#0655a7" className="-rotate-90" />

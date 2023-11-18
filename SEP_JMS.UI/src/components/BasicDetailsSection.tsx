@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BasicTaskInfo from "./common/BasicTaskInfo";
 import { FiUser, FiUsers } from "react-icons/fi";
 import { BiSupport } from "react-icons/bi";
@@ -29,6 +29,8 @@ import { convertVND } from "../utils/VNDConvert";
 import useSideBarPanel from "../hooks/store/useSideBarPanel";
 import { cn } from "../utils/className";
 import { correlationJobOptions } from "../constants";
+import { checkStatusCompletedProjectEdit } from "../utils/checkInputJob";
+import { Error } from "../enums/validateInput";
 
 interface IBasicDetailsSectionProps {
   taskDetail: any;
@@ -48,21 +50,33 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
   const initStatus =
     visibleType === VisibleType.Public ? jobDetail?.jobStatus : jobDetail?.internalJobStatus;
   const [selectedStatus, setSelectedStatus] = useState<InternalJobStatusType>(initStatus);
+  const [taskDetail, setTaskDetail] = useState<any>();
 
   const { taskId } = useParams();
   const snakeBar = useSnakeBar();
   const sideBar = useSideBarPanel();
   const currentPerson = useCurrentPerson();
 
-  const handleChangeInternalStatus = (status: InternalJobStatusType) => {
-    AlwayxInstance.put(`internal/job/${taskId}/status`, {
+  useEffect(() => {
+    setTaskDetail(jobDetail);
+  }, [jobDetail]);
+
+  const handleChangeInternalStatus = async (status: InternalJobStatusType) => {
+    if (correlationJobType === CorrelationJobType.Project) {
+      var checkStatusProjectEdit = await checkStatusCompletedProjectEdit(taskId, status);
+      if (!checkStatusProjectEdit) {
+        snakeBar.setSnakeBar(Error.EDIT_STATUS_PROJECT_COMPLETE, "warning", true);
+        return;
+      }
+    }
+    await AlwayxInstance.put(`internal/job/${taskId}/status`, {
       internalJobStatus: status
     })
       .then(() => {
         setSelectedStatus(status);
-        if (status === InternalJobStatusType.Completed) {
-          setOpenDialog(true);
-        }
+        // if (status === InternalJobStatusType.Completed) {
+        //   setOpenDialog(true);
+        // }
         snakeBar.setSnakeBar("Cập nhật trạng thái thành công", "success", true);
       })
       .catch(err => console.error(err));
@@ -74,57 +88,60 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         <BasicTaskInfo
           Icon={<HiOutlineCircleStack size={15} color="#555" />}
           title="Số lượng:"
-          detail={jobDetail?.quantity}
+          detail={taskDetail?.quantity}
         />
       );
     }
     return <></>;
   };
+
   return (
     <>
       <div className="grid grid-cols-2 gap-[2px] bg-third p-[2px]">
         <BasicTaskInfo
           Icon={<FiUsers size={15} color="#555" />}
           title="Khách hàng:"
-          detail={jobDetail?.company?.companyName ?? "..."}
+          detail={taskDetail?.company?.companyName ?? "..."}
         />
 
         <BasicTaskInfo
           Icon={<FiUser size={15} color="#555" />}
           title="Người order:"
-          detail={jobDetail?.customer?.fullname}
+          detail={taskDetail?.customer?.fullname}
         />
 
         <BasicTaskInfo
           Icon={<BiSupport size={15} color="#555" />}
           title="Account:"
-          detail={jobDetail?.account?.fullname}
+          detail={taskDetail?.account?.fullname}
         />
 
         <BasicTaskInfo
           Icon={<AiOutlineEdit size={15} color="#555" />}
           title="Designer:"
-          detail={jobDetail?.designer?.fullname ?? "..."}
+          detail={taskDetail?.designer?.fullname ?? "..."}
         />
 
         <BasicTaskInfo
           Icon={<AiOutlineClockCircle size={15} color="#555" />}
           title="Thời gian tạo:"
-          detail={moment(ticksToDate(jobDetail?.createdTime)).format("DD-MM-YYYY - h:mm")}
+          detail={moment(ticksToDate(taskDetail?.createdTime)).format("DD-MM-YYYY - h:mm")}
         />
 
         <BasicTaskInfo
           Icon={<AiOutlineClockCircle size={15} color="#555" />}
           title="Deadline:"
-          detail={moment(ticksToDate(jobDetail?.deadline)).format("DD-MM-YYYY - h:mm")}
+          detail={moment(ticksToDate(taskDetail?.deadline)).format("DD-MM-YYYY - h:mm")}
           customText="text-red-600 font-semibold"
         />
 
         <BasicTaskInfo
-          Icon={getPriorityIcon(jobDetail?.priority)}
+          Icon={getPriorityIcon(taskDetail?.priority)}
           title="Ưu tiên:"
-          detail={priorityOptions.find(option => option.key === jobDetail?.priority)?.text ?? "..."}
-          customText={getTextColorFromPriority(jobDetail?.priority) + " font-semibold"}
+          detail={
+            priorityOptions.find(option => option.key === taskDetail?.priority)?.text ?? "..."
+          }
+          customText={getTextColorFromPriority(taskDetail?.priority) + " font-semibold"}
         />
         {visibleType === VisibleType.Public && (
           <BasicTaskInfo
@@ -183,7 +200,17 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
                 }}
               >
                 {internalStatusOptions.map(({ key, text }) => (
-                  <MenuItem key={key} value={key}>
+                  <MenuItem
+                    key={key}
+                    disabled={
+                      key === InternalJobStatusType.Completed &&
+                      ((taskDetail?.previewProducts !== null
+                        ? taskDetail?.previewProducts.files.length <= 0
+                        : true) ||
+                        currentPerson.roleType === Role.CUSTOMER)
+                    }
+                    value={key}
+                  >
                     {text}
                   </MenuItem>
                 ))}
@@ -195,19 +222,10 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         <BasicTaskInfo
           Icon={<MdOutlineTypeSpecimen size={15} color="#555" />}
           title="Loại thiết kế:"
-          detail={jobDetail?.jobType?.typeName || "..."}
+          detail={taskDetail?.jobType?.typeName || "..."}
         />
 
         {renderCorrelationJobType()}
-
-        {/* <BasicTaskInfo
-          Icon={<BsWindowStack size={15} color="#555" />}
-          title="Loại công việc:"
-          detail={
-            correlationJobOptions.find(item => item.key === jobDetail?.correlationType)?.text ?? ""
-          }
-        /> */}
-        {/* <BasicTaskInfo Icon={<></>} title="" detail="" /> */}
       </div>
 
       <div className="flex flex-1 items-center justify-center">
@@ -221,7 +239,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
           >
             <div className="flex items-center gap-2 px-2">
               <IoCreateOutline color="white" size={20} />
-              <p className="text-secondary mt-[2px] text-sm normal-case leading-6 text-white">
+              <p className="text-secondary mt-[2px] text-sm  normal-case leading-6 text-white">
                 Chỉnh sửa công việc
               </p>
             </div>

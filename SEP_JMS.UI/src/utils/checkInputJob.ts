@@ -1,6 +1,7 @@
+import { JobStatusType } from "../enums/jobStatusType";
 import { Error } from "../enums/validateInput";
 import { dateToTicks } from "./Datetime";
-
+import AlwayxInstance from "../api/AxiosInstance";
 const checkInputQuantity = (quantity: number) => {
   if (quantity === 0) {
     return Error.QUANTITY_BIGGER_0;
@@ -40,6 +41,27 @@ const checkInputCreateJob = (quantity: number, deadline: any) => {
   return errors;
 };
 
+const checkStatusCompletedProjectEdit = async (taskId: any, jobStatusEdit: number) => {
+  let successJob = 0;
+  let totalJob = 0;
+  let result = false;
+  if (jobStatusEdit === JobStatusType.Completed) {
+    await AlwayxInstance.get(`job/${taskId}/projectdetailstatistics`)
+      .then(res => {
+        successJob = res.data.successJob;
+        totalJob = res.data.totalJob;
+        result = successJob === totalJob ? true : false;
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    return result;
+  } else {
+    result = true;
+    return result;
+  }
+};
+
 const checkInputEditJob = (quantity: number, deadline: any, createdTime: any) => {
   const quantityError = checkInputQuantity(quantity);
   const deadlineError = checkInputDeadlineEdit(deadline, createdTime);
@@ -57,4 +79,4 @@ const checkInputEditJob = (quantity: number, deadline: any, createdTime: any) =>
   return errors;
 };
 
-export { checkInputCreateJob, checkInputEditJob };
+export { checkInputCreateJob, checkInputEditJob, checkStatusCompletedProjectEdit };

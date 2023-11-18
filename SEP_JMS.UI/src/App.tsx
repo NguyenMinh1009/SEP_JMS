@@ -271,7 +271,7 @@ function App() {
                           <EditTask isInternal isCorrelationJobType={CorrelationJobType.Job} />
                         }
                       />
-                      <Route
+                      {/* <Route
                         path={`:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`}
                         element={
                           <Home
@@ -280,7 +280,7 @@ function App() {
                             isInternal
                           />
                         }
-                      />
+                      /> */}
                     </Route>
                   )}
 

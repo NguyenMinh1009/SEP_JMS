@@ -17,6 +17,8 @@ import { TiDelete } from "react-icons/ti";
 import { AccountStatusType } from "../../enums/accountStatusType";
 import { accountStatusOptions, genderOptions, roleOptions } from "../../constants";
 import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
+import { JobStatusType } from "../../enums/jobStatusType";
+import { CorrelationJobType } from "../../enums/correlationJobType";
 type IRowProps = {
   row: any;
   index: number;
@@ -40,6 +42,41 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
 
   const handleClickNoti = () => {
         // get job status then navigate from UI
+        APIClientInstance.get(
+          `/job/${row.entityIdentifier}`
+        ).then(res => {
+          const jobStatus: JobStatusType = res.data.jobStatus;
+          const jobCorr: CorrelationJobType = res.data.correlationType;
+          // for job
+          if (jobCorr === CorrelationJobType.Job) {
+            if (jobStatus == JobStatusType.Completed) navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+            );
+
+            if (jobStatus == JobStatusType.Pending) navigate(
+              `/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+            );
+
+            if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+            );
+          }
+          // for project
+          if (jobCorr === CorrelationJobType.Project) {
+            if (jobStatus == JobStatusType.Completed) navigate(
+              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
+            );
+
+            if (jobStatus == JobStatusType.Pending) navigate(
+              `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
+            );
+
+            if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
+              `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
+            );
+          }
+          
+        });
         // mark as read
         APIClientInstance.post(
           `/notification/read/${row.notificationId}`
@@ -56,9 +93,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
               }
             return clone;
           });
-          navigate(
-            `/${PathString.VIEC_DA_XONG}/${row.entityIdentifier}`
-          );
+          
         })
         .catch(err => {
           console.log(err);

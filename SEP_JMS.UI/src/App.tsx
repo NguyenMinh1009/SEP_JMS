@@ -45,6 +45,7 @@ import PricesPage from "./pages/Prices";
 import PriceList from "./pages/PriceList";
 import EditTypeOfJobs from "./pages/EditTypeOfJobs";
 import ReportPage from "./pages/ReportPage";
+import LandingPage from "./pages/Landing";
 
 const theme = createTheme(
   {
@@ -145,8 +146,9 @@ function App() {
           {!localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired() ? (
             <Routes>
               <Route path={`/${PathString.DANG_NHAP}`} element={<SignInSide />} />
+              <Route path={`/${PathString.HOMEPAGE}`} element={<LandingPage />} />
               <Route path={`/${PathString.QUEN_MAT_KHAU}`} element={<ForgotPassword />} />
-              <Route path="*" element={<Navigate to={`/${PathString.DANG_NHAP}`} />} />
+              <Route path="*" element={<Navigate to={`/${PathString.HOMEPAGE}`} />} />
             </Routes>
           ) : (
             <div className={`//max-w-[1700px] relative mx-auto`}>

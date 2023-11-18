@@ -4,6 +4,8 @@ using SEP_JMS.Model.Models.ExtensionModels;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Enums.System;
+using SEP_JMS.Repository.Repositories;
 
 namespace SEP_JMS.Service.IServices
 {
@@ -32,6 +34,11 @@ namespace SEP_JMS.Service.IServices
         public Task<string> ExportJobs(ExportJobRequest model);
 
         public Task<List<JobStatisticsResponse>> GetJobStatistics(StatisticsJobRequest model);
+
         public Task<ProjectDetailStatistics> GetProjectDetailStatistics(Guid id);
+
+        public Task<int> GetTotalJob();
+
+        public Task<int> GetTotalProject();
     }
 }

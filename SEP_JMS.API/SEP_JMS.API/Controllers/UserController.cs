@@ -15,6 +15,8 @@ using System.Security.Claims;
 using System.Text;
 using SEP_JMS.Common;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Common.Utils;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -150,6 +152,51 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception while processing send new password to user {model.UserName}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [RequestSizeLimit(PolicyConstants.avatarFileSize)]
+        [RequestFormLimits(MultipartBodyLengthLimit = PolicyConstants.avatarFileSize)]
+        [HttpPost("avatar")]
+        public async Task<IActionResult> UpdateAvatar(IFormFile file)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update avatar for user {ApiContext.Current.UserId}.");
+                if (file.Length > PolicyConstants.avatarFileSize || !ApiConstants.AvatarExtensions.Contains(Path.GetExtension(file.FileName))) return BadRequest();
+                var fileModel = await FileUtility.SaveOneFile(ApiConstants.AvatarUploadFolder, ApiContext.Current.UserId.ToString(), file);
+                if (fileModel != null)
+                {
+                    await userService.UpdateAvatar(ApiContext.Current.UserId, "api/user/avatar/" + fileModel.FileName);
+                }
+                return fileModel == null ? BadRequest() : Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception while processing update profile for user {ApiContext.Current.UserId}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("avatar/{payload}")]
+        public async Task<IActionResult> GetAvatar(string payload)
+        {
+            try
+            {
+                var fPath = payload.Split("?").First();
+                logger.Info($"{logPrefix} Start to get avatar for user {fPath}.");
+                // var fPath = await userService.GetAvatar(userId);
+                // if (!String.IsNullOrEmpty(fPath)) fPath = fPath.Split("/").Last().Split("?").First();
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ApiConstants.AvatarUploadFolder, fPath);
+                if (!System.IO.File.Exists(filePath)) return StatusCode(404);
+                _ = new FileExtensionContentTypeProvider().TryGetContentType(filePath, out string? mediaType);
+                return new FileStreamResult(new FileStream(filePath, FileMode.Open), mediaType ?? "application/octet-stream");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception while processing update profile for user {ApiContext.Current.UserId}. Error: {ex}");
                 return StatusCode(500);
             }
         }

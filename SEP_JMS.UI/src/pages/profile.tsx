@@ -14,13 +14,14 @@ import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, FormCo
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { HiOutlineEye } from "react-icons/hi";
 import { cn } from "../utils/className";
-import { commonRegex } from "../constants";
+import { APIUrlHost, commonRegex } from "../constants";
 import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
 import APIClientInstance from "../api/AxiosInstance";
 import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
 import { info } from "console";
 import ASwitchButton from "../components/common/ASwitchButton";
+import useAvtRef from "../hooks/store/useCurrentAvatar";
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Thông tin");
@@ -33,9 +34,11 @@ const Profile = () => {
   const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isProcessUpdate, setIsProcessUpdate] = useState<boolean>(false);
+  const [isProcessUpdate, setIsProcessUpdate] = useState<boolean>(false); 
+  const [avtRefresh, setAvtRefresh] = useState<number>(Date.now()); 
 
   const currentPerson = useCurrentPerson();
+  const avtRef = useAvtRef();
   const snakeBar = useSnakeBar();
 
   // state for update information
@@ -138,13 +141,13 @@ const Profile = () => {
       //element: <TaskPreview />
     },
     {
-      text: "Đổi mật khẩu",
-      icon: <FaLock size={14} />
+      text: "Cập nhật thông tin",
+      icon: <AiFillEdit size={14} />
       //element: <TaskPreview />
     },
     {
-      text: "Cập nhật thông tin",
-      icon: <AiFillEdit size={14} />
+      text: "Đổi mật khẩu",
+      icon: <FaLock size={14} />
       //element: <TaskPreview />
     },
     {
@@ -206,16 +209,29 @@ const Profile = () => {
       });
   };
 
+  const avatarHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/png");
+    input.click();
+    input.onchange = (e: any) => {
+      console.log(input.files);
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
+      APIClientInstance.post("user/avatar", formData).then(e => avtRef.setContent(Date.now()));
+    };
+  };
+
   return (
     <div className="flex h-full gap-12">
       <div className="flex w-1/4 max-w-[300px] flex-col items-start">
         <div className="group relative mb-9 aspect-square w-full cursor-pointer overflow-hidden rounded-md bg-slate-500">
           <img
-            src={currentPerson.avatarUrl ?? Images.avtPlaceHolder}
+            src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content ?? Images.avtPlaceHolder}
             alt=""
             className="w-full object-cover"
           />
-          <div className="absolute left-0 top-full flex h-2/5 w-full flex-col items-center justify-center gap-2 bg-black bg-opacity-30 transition-all group-hover:top-[60%]">
+          <div className="absolute left-0 top-full flex h-2/5 w-full flex-col items-center justify-center gap-2 bg-black bg-opacity-30 transition-all group-hover:top-[60%]" onClick={avatarHandler}>
             <MdPhotoCamera size={26} className="text-white" />
             <p className="font-semibold text-white">Thay ảnh đại diện</p>
           </div>

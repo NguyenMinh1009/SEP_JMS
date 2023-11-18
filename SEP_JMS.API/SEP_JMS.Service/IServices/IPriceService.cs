@@ -18,5 +18,6 @@ namespace SEP_JMS.Service.IServices
         public Task<PriceGroup> UpdatePriceGroup(Guid id, UpdatePriceGroupRequestModel model);
         public Task<bool> UsedInCompany(Guid groupId);
         public Task DeletePriceGroup(Guid groupId);
+        public Task<string> ExportTemplate();
     }
 }

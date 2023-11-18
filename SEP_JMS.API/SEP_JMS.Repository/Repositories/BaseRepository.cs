@@ -22,6 +22,11 @@ namespace SEP_JMS.Repository.Repositories
                  .Skip(skip).Take(top).AsNoTracking().ToListAsync();
         }
 
+        public async Task<int> Count(Expression<Func<T, bool>> conditions)
+        {
+            return await _context.Set<T>().CountAsync(conditions);
+        }
+
         public async Task<T?> Get(object identifier)
         {
             return await _context.Set<T>().FindAsync(identifier);

@@ -11,11 +11,19 @@
         public static readonly string GoogleDriveProjectFinalFolder = "ProjectFinalFolder";
         public static readonly string GoogleDriveJobFinalFolder = "JobFinalFolder";
 
+        public static readonly string AvatarUploadFolder = "avatars";
         public static readonly string CommentUploadFolder = "comments";
         public static readonly string RequirementUploadFolder = "jobsrequirements";
         public static readonly string FinalUploadFolder = "jobsfinals";
         public static readonly string PreviewUploadFolder = "jobspreviews";
         public static readonly string ExportFolder = "jobexports";
+
+        public static readonly List<string> AvatarExtensions = new()
+        {
+            ".jpg",
+            ".png",
+            ".gif"
+        };
 
         public static readonly List<string> AllowedMimeTypes = new()
         {

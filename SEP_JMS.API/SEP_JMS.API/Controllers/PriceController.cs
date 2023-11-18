@@ -9,6 +9,10 @@ using SEP_JMS.Service.IServices;
 using System.Data;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Response;
+using Microsoft.AspNetCore.StaticFiles;
+using SEP_JMS.Common.Utils;
+using SEP_JMS.Service.Services;
+using OfficeOpenXml;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -19,11 +23,13 @@ namespace SEP_JMS.API.Controllers
     {
         private readonly string logPrefix = "[PriceController]";
         private readonly IPriceService priceService;
+        private readonly IJobTypeService jobTypeService;
         private readonly IJMSLogger logger;
 
-        public PriceController(IPriceService priceService, IJMSLogger logger)
+        public PriceController(IPriceService priceService, IJobTypeService jobTypeService, IJMSLogger logger)
         {
             this.priceService = priceService;
+            this.jobTypeService = jobTypeService;
             this.logger = logger;
         }
         [HttpPost("all")]
@@ -108,6 +114,99 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Error($"{logPrefix} Got exception when deleting price group {id}. Error: {ex}");
                 return StatusCode(500);
+            }
+        }
+
+        [HttpPost("export_template")]
+        public async Task<IActionResult> ExportTemplate()
+        {
+            var filePath = string.Empty;
+            try
+            {
+                logger.Info($"{logPrefix} Start to export template.");
+                filePath = await priceService.ExportTemplate();
+                if (string.IsNullOrEmpty(filePath)) return BadRequest();
+                _ = new FileExtensionContentTypeProvider().TryGetContentType(filePath, out string? mediaType);
+                return new FileStreamResult(new FileStream(filePath, FileMode.Open), mediaType ?? "application/octet-stream");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when exporting template. Error: {ex}");
+                return StatusCode(500);
+            }
+            finally
+            {
+                try
+                {
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+                catch { }
+            }
+        }
+
+        [HttpPost("import_template_file")]
+        public async Task<IActionResult> ImportTemplateFile(IFormFile file)
+        {
+            var filePath = string.Empty;
+            try
+            {
+                logger.Info($"{logPrefix} Start to import template.");
+                if (file == null || file.Length == 0 || file.Length > PolicyConstants.maxFileSizeDrive)
+                {
+                    throw new Exception("Invalid file!");
+                }
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream).ConfigureAwait(false);
+
+                    using (var package = new ExcelPackage(memoryStream))
+                    {
+                        var worksheet = package.Workbook.Worksheets[0];
+                        // parse worksheet
+                        var result = new PriceListDisplayModel();
+                        result.Group = new PriceGroup();
+                        result.Prices = new List<Price>();
+
+                        result.Group.Name = worksheet.Cells["B1"].Value?.ToString() ?? "";
+                        result.Group.Description = worksheet.Cells["B2"].Value?.ToString() ?? "";
+
+                        var index = 5;
+                        var jtAll = await jobTypeService.GetJobTypes();
+                        for (var i = 0; i < jtAll.Count; i++)
+                        {
+                            var tName = worksheet.Cells[$"B{index}"].Value.ToString();
+                            if (!String.IsNullOrEmpty(tName) )
+                            {
+                                var jobType = jtAll.Where(e => e.TypeName.Equals(tName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                                if (jobType != null )
+                                {
+                                    result.Prices.Add(new Price()
+                                    {
+                                        JobTypeId = jobType.TypeId,
+                                        Description = worksheet.Cells[$"C{index}"].Value?.ToString(),
+                                        UnitPrice = Convert.ToInt32(worksheet.Cells[$"D{index}"].Value?.ToString() ?? "0")
+                                    }) ;
+                                }
+                                
+                            }
+                            index++;
+                        }
+
+                        return Ok(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when importing template. Error: {ex}");
+                return StatusCode(500);
+            }
+            finally
+            {
+                
             }
         }
     }

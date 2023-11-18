@@ -14,7 +14,7 @@ import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 import useFilterInfo from "../../hooks/store/useFilterInfo";
 import CustomButton from "./CustomButton";
 import { useLocation } from "react-router-dom";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 
 interface JobFilterSectionProps {
@@ -68,7 +68,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
 
   const getCompanyList = () => {
     if (currentPerson.roleType) {
-      AlwayxInstance.post(
+      APIClientInstance.post(
         currentPerson.roleType === Role.ADMIN ? "company/search" : "company/search",
         {
           pageIndex: 1,
@@ -82,7 +82,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   };
   const getDesignerList = () => {
     if (currentPerson.roleType) {
-      AlwayxInstance.post("user/search", {
+      APIClientInstance.post("user/search", {
         pageIndex: 1,
         pageSize: 2147483647,
         searchText: null,
@@ -100,7 +100,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       currentPerson.roleType === Role.DESIGNER
     )
       return;
-    AlwayxInstance.post("user/search", {
+    APIClientInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: null,
@@ -112,7 +112,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
 
   const getCustomerListForStaff = () => {
     if (currentPerson.roleType) {
-      AlwayxInstance.post(
+      APIClientInstance.post(
         currentPerson.roleType === Role.ADMIN ? "user/search" : "customer/related",
         {
           pageIndex: 1,
@@ -127,7 +127,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   };
 
   const getJobTypeList = () => {
-    AlwayxInstance.get("jobtype/all")
+    APIClientInstance.get("jobtype/all")
       .then(res => setJobtypes(res.data))
       .catch(err => console.error(err));
   };

@@ -37,6 +37,20 @@ namespace SEP_JMS.Common.Utils
             };
         }
 
+        public static async Task<FileItem> SaveOneFile(string container, string fileName, IFormFile file)
+        {
+            var commentFolder = GetFolderPath(container, "");
+            fileName = fileName + Path.GetExtension(file.FileName);
+            using var fileStream = new FileStream(Path.Combine(commentFolder, fileName), FileMode.Create);
+            await file.CopyToAsync(fileStream);
+            return new FileItem
+            {
+                FileName = fileName,
+                OriginalName = file.FileName,
+                MimeType = file.ContentType
+            };
+        }
+
         public static void RemoveOldFiles(string folderPath, List<FileItem> keepingFiles)
         {
             if (!Directory.Exists(folderPath)) return;

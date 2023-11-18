@@ -35,7 +35,7 @@ namespace SEP_JMS.Service.Services
         public async Task<Guid> CreateNotification(NotiCreationRequest model, NotiAction action)
         {
             var receivers = await userRepository.GetAll(user=>model.Receivers.Contains(user.UserId));
-            model.Message = GenerateMassage(action, ApiContext.Current.Username, model.EntityIdentifier);
+            model.Message = GenerateMassage(action, ApiContext.Current.Username, model);
             foreach (var user in receivers)
             {
                 var notiConfig = JsonConvert.DeserializeObject<List<NotiType>>(user.NotificationConfig);
@@ -79,16 +79,16 @@ namespace SEP_JMS.Service.Services
             await notificationRepository.UpdateReadTime(Guid.Empty, true);
         }
 
-        private string GenerateMassage(NotiAction action, string userName, Guid id)
+        private string GenerateMassage(NotiAction action, string userName, NotiCreationRequest notiReq)
         {
             switch (action)
             {
                 case NotiAction.CreateJob:
-                    return $"{userName} đã {ActionConstants.CreateJob}!";
+                    return $"{userName} đã {(notiReq.EntityName.Equals("CreateJob") ? ActionConstants.CreateJob : ActionConstants.CreateProject) } [{notiReq.Title}]!";
                 case NotiAction.UpdateJob:
-                    return $"{userName} đã {ActionConstants.UpdateJob}!";
+                    return $"{userName} đã {ActionConstants.UpdateJob} [{notiReq.Title}]!";
                 case NotiAction.Comment:
-                    return $"{userName} đã {ActionConstants.Comment}!";
+                    return $"{userName} đã {ActionConstants.Comment} trong [{notiReq.Title}]!";
                 default:
                     break;
             }

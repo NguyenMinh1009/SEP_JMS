@@ -1,4 +1,6 @@
 export enum PathString {
+  NOT_FOUND = "404",
+  HOMEPAGE = "homepage",
   DANG_NHAP = "dang-nhap",
   QUEN_MAT_KHAU = "quen-mat-khau",
   CONG_KHAI = "viec-dang-lam",

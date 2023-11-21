@@ -27,7 +27,7 @@ import Home from "./pages/Home";
 
 import CreateSubTask from "./components/ProjectManagement/SubTasks/CreateSubTask";
 // import SubTaskDetail from "./pages/SubTaskDetail";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import UsersPage from "./pages/Users";
 import CreateCompany from "./pages/CreateCompany";
@@ -214,7 +214,7 @@ const PathRules: RouteRule[] = [
   //cong-khai-viec-hang-ngay
   {
     path: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/*`,
-    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER, Role.CUSTOMER],
     element: <Jobs isCorrelationJobType={CorrelationJobType.Job} />,
     sub_routes: [
       {
@@ -232,7 +232,7 @@ const PathRules: RouteRule[] = [
   //cong-khai-viec-du-an
   {
     path: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/*`,
-    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER, Role.CUSTOMER],
     element: <Jobs isCorrelationJobType={CorrelationJobType.Project} />,
     sub_routes: [
       {
@@ -266,7 +266,7 @@ const PathRules: RouteRule[] = [
   //viec-da-xong-viec-hang-ngay
   {
     path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/*`,
-    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER, Role.CUSTOMER],
     element: <FinishedTasks />,
     sub_routes: [
       {
@@ -285,7 +285,7 @@ const PathRules: RouteRule[] = [
   //viec-da-xong-viec-du-an
   {
     path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/*`,
-    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER, Role.CUSTOMER],
     element: <FinishedProjects />,
     sub_routes: [
       {

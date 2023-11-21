@@ -1,5 +1,4 @@
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import "./index.css";
 import { StyledEngineProvider } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";

@@ -8,6 +8,8 @@ import AlwayxInstance from "../../../api/AxiosInstance";
 import CustomDialog from "../../common/CustomDialog";
 import useSnakeBar from "../../../hooks/store/useSnakeBar";
 import { IComments } from "../../../interface/comment";
+import useCurrentPerson from "../../../hooks/store/useCurrentPerson";
+import { Role } from "../../../enums/role";
 
 interface IDropdownAction {
   visibleType: VisibleType;
@@ -29,6 +31,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
   const navigate = useNavigate();
   const { taskId } = useParams();
   const snakeBar = useSnakeBar();
+  const currentPerson = useCurrentPerson();
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -121,18 +124,23 @@ const DropdownAction: React.FC<IDropdownAction> = ({
               >
                 View
               </button>
-              <button
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                onClick={handleUpdateClick}
-              >
-                Update
-              </button>
-              <button
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                onClick={handleClickDeleteTask}
-              >
-                Delete
-              </button>
+              {currentPerson.roleType !== Role.CUSTOMER && (
+                <button
+                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleUpdateClick}
+                >
+                  Update
+                </button>
+              )}
+
+              {currentPerson.roleType !== Role.CUSTOMER && (
+                <button
+                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleClickDeleteTask}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         )}

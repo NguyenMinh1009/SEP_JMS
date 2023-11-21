@@ -165,6 +165,11 @@ const PathRules: RouteRule[] = [
     element: <Jobs isInternal isCorrelationJobType={CorrelationJobType.Job} />,
     sub_routes: [
       {
+        //add
+        path: `${PathString.THEM_MOI}`,
+        element: <Home isCorrelationJobType={CorrelationJobType.Job} isInternal />
+      },
+      {
         //detail
         path: `:taskId`,
         element: <InternalTasksDetail isCorrelationJobType={CorrelationJobType.Job} />
@@ -183,6 +188,11 @@ const PathRules: RouteRule[] = [
     roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
     element: <Jobs isInternal isCorrelationJobType={CorrelationJobType.Project} />,
     sub_routes: [
+      {
+        //add
+        path: `${PathString.THEM_MOI}`,
+        element: <Home isCorrelationJobType={CorrelationJobType.Project} isInternal />
+      },
       {
         //detail project
         path: `:taskId`,
@@ -218,6 +228,11 @@ const PathRules: RouteRule[] = [
     element: <Jobs isCorrelationJobType={CorrelationJobType.Job} />,
     sub_routes: [
       {
+        //add
+        path: `${PathString.THEM_MOI}`,
+        element: <Home isCorrelationJobType={CorrelationJobType.Job} />
+      },
+      {
         //detail
         path: `:taskId`,
         element: <TasksDetail isCorrelationJobType={CorrelationJobType.Job} />
@@ -235,6 +250,11 @@ const PathRules: RouteRule[] = [
     roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER, Role.CUSTOMER],
     element: <Jobs isCorrelationJobType={CorrelationJobType.Project} />,
     sub_routes: [
+      {
+        //add new project
+        path: `${PathString.THEM_MOI}`,
+        element: <Home isCorrelationJobType={CorrelationJobType.Project} />
+      },
       {
         //detail project
         path: `:taskId`,
@@ -298,22 +318,44 @@ const PathRules: RouteRule[] = [
         path: `:taskId/${PathString.CHINH_SUA}`,
         element: <EditTask isCorrelationJobType={CorrelationJobType.Project} />
       },
-      {
-        //add sub task
-        path: `:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`,
-        element: <Home isCorrelationJobType={CorrelationJobType.Job} isParentId finishedOnly />
-      },
+      // {
+      //   //add sub task
+      //   path: `:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`,
+      //   element: <Home isCorrelationJobType={CorrelationJobType.Job} isParentId finishedOnly />
+      // },
       {
         //detail sub task
         path: `:taskId/:subTaskId`,
         element: <SubTaskDetail finishOnly />
-      },
-      {
-        //edit sub task
-        path: `:taskId/:subTaskId/${PathString.CHINH_SUA}`,
-        element: <EditTask finishedOnly isCorrelationJobType={CorrelationJobType.Job} />
       }
+      // {
+      //   //edit sub task
+      //   path: `:taskId/:subTaskId/${PathString.CHINH_SUA}`,
+      //   element: <EditTask finishedOnly isCorrelationJobType={CorrelationJobType.Job} />
+      // }
     ]
+  },
+
+  {
+    path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <Home isCorrelationJobType={CorrelationJobType.Job} finishedOnly />
+  },
+
+  {
+    path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${PathString.THEM_MOI}`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <Home isCorrelationJobType={CorrelationJobType.Project} finishedOnly />
+  },
+  {
+    path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/:taskId/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <Home isCorrelationJobType={CorrelationJobType.Job} isParentId finishedOnly />
+  },
+  {
+    path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/:taskId/:subTaskId/${PathString.CHINH_SUA}`,
+    roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
+    element: <EditTask isCorrelationJobType={CorrelationJobType.Job} finishedOnly />
   }
 ];
 

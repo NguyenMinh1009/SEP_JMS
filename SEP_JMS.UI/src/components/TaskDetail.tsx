@@ -301,15 +301,29 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                     <p className="text-primary //border-r-2 mr-3 w-fit pr-4 text-base leading-5">
                       Sub công việc
                     </p>
-                    <button
-                      onClick={handleCreateTask}
-                      className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 "
-                    >
-                      <RiAddCircleLine size={16} color="#0655a7" />
-                      <p>
-                        <i className="text-[13px] font-[500]"> Thêm công việc</i>
-                      </p>
-                    </button>
+                    {currentPerson.roleType === Role.CUSTOMER ? (
+                      !finishOnly && (
+                        <button
+                          onClick={handleCreateTask}
+                          className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 "
+                        >
+                          <RiAddCircleLine size={16} color="#0655a7" />
+                          <p>
+                            <i className="text-[13px] font-[500]"> Thêm công việc</i>
+                          </p>
+                        </button>
+                      )
+                    ) : (
+                      <button
+                        onClick={handleCreateTask}
+                        className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 "
+                      >
+                        <RiAddCircleLine size={16} color="#0655a7" />
+                        <p>
+                          <i className="text-[13px] font-[500]"> Thêm công việc</i>
+                        </p>
+                      </button>
+                    )}
                   </div>
                   {finishOnly ? (
                     <SubTasksSection

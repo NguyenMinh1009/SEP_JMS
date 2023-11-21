@@ -40,8 +40,8 @@ const EditCustomer = () => {
   const [phone, setPhone] = useState<string>("");
   const [gender, setGender] = useState<GenderType>(GenderType.Male);
   const [status, setStatus] = useState<AccountStatusType>(AccountStatusType.Active);
-  const [selectedCompany, setSelectedCompany] = useState<CompanyResponseType | null>(null);
-  const [companies, setCompanies] = useState<CompanyResponseType[]>([]);
+  const [selectedCompany, setSelectedCompany] = useState<BasicCompanyType | null>(null);
+  const [companies, setCompanies] = useState<BasicCompanyType[]>([]);
   const [showPrice, setShowPrice] = useState<boolean>(false);
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -89,9 +89,10 @@ const EditCustomer = () => {
       pageIndex: 1,
       pageSize: 2147483647
     });
-    const companyList: CompanyResponseType[] | undefined = companiesRes.data?.items;
-    if (companyList) {
-      setCompanies(companyList);
+    const rsList: CompanyResponseType[] | undefined = companiesRes.data?.items;
+    if (rsList) {
+      const cList = rsList.map(e => e.company);
+      setCompanies(cList);
     }
   };
 
@@ -125,7 +126,7 @@ const EditCustomer = () => {
       phone: phone.trim(),
       dob: dob ? dateToTicks(dob.toDate()) : undefined,
       gender: gender,
-      companyId: selectedCompany?.company.companyId,
+      companyId: selectedCompany?.companyId,
       hiddenPrice: !showPrice,
       accountStatus: status
     })
@@ -484,7 +485,7 @@ const EditCustomer = () => {
             onChange={(_, newValue) => {
               if (newValue) setSelectedCompany(newValue);
             }}
-            getOptionLabel={option => option.company?.companyName}
+            getOptionLabel={option => option.companyName}
             size="small"
             options={companies}
             fullWidth

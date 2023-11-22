@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const APIClientInstance = axios.create({
-  baseURL: "http://localhost:5206/api/",
+  baseURL: "http://103.232.54.93:5555/api/",
   headers: {
     Accept: "application/json"
     // Authorization: `Bearer ${currentCustomer.token}`,
@@ -26,8 +26,8 @@ APIClientInstance.interceptors.response.use(
   async function (error) {
     const originalRequest = error.config;
     if (error?.response?.status === 401 && !originalRequest._retry) {
-		localStorage.removeItem('user')
-		dispatchEvent(new Event("storage"))
+      localStorage.removeItem("user");
+      dispatchEvent(new Event("storage"));
     }
     return Promise.reject(error);
   }

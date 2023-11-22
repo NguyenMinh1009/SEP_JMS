@@ -1,6 +1,6 @@
 using SEP_JMS.Common.Utils;
 
-namespace SEP_JMS.Common.Utils.Tests
+namespace SEP_JMS.Tests.Common.Utils
 {
     [TestFixture]
     public class DataVerificationUtilityTests
@@ -11,14 +11,13 @@ namespace SEP_JMS.Common.Utils.Tests
         }
 
         [Test]
-        [TestCase("123456")]
-        [TestCase("123456!@")]
-        [TestCase("123456!@123")]
-        [TestCase("123456!@Abc")]
-        public void VerifyPasswordStrong_IsStrong_ReturnTrue(string input)
+        [TestCase("123456", ExpectedResult = false)]
+        [TestCase("123456!@", ExpectedResult = true)]
+        [TestCase("123456!@123", ExpectedResult = true)]
+        [TestCase("123456!@Abc", ExpectedResult = true)]
+        public bool VerifyPasswordStrong_IsStrong_ReturnTrue(string input)
         {
-            var result = DataVerificationUtility.VerifyPasswordStrong(input);
-            Assert.IsTrue(result, $"{input} is not strong password!");
+            return DataVerificationUtility.VerifyPasswordStrong(input);
         }
     }
 }

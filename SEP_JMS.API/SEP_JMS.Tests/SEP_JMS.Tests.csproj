@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.14" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
@@ -18,7 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SEP_JMS.API\SEP_JMS.API.csproj" />
     <ProjectReference Include="..\SEP_JMS.Common\SEP_JMS.Common.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Mapper\SEP_JMS.Mapper.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Model\SEP_JMS.Model.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Repository\SEP_JMS.Repository.csproj" />
+    <ProjectReference Include="..\SEP_JMS.Service\SEP_JMS.Service.csproj" />
   </ItemGroup>
 
 </Project>

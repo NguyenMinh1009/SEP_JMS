@@ -50,9 +50,9 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task<int> ChangePassword(Guid userId, string newPassword)
         {
-            return await Context.Users.Where(job => job.UserId == userId)
-                .ExecuteUpdateAsync(users => users
-                .SetProperty(user => user.Password, user => newPassword));
+            var user = await Context.Users.FirstAsync(u => u.UserId == userId);
+            user.Password = newPassword;
+            return await Context.SaveChangesAsync();
         }
         public async Task<PagingModel<Tuple<User, Company>>> FindUsers(GetUsersRequestModel model)
         {

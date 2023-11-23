@@ -1,5 +1,5 @@
 import React from "react";
-import Sidebar from "./SideBar/Sidebar";
+import Sidebar from "./sidebar/Sidebar"; // rname
 import { Outlet } from "react-router-dom";
 import useSideBarPanel from "../hooks/store/useSideBarPanel";
 import BreadCrumb from "./common/BreadCrumb";

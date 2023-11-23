@@ -20,6 +20,7 @@ import CustomDialog from "./CustomDialog";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { FileResponse } from "../../interface/fileResponse";
 import { CircularProgress } from "@mui/material";
+import { APIUrlHost } from "../../constants";
 
 const Comment = ({
   content,
@@ -150,7 +151,13 @@ const Comment = ({
       />
       <div className="comment flex flex-col gap-3 rounded-md px-5 pb-3 pt-4 shadow-custom">
         <div className="flex w-full">
-          <div className="h-8 w-8 shrink-0 rounded-full bg-slate-500"></div>
+          <div className="h-8 w-8 shrink-0 rounded-full bg-slate-500">
+            <img
+              src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=0"}
+              className="h-full w-full rounded-full"
+              alt=""
+            />
+          </div>
           <div className="-mt-1 flex-1 pl-4">
             <div className="break-word mb-1 grow-0 hyphens-auto rounded-md bg-white">
               <div className="flex justify-between gap-3">

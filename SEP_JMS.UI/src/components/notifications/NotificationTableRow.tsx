@@ -60,6 +60,8 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
               `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
             );
+
+            navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`);
           }
           // for project
           if (jobCorr === CorrelationJobType.Project) {
@@ -74,6 +76,8 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
               `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
             );
+
+            navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
           }
           
         });
@@ -181,7 +185,8 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             <div style={{ color: 'blue' }}>
             {"[" + moment(ticksToDate(row.createdTime)).fromNow() + "]"}
             </div>
-          {row.message ?? "..."}
+            {row.readAt == null || row.readAt == 0 ? (<b>{row.message ?? "..."}</b>) : (row.message ?? "...")}
+          
           </div>
         </TableCell>
 

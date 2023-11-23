@@ -151,6 +151,8 @@ const BreadCrumb = () => {
     return "";
   };
 
+// nguyễn việt thái anh yêu em nhiều lắm
+
   const getBreadCrumbText = (path: string, _index: number): string => {
     const crumbItem = breadCrumb.find(({ key }) => key === path);
     const preFix: string = " > ";

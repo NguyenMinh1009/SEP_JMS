@@ -162,279 +162,276 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       : snakeBar.setSnakeBar("Tìm kiếm không hợp lệ!", "warning", true);
   };
 
+  const clearAll = () => {
+    setFrom(null), setTo(null), setSelectedCompany(null);
+    setSelectedCustomer(null),
+      setSelectedJobType(null),
+      setSelectedDesigner(null),
+      setSelectedStatus(allKey.key),
+      setSelectedAccount(null);
+  };
+
   return (
-    <div key={location.pathname} className="grid grid-cols-5 items-end gap-3">
-      <div className="flex flex-col items-start gap-3">
-        <label htmlFor="" className="text-primary col-span-2 mr-4">
-          Từ ngày
-        </label>
-        <DateTimePicker
-          slotProps={{
-            actionBar: {
-              actions: ["clear"]
-            }
-          }}
-          localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-          className="h-[40px] w-full"
-          sx={{
-            "& .MuiInputBase-root": {
-              height: "40px"
-            },
-            "& .MuiSvgIcon-root": {
-              fontSize: "1rem"
-            }
-          }}
-          format="DD-MM-YYYY - h:mm"
-          closeOnSelect={false}
-          ampm={false}
-          value={from}
-          onChange={value => {
-            setFrom(value);
-          }}
-        />
-      </div>
-      <div className="flex flex-col items-start gap-3">
-        <label htmlFor="" className="text-primary col-span-2 mr-4">
-          Đến ngày
-        </label>
-        <DateTimePicker
-          slotProps={{
-            actionBar: {
-              actions: ["clear"]
-            }
-          }}
-          localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-          className="h-[40px] w-full"
-          sx={{
-            "& .MuiInputBase-root": {
-              height: "40px"
-            },
-            "& .MuiSvgIcon-root": {
-              fontSize: "1rem"
-            }
-          }}
-          format="DD-MM-YYYY - h:mm"
-          closeOnSelect={false}
-          ampm={false}
-          value={to}
-          onChange={value => {
-            setTo(value);
-          }}
-        />
-      </div>
-      {!report && (
-        <>
-          <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Loại thiết kế
-            </label>
-            <Autocomplete
-              id="types"
-              value={selectedJobType}
-              onChange={(_, newValue) => {
-                setSelectedJobType(newValue);
-              }}
-              getOptionLabel={option => option.typeName}
-              size="small"
-              options={jobtypes}
-              fullWidth
-              // disabled
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  sx={{
-                    "& .MuiInputBase-sizeSmall": {
-                      height: "40px !important"
-                    },
-                    "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                  }}
-                  placeholder="-- Chọn loại TK --"
-                />
-              )}
-            />
-          </div>
-          <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Trạng thái
-            </label>
-            <Select
-              disabled={finishedOnly}
-              fullWidth
-              size="small"
-              id="demo-simple-select"
-              value={selectedStatus}
-              onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-              sx={{
-                "& .MuiInputBase-inputSizeSmall": {
-                  fontSize: "13px !important"
-                }
-              }}
-            >
-              {(isInternal ? [allKey, ...internalStatusOptions] : [allKey, ...statusOptions]).map(
-                ({ key, text }) => (
-                  <MenuItem key={key} value={key}>
-                    {text}
-                  </MenuItem>
-                )
-              )}
-            </Select>
-          </div>
-          <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Loại công việc
-            </label>
-            <Select
-              fullWidth
-              size="small"
-              id="demo-simple-select"
-              value={selectedCorrelationJobType}
-              onChange={e => setSelectedCorrelationJobType(e.target.value as CorrelationJobType)}
-              sx={{
-                "& .MuiInputBase-inputSizeSmall": {
-                  fontSize: "13px !important"
-                }
-              }}
-            >
-              {[allKey, ...correlationJobOptions].map(({ key, text }) => (
-                <MenuItem key={key} value={key}>
-                  {text}
-                </MenuItem>
-              ))}
-            </Select>
-          </div>
-          <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Khách hàng
-            </label>
-            <Autocomplete
-              noOptionsText="Không có lựa chọn"
-              id="companies"
-              value={selectedCompany}
-              onChange={(_, newValue) => {
-                setSelectedCompany(newValue);
-              }}
-              getOptionLabel={option => option.companyName}
-              size="small"
-              options={companies}
-              fullWidth
-              // disabled
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  sx={{
-                    "& .MuiInputBase-sizeSmall": {
-                      height: "40px !important"
-                    },
-                    "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                  }}
-                  placeholder="-- Chọn khách hàng --"
-                />
-              )}
-            />
-          </div>
-          <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Người order
-            </label>
-            <Autocomplete
-              noOptionsText="Không có lựa chọn"
-              id="customers"
-              value={selectedCustomer}
-              onChange={(_, newValue) => {
-                setSelectedCustomer(newValue);
-              }}
-              getOptionLabel={option => `${option.fullname} (${option.username})`}
-              size="small"
-              options={customers}
-              fullWidth
-              // disabled
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  sx={{
-                    "& .MuiInputBase-sizeSmall": {
-                      height: "40px !important"
-                    },
-                    "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                  }}
-                  placeholder="-- Chọn người order --"
-                />
-              )}
-            />
-          </div>
-          <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Designer
-            </label>
-            <Autocomplete
-              disabled={currentPerson.roleType === Role.DESIGNER}
-              noOptionsText="Không có lựa chọn"
-              id="designers"
-              value={selectedDesigner}
-              onChange={(_, newValue) => {
-                setSelectedDesigner(newValue);
-              }}
-              getOptionLabel={option => option.fullname}
-              size="small"
-              options={designers}
-              fullWidth
-              // disabled
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  sx={{
-                    "& .MuiInputBase-sizeSmall": {
-                      height: "40px !important"
-                    },
-                    "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                  }}
-                  placeholder="-- Chọn NTK --"
-                />
-              )}
-            />
-          </div>
-          <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Account
-            </label>
-            <Autocomplete
-              disabled={
-                currentPerson.roleType === Role.ACCOUNT || currentPerson.roleType === Role.DESIGNER
+    <div className="grid grid-cols-5 gap-3">
+      <div key={location.pathname} className=" col-span-4 grid grid-cols-4 gap-3">
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            Từ ngày
+          </label>
+          <DateTimePicker
+            slotProps={{
+              actionBar: {
+                actions: ["clear"]
               }
-              noOptionsText="Không có lựa chọn"
-              id="designers"
-              value={selectedAccount}
-              onChange={(_, newValue) => {
-                setSelectedAccount(newValue);
-              }}
-              getOptionLabel={option => option.fullname}
-              size="small"
-              options={accounts}
-              fullWidth
-              // disabled
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  sx={{
-                    "& .MuiInputBase-sizeSmall": {
-                      height: "40px !important"
-                    },
-                    "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                  }}
-                  placeholder="-- Chọn Account --"
-                />
-              )}
-            />
-          </div>
-        </>
-      )}
-      <CustomButton
-        primary
-        className="h-10 text-xs font-normal normal-case text-white"
-        onClick={handleApply}
-      >
-        Áp dụng
-      </CustomButton>
+            }}
+            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+            className="h-[40px] w-full"
+            sx={{
+              "& .MuiInputBase-root": {
+                height: "40px"
+              },
+              "& .MuiSvgIcon-root": {
+                fontSize: "1rem"
+              }
+            }}
+            format="DD-MM-YYYY - h:mm"
+            closeOnSelect={false}
+            ampm={false}
+            value={from}
+            onChange={value => {
+              setFrom(value);
+            }}
+          />
+        </div>
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            Đến ngày
+          </label>
+          <DateTimePicker
+            slotProps={{
+              actionBar: {
+                actions: ["clear"]
+              }
+            }}
+            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+            className="h-[40px] w-full"
+            sx={{
+              "& .MuiInputBase-root": {
+                height: "40px"
+              },
+              "& .MuiSvgIcon-root": {
+                fontSize: "1rem"
+              }
+            }}
+            format="DD-MM-YYYY - h:mm"
+            closeOnSelect={false}
+            ampm={false}
+            value={to}
+            onChange={value => {
+              setTo(value);
+            }}
+          />
+        </div>
+        {!report && (
+          <>
+            <div className="flex flex-col items-start gap-3">
+              <label htmlFor="" className="text-primary col-span-2 mr-4">
+                Loại thiết kế
+              </label>
+              <Autocomplete
+                id="types"
+                value={selectedJobType}
+                onChange={(_, newValue) => {
+                  setSelectedJobType(newValue);
+                }}
+                getOptionLabel={option => option.typeName}
+                size="small"
+                options={jobtypes}
+                fullWidth
+                // disabled
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                    placeholder="-- Chọn loại TK --"
+                  />
+                )}
+              />
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <label htmlFor="" className="text-primary col-span-2 mr-4">
+                Trạng thái
+              </label>
+              <Select
+                disabled={finishedOnly}
+                fullWidth
+                size="small"
+                id="demo-simple-select"
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                sx={{
+                  "& .MuiInputBase-inputSizeSmall": {
+                    fontSize: "13px !important"
+                  }
+                }}
+              >
+                {(isInternal ? [allKey, ...internalStatusOptions] : [allKey, ...statusOptions]).map(
+                  ({ key, text }) => (
+                    <MenuItem key={key} value={key}>
+                      {text}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <label htmlFor="" className="text-primary col-span-2 mr-4">
+                Khách hàng
+              </label>
+              <Autocomplete
+                noOptionsText="Không có lựa chọn"
+                id="companies"
+                value={selectedCompany}
+                onChange={(_, newValue) => {
+                  setSelectedCompany(newValue);
+                }}
+                getOptionLabel={option => option.companyName}
+                size="small"
+                options={companies}
+                fullWidth
+                // disabled
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                    placeholder="-- Chọn khách hàng --"
+                  />
+                )}
+              />
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <label htmlFor="" className="text-primary col-span-2 mr-4">
+                Người order
+              </label>
+              <Autocomplete
+                noOptionsText="Không có lựa chọn"
+                id="customers"
+                value={selectedCustomer}
+                onChange={(_, newValue) => {
+                  setSelectedCustomer(newValue);
+                }}
+                getOptionLabel={option => `${option.fullname} (${option.username})`}
+                size="small"
+                options={customers}
+                fullWidth
+                // disabled
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                    placeholder="-- Chọn người order --"
+                  />
+                )}
+              />
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <label htmlFor="" className="text-primary col-span-2 mr-4">
+                Designer
+              </label>
+              <Autocomplete
+                disabled={currentPerson.roleType === Role.DESIGNER}
+                noOptionsText="Không có lựa chọn"
+                id="designers"
+                value={selectedDesigner}
+                onChange={(_, newValue) => {
+                  setSelectedDesigner(newValue);
+                }}
+                getOptionLabel={option => option.fullname}
+                size="small"
+                options={designers}
+                fullWidth
+                // disabled
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                    placeholder="-- Chọn NTK --"
+                  />
+                )}
+              />
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <label htmlFor="" className="text-primary col-span-2 mr-4">
+                Account
+              </label>
+              <Autocomplete
+                disabled={
+                  currentPerson.roleType === Role.ACCOUNT ||
+                  currentPerson.roleType === Role.DESIGNER
+                }
+                noOptionsText="Không có lựa chọn"
+                id="designers"
+                value={selectedAccount}
+                onChange={(_, newValue) => {
+                  setSelectedAccount(newValue);
+                }}
+                getOptionLabel={option => option.fullname}
+                size="small"
+                options={accounts}
+                fullWidth
+                // disabled
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                    placeholder="-- Chọn Account --"
+                  />
+                )}
+              />
+            </div>
+          </>
+        )}
+      </div>
+      <div className="mt-8 flex flex-col gap-11">
+        <button
+          className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
+          onClick={clearAll}
+        >
+          Xóa tất cả
+        </button>
+        <CustomButton
+          primary
+          className=" h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
+          onClick={handleApply}
+        >
+          Áp dụng
+        </CustomButton>
+      </div>
     </div>
   );
 };

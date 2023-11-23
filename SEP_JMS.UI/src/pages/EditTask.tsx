@@ -277,6 +277,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
           <>
             <label htmlFor="" className="text-primary col-span-2">
               Số lượng
+              <RequireText />
             </label>
             <input
               disabled={currentPerson.roleType === Role.DESIGNER}
@@ -649,12 +650,13 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
       return (
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Trạng thái{" "}
+            Trạng thái
             {currentPerson.roleType !== Role.CUSTOMER && (
               <span className="mb-3 text-[13px] font-semibold text-orange-500">
                 <i>(Nội Bộ)</i>
               </span>
             )}
+            <RequireText />
           </label>
           <Select
             disabled={
@@ -700,6 +702,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
                 <i>(Công khai)</i>
               </span>
             )}
+            <RequireText />
           </label>
           <Select
             disabled={
@@ -784,6 +787,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
                 <div className="flex w-full items-center justify-between">
                   <label htmlFor="" className="text-primary min-w-[75px]">
                     Tên công việc
+                    <RequireText />
                     <i className="text-[13px] text-orange-500"> (Tối đa 150 kí tự)</i>
                   </label>
                   <div className="text-[13px]">{`${title.length ?? 0}/150`}</div>
@@ -797,7 +801,10 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
                   className="w-full rounded-md border-2 p-2 leading-5 shadow-sm"
                 />
               </div>
-              <div className="text-primary mb-3 min-w-[75px]">Mô tả công việc</div>
+              <div className="text-primary mb-3 min-w-[75px]">
+                Mô tả công việc
+                <RequireText />
+              </div>
               <div className="mb-6 overflow-hidden rounded-md border-2">
                 <ReactQuill
                   readOnly={currentPerson.roleType === Role.DESIGNER}
@@ -985,6 +992,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Khách hàng
+                <RequireText />
               </label>
               {currentPerson.roleType === Role.DESIGNER ? (
                 <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
@@ -1033,44 +1041,13 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
                 )}
               />
             </div>
-            {/* <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Account
-              </label>
-              <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-                {currentPerson.roleType === Role.ADMIN && (
-                  <span className="col-span-3 p-2 pl-0 opacity-60">
-                    {
-                      customers.find(item => item.userId === selectedCustomer?.userId)?.account
-                        ?.fullname
-                    }
-                  </span>
-                )}
-
-                {currentPerson.roleType === Role.ACCOUNT && (
-                  <span className="col-span-3 p-2 pl-0 opacity-60">{currentPerson?.fullname}</span>
-                )}
-
-                {currentPerson.roleType === Role.DESIGNER && (
-                  <span className="col-span-3 p-2 pl-0 opacity-60">
-                    {taskDetail?.account?.fullname}
-                  </span>
-                )}
-
-                {currentPerson.roleType === Role.CUSTOMER && (
-                  <span className="col-span-3 p-2 pl-0 opacity-60">
-                    {currentPerson?.account?.fullname}
-                  </span>
-                )}
-              </div>
-            </div> */}
-
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Account
+                <RequireText />
               </label>
               <Autocomplete
-                disabled={currentPerson.roleType === Role.CUSTOMER}
+                disabled={currentPerson.roleType === Role.CUSTOMER || subTaskId !== undefined}
                 noOptionsText="Không có lựa chọn"
                 id="accounts"
                 value={selectedAccount}
@@ -1101,6 +1078,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
                   Designer
+                  <RequireText />
                 </label>
                 {currentPerson.roleType === Role.DESIGNER ? (
                   <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
@@ -1130,6 +1108,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại thiết kế
+                <RequireText />
               </label>
               <Autocomplete
                 disabled={currentPerson.roleType === Role.DESIGNER}
@@ -1150,6 +1129,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
                   Ưu tiên
+                  <RequireText />
                 </label>
                 <Select
                   disabled={currentPerson.roleType === Role.DESIGNER}
@@ -1173,6 +1153,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Deadline
+                <RequireText />
               </label>
               <DateTimePicker
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}

@@ -504,7 +504,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                   size="small"
                   options={companies}
                   fullWidth
-                  // disabled
+                  //disabled
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -582,6 +582,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Account
+                <RequireText />
               </label>
               <Autocomplete
                 disabled={currentPerson.roleType === Role.CUSTOMER}
@@ -614,6 +615,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
                   Designer
+                  <RequireText />
                 </label>
                 <Autocomplete
                   noOptionsText="Không có lựa chọn"
@@ -646,6 +648,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại thiết kế
+                <RequireText />
               </label>
               <Autocomplete
                 id="jobtypes"
@@ -710,6 +713,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Deadline
+                <RequireText />
               </label>
               <DateTimePicker
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
@@ -734,6 +738,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Trạng thái
+                <RequireText />
               </label>
               {finishedOnly ? (
                 <Select

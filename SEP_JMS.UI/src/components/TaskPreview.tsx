@@ -89,7 +89,11 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
               {/* ---JOB--- */}
               {isCorrelationJobType === CorrelationJobType.Job && (
                 <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                  <EnhancedTableHead correlationJobType={CorrelationJobType.Job} />
+                  {finishedOnly ? (
+                    <EnhancedTableHead finishedOnly correlationJobType={CorrelationJobType.Job} />
+                  ) : (
+                    <EnhancedTableHead correlationJobType={CorrelationJobType.Job} />
+                  )}
                   <TableBody>
                     {jobs?.map((row: any, index: number) => {
                       return (
@@ -112,7 +116,14 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
               {/* ---PROJECT--- */}
               {isCorrelationJobType === CorrelationJobType.Project && (
                 <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                  <EnhancedTableHead correlationJobType={CorrelationJobType.Project} />
+                  {finishedOnly ? (
+                    <EnhancedTableHead
+                      finishedOnly
+                      correlationJobType={CorrelationJobType.Project}
+                    />
+                  ) : (
+                    <EnhancedTableHead correlationJobType={CorrelationJobType.Project} />
+                  )}
                   <TableBody>
                     {jobs?.map((row: any, index: number) => {
                       return (

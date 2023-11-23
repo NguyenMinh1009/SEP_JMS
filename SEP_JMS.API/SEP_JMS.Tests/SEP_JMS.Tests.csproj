@@ -27,4 +27,8 @@
     <ProjectReference Include="..\SEP_JMS.Service\SEP_JMS.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\Utils\" />
+  </ItemGroup>
+
 </Project>

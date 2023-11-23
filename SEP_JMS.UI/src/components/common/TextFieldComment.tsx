@@ -20,6 +20,8 @@ import { VisibleType } from "../../enums/visibleType";
 import ImageSection from "./ImageSection";
 import { useClickOutside } from "../../utils/useClickOutside";
 import CustomDialog from "./CustomDialog";
+import { APIUrlHost } from "../../constants";
+import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -82,7 +84,9 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
   const editorRef = useRef<any>(null);
   const wrapperRef = useRef<any>(null);
 
-  useEffect(() => {});
+  const currentPerson = useCurrentPerson();
+
+  useEffect(() => { });
   useClickOutside(
     wrapperRef,
     () => {
@@ -159,33 +163,33 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
     {
       subTaskId === undefined
         ? AlwayxInstance.post(`comment/${taskId}`, formData)
-            .then(() => {
-              getComments();
-              setValue("");
-              setFiles([]);
-              setLoading(false);
-              setOpenReplySection?.(false);
-              if (reply === undefined) setOpenTaskPanel(false);
-            })
-            .catch(_err => {
-              setLoading(false);
-              snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-            })
-            .finally(() => setLoading(false))
+          .then(() => {
+            getComments();
+            setValue("");
+            setFiles([]);
+            setLoading(false);
+            setOpenReplySection?.(false);
+            if (reply === undefined) setOpenTaskPanel(false);
+          })
+          .catch(_err => {
+            setLoading(false);
+            snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+          })
+          .finally(() => setLoading(false))
         : AlwayxInstance.post(`comment/${subTaskId}`, formData)
-            .then(() => {
-              getComments();
-              setValue("");
-              setFiles([]);
-              setLoading(false);
-              setOpenReplySection?.(false);
-              if (reply === undefined) setOpenTaskPanel(false);
-            })
-            .catch(_err => {
-              setLoading(false);
-              snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-            })
-            .finally(() => setLoading(false));
+          .then(() => {
+            getComments();
+            setValue("");
+            setFiles([]);
+            setLoading(false);
+            setOpenReplySection?.(false);
+            if (reply === undefined) setOpenTaskPanel(false);
+          })
+          .catch(_err => {
+            setLoading(false);
+            snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+          })
+          .finally(() => setLoading(false));
     }
   };
 
@@ -227,7 +231,13 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
         secondaryBtnCallback={() => setOpenTaskPanel(false)}
       />
       <div className="reply-btn flex w-full max-w-full grow-0 items-center gap-4 overflow-hidden bg-white px-5 py-3">
-        <div className="h-8 w-8 rounded-full bg-slate-500"></div>
+        <div className="h-8 w-8 rounded-full bg-slate-500">
+          <img
+            src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=0"}
+            className="h-full w-full rounded-full"
+            alt=""
+          />
+        </div>
         <div className="flex-1">
           <div className="flex gap-3 rounded-md bg-white">
             <div className="flex flex-1 items-center gap-3">

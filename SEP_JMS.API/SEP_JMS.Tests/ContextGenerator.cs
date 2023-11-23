@@ -6,10 +6,11 @@ namespace SEP_JMS.Tests
 {
     public static class ContextGenerator
     {
+        public static readonly JSMContext Instance = Generate();
         public static JSMContext Generate()
         {
             var optionBuilder = new DbContextOptionsBuilder<JSMContext>()
-                .UseInMemoryDatabase("TESTDB");
+                .UseInMemoryDatabase("SEP_JMS_Test");
             return new JSMContext(optionBuilder.Options);
         }
 
@@ -17,8 +18,7 @@ namespace SEP_JMS.Tests
             where T : BaseRepository<TEntity>
             where TEntity : class
         {
-            var context = Generate();
-            var instance = Activator.CreateInstance(typeof(T), context);
+            var instance = Activator.CreateInstance(typeof(T), Instance);
             return (T?)instance ?? throw new Exception($"Can't create instance of {typeof(T).FullName}");
         }
     }

@@ -153,4 +153,4 @@ export const commonRegex = {
   username: /^[a-zA-Z0-9_-]{3,20}$/
 };
 
-export const APIUrlHost = "http://localhost:5206"
+export const APIUrlHost = "http://103.232.54.93:5555"

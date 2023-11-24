@@ -218,6 +218,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
           <>
             <label htmlFor="" className="text-primary col-span-2">
               Số lượng
+              <RequireText />
             </label>
             <input
               type="number"
@@ -402,6 +403,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
               <div className="flex h-fit w-full items-center justify-between">
                 <label htmlFor="" className="text-primary min-w-[75px]">
                   Tên công việc
+                  <RequireText />
                   <i className="text-[13px] text-orange-500"> (Tối đa 150 kí tự)</i>
                 </label>
                 <div className="text-[13px]">{`${title.length ?? 0}/150`}</div>
@@ -414,7 +416,9 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 className="w-full rounded-md border-2 p-2 leading-5 shadow-sm"
               />
             </div>
-            <div className="text-primary mb-3 min-w-[75px]">Mô tả công việc</div>
+            <div className="text-primary mb-3 min-w-[75px]">
+              Mô tả công việc <RequireText />
+            </div>
             <div className="overflow-hidden rounded-md border-2">
               <ReactQuill
                 modules={quillModules}
@@ -482,13 +486,14 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Khách hàng
+                <RequireText />
               </label>
               {currentPerson.roleType === Role.CUSTOMER ||
               currentPerson.roleType === Role.ACCOUNT ? (
                 <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
                   <span className="col-span-3 p-2 pl-0 opacity-50">
                     {(currentPerson.roleType === Role.CUSTOMER
-                      ? currentPerson?.company?.companyName
+                      ? currentPerson?.company?.companyId
                       : selectedCustomer?.company?.companyName) ?? "..."}
                   </span>
                 </div>
@@ -504,7 +509,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                   size="small"
                   options={companies}
                   fullWidth
-                  // disabled
+                  //disabled
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -582,6 +587,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Account
+                <RequireText />
               </label>
               <Autocomplete
                 disabled={currentPerson.roleType === Role.CUSTOMER}
@@ -614,6 +620,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
                   Designer
+                  <RequireText />
                 </label>
                 <Autocomplete
                   noOptionsText="Không có lựa chọn"
@@ -646,6 +653,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại thiết kế
+                <RequireText />
               </label>
               <Autocomplete
                 id="jobtypes"
@@ -682,7 +690,8 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             >
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Độ ưu tiên
+                  Uu tiên
+                  <RequireText />
                 </label>
                 <Select
                   fullWidth
@@ -710,6 +719,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Deadline
+                <RequireText />
               </label>
               <DateTimePicker
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
@@ -734,6 +744,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Trạng thái
+                <RequireText />
               </label>
               {finishedOnly ? (
                 <Select

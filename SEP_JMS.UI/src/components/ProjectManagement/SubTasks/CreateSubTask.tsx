@@ -154,24 +154,6 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
       }
     });
   };
-
-  const getCustomerListForStaff = () => {
-    AlwayxInstance.post("user/search", {
-      pageIndex: 1,
-      pageSize: 2147483647,
-      searchText: null,
-      companyId:
-        currentPerson.roleType === Role.ADMIN
-          ? selectedCompany?.companyId ?? defaultCompany.companyId
-          : undefined,
-      role: Role.CUSTOMER
-    })
-      .then(res => setCustomers(res.data.items))
-      .catch(err => {
-        console.error(err);
-      });
-  };
-
   const getDesignerList = () => {
     AlwayxInstance.post("user/search", {
       pageIndex: 1,
@@ -219,6 +201,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
           <>
             <label htmlFor="" className="text-primary col-span-2">
               Số lượng
+              <RequireText />
             </label>
             <input
               type="number"
@@ -297,7 +280,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             break;
           case VisibleType.Internal:
             {
-                navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
+              navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
             }
 
             break;
@@ -336,12 +319,24 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
     return false;
   };
 
+  const getTaskDetailParent = async () => {
+    setLoading(true);
+    let res: any;
+    res = await AlwayxInstance.get(`job/${taskId}`);
+    setSelectedCompany(res.data.company);
+    setSelectedCustomer(res.data.customer);
+    setSelectedAccount(res.data.account);
+    setLoading(false);
+  };
+
   useEffect(() => {
     if (currentPerson.roleType !== Role.CUSTOMER) {
       getDesignerList();
       getOrderList();
       getAccountList();
       getJobTypeList();
+
+      getTaskDetailParent();
     }
   }, [currentPerson.roleType]);
 
@@ -351,12 +346,6 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
     }
   }, [currentPerson.roleType]);
 
-  useEffect(() => {
-    if (currentPerson.roleType !== Role.CUSTOMER) {
-      setSelectedCustomer(null);
-      getCustomerListForStaff();
-    }
-  }, [selectedCompany, currentPerson.roleType]);
   return (
     <div className="create-task relative -mx-2 -mt-2 grid h-max grid-cols-12 gap-6 px-2">
       <div
@@ -465,6 +454,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Khách hàng
+                <RequireText />
               </label>
               {currentPerson.roleType === Role.CUSTOMER ||
               currentPerson.roleType === Role.ACCOUNT ? (
@@ -487,7 +477,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
                   size="small"
                   options={companies}
                   fullWidth
-                  // disabled
+                  disabled
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -526,7 +516,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
                   size="small"
                   options={customers}
                   fullWidth
-                  // disabled
+                  disabled
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -565,9 +555,9 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Account
+                <RequireText />
               </label>
               <Autocomplete
-                disabled={currentPerson.roleType === Role.CUSTOMER}
                 noOptionsText="Không có lựa chọn"
                 id="accounts"
                 value={selectedAccount}
@@ -578,7 +568,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
                 size="small"
                 options={accounts}
                 fullWidth
-                // disabled
+                disabled
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -597,6 +587,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
                   Designer
+                  <RequireText />
                 </label>
                 <Autocomplete
                   noOptionsText="Không có lựa chọn"
@@ -629,6 +620,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại thiết kế
+                <RequireText />
               </label>
               <Autocomplete
                 id="jobtypes"
@@ -665,7 +657,8 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             >
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Độ ưu tiên
+                  Ưu tiên
+                  <RequireText />
                 </label>
                 <Select
                   fullWidth
@@ -693,6 +686,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Deadline
+                <RequireText />
               </label>
               <DateTimePicker
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
@@ -717,6 +711,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Trạng thái
+                <RequireText />
               </label>
               {finishedOnly ? (
                 <Select

@@ -232,20 +232,23 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
             {priorityOptions.find(option => option.key === row.priority)?.text}
           </div>
         </TableCell>
-        <TableCell
-          padding="none"
-          className="border-r-[1px] p-2 text-[13px] text-white"
-          align="center"
-        >
-          <span
-            className={`${getStatusBgColor(
-              taskStatus,
-              visibleType
-            )} inline-block w-28 rounded-sm py-2 text-center font-[400]`}
+        {!finishOnly ? (
+          <TableCell
+            padding="none"
+            className="border-r-[1px] p-2 text-[13px] text-white"
+            align="center"
           >
-            {getStatusOptions.find(option => option.key === taskStatus)?.text}
-          </span>
-        </TableCell>
+            <span
+              className={`${getStatusBgColor(
+                taskStatus,
+                visibleType
+              )} inline-block w-28 rounded-sm py-2 text-center font-[400]`}
+            >
+              {getStatusOptions.find(option => option.key === taskStatus)?.text}
+            </span>
+          </TableCell>
+        ) : null}
+
         <TableCell
           padding="none"
           className="h-full min-w-[100px] justify-center p-2 align-top text-[13px] font-[400] first-letter:items-center"

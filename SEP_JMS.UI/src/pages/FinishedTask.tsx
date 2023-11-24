@@ -75,7 +75,7 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
                 <span className="hidden 3xl:block">Tạo công việc mới</span>
               </div>
             )}
-            {1 === 1 && (
+            {currentPerson.roleType === Role.ADMIN && (
               <div
                 onClick={isExporting ? undefined : handleExport}
                 className="flex h-10 w-20 cursor-pointer items-center justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"

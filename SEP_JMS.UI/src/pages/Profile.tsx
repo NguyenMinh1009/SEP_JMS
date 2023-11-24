@@ -136,7 +136,7 @@ const Profile = () => {
       case Role.ADMIN:
         return "Admin";
       case Role.DESIGNER:
-        return "Thiết kế";
+        return "Nhà thiết kế";
     }
   };
 
@@ -174,6 +174,16 @@ const Profile = () => {
   const validateInput = async (): Promise<boolean> => {
     if (!infoUpdate.fullname.trim()) {
       snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
+      return false;
+    }
+
+    if (infoUpdate.fullname.trim().length > 150) {
+      snakeBar.setSnakeBar("Họ và tên vượt quá số kí tự cho phép (150)!", "warning", true);
+      return false;
+    }
+
+    if (infoUpdate.address.trim().length > 150) {
+      snakeBar.setSnakeBar("Địa chỉ vượt quá số kí tự cho phép (150)!", "warning", true);
       return false;
     }
     

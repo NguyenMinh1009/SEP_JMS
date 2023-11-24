@@ -59,29 +59,29 @@ const HomeFeature: FC = () => {
                 }}
               >
                 <Typography variant="h5" sx={{ mb: 1 }}>
-                  Lorem ipsum dolor
+                  Languages
                 </Typography>
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" color="text.secondary">
-                    UI/UI Design
+                    C# ASP. NET
                   </Typography>
                   <BorderLinearProgress variant="determinate" color="inherit" value={65} order={1} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" color="text.secondary">
-                    Mobile Development
+                    ReactJs
                   </Typography>
-                  <BorderLinearProgress variant="determinate" color="inherit" value={40} order={2} />
+                  <BorderLinearProgress variant="determinate" color="inherit" value={80} order={2} />
                 </Box>
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" color="text.secondary">
-                    Web Development
+                    IIS Server
                   </Typography>
-                  <BorderLinearProgress variant="determinate" color="inherit" value={50} order={3} />
+                  <BorderLinearProgress variant="determinate" color="inherit" value={100} order={3} />
                 </Box>
               </Box>
 
-              <Box
+              {/* <Box
                 sx={{
                   position: 'absolute',
                   bottom: -12,
@@ -138,7 +138,7 @@ const HomeFeature: FC = () => {
                     />
                   </Box>
                 </Box>
-              </Box>
+              </Box> */}
             </Box>
           </Grid>
           <Grid item xs={12} md={7}>
@@ -154,18 +154,18 @@ const HomeFeature: FC = () => {
                 fontWeight: 'bold',
               }}
             >
-              Make your{' '}
+              Phát triển bởi{' '}
               <Typography
                 component="mark"
                 sx={{
                   position: 'relative',
-                  color: 'primary.main',
+                  color: '#127C71',
                   fontSize: 'inherit',
                   fontWeight: 'inherit',
                   backgroundColor: 'unset',
                 }}
               >
-                Learning <br />
+                SEP-FU <br />
                 <Box
                   sx={{
                     position: 'absolute',
@@ -179,12 +179,11 @@ const HomeFeature: FC = () => {
                   <img src={Images.headlineCurve} alt="Headline curve" />
                 </Box>
               </Typography>
-              Enjoyable
+              Team
             </Typography>
 
             <Typography sx={{ color: 'text.secondary', mb: 2, ml: { xs: 0, md: 4 } }}>
-              Set the way of learning according to your wishes with some of the benefits that you get us, so you on
-              enjoy the lessons that we provide.
+              Đây là sản phẩm bảo vệ đồ án của sinh viên trường Đại học FPT
             </Typography>
 
             <Grid container spacing={2} sx={{ ml: { xs: 0, md: 2 } }}>
@@ -194,7 +193,7 @@ const HomeFeature: FC = () => {
                     <Box
                       sx={{
                         mr: 1,
-                        backgroundColor: 'primary.main',
+                        backgroundColor: '#127C71',
                         borderRadius: '50%',
                         height: 36,
                         width: 36,
@@ -210,7 +209,7 @@ const HomeFeature: FC = () => {
                       {icon}
                     </Box>
                     <Box sx={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
-                      <Typography variant="h6" sx={{ fontSize: '1rem', mb: 1, color: 'secondary.main' }}>
+                      <Typography variant="h6" sx={{ fontSize: '1rem', mb: 1, color: '#ffaf35' }}>
                         {title}
                       </Typography>
                       <Typography sx={{ lineHeight: 1.3, color: 'text.secondary' }} variant="subtitle1">

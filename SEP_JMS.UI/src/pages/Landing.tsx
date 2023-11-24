@@ -14,6 +14,7 @@ import Hero from "../components/home/hero";
 import Header from "../components/home/header";
 import Footer from "../components/home/footer";
 import HomeFeature from "../components/home/feature";
+import HomeContact from "../components/home/homeContact";
 
 
 const LandingPage: React.FC = () => {
@@ -26,6 +27,7 @@ const LandingPage: React.FC = () => {
       <Header></Header>
       <Hero></Hero>
       <HomeFeature></HomeFeature>
+      <HomeContact></HomeContact>
       <Footer></Footer>
     </section>
   );

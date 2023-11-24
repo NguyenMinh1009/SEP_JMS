@@ -7,7 +7,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import TaskPreview from "../components/TaskPreview";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import { ticksToDate } from "../utils/Datetime";
+import { dateToTicks, ticksToDate } from "../utils/Datetime";
 import Images from "../img";
 import RequireText from "../components/common/RequireText";
 import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, FormControlLabel, FormGroup, Switch, Tooltip, Typography, styled } from "@mui/material";
@@ -22,6 +22,7 @@ import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
 import { info } from "console";
 import ASwitchButton from "../components/common/ASwitchButton";
 import useAvtRef from "../hooks/store/useCurrentAvatar";
+import { DatePicker, viVN } from "@mui/x-date-pickers";
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Thông tin");
@@ -34,8 +35,8 @@ const Profile = () => {
   const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isProcessUpdate, setIsProcessUpdate] = useState<boolean>(false); 
-  const [avtRefresh, setAvtRefresh] = useState<number>(Date.now()); 
+  const [isProcessUpdate, setIsProcessUpdate] = useState<boolean>(false);
+  const [currentInfo, setCurrentInfo] = useState<any>(null);
 
   const currentPerson = useCurrentPerson();
   const avtRef = useAvtRef();
@@ -44,22 +45,11 @@ const Profile = () => {
   // state for update information
   const [infoUpdate, setInfoUpdate] = useState<any>({});
   const onChangeBindInfo = (value: any, path: string) => {
-    console.log("Current info:", infoUpdate);
-    let clone = {... infoUpdate};
+    // console.log("Current info:", infoUpdate);
+    let clone = { ...infoUpdate };
     clone[path] = value;
     setInfoUpdate(clone);
   }
-
-  useEffect(() => {
-    selectedTab === "Cập nhật thông tin" && setInfoUpdate({
-      avatarUrl: currentPerson.avatarUrl,
-      fullname: currentPerson.fullname,
-      phone: currentPerson.phone,
-      dob: currentPerson.dob,
-      gender: currentPerson.gender,
-      address: currentPerson.address
-    })
-  }, [selectedTab]);
 
   // Add more notification configurations
   const [notiState, setNotiState] = useState<boolean[]>([]);
@@ -79,19 +69,36 @@ const Profile = () => {
     });
   };
 
+  const getCurrentInfo = async () => {
+    await APIClientInstance.get("user/profile").then(res => {
+      setCurrentInfo(res.data);
+    });
+  };
+
+  useEffect(() => {
+    (selectedTab === "Thông tin") && getCurrentInfo();
+  }, [selectedTab]);
+
+  useEffect(() => {
+    setInfoUpdate({
+      avatarUrl: currentInfo?.avatarUrl,
+      fullname: currentInfo?.fullname,
+      phone: currentInfo?.phone,
+      dob: currentInfo?.dob ? moment(ticksToDate(currentInfo?.dob)) : null,
+      gender: currentInfo?.gender,
+      address: currentInfo?.address
+    })
+  }, [currentInfo]);
+
   const notiItems = [
     {
       title: "Công việc",
       value: 0
     },
     {
-      title: "Bình luân",
+      title: "Bình luận",
       value: 1
     },
-    {
-      title: "Email",
-      value: 2
-    }
   ];
 
   useEffect(() => {
@@ -100,19 +107,19 @@ const Profile = () => {
   }, [focusPassword, password]);
 
   useEffect(() => {
-    console.log(notiState);
+    // console.log(notiState);
     if (notiState.length === 0) {
-      console.log("Update noti state:", notiState);
+      // console.log("Update noti state:", notiState);
       setIsProcessNotifyConfig(true);
       let currentCfg = currentPerson.notificationConfig.replace("[", "").replace("]", "").split(",");
-      let clone : boolean[] = [];
+      let clone: boolean[] = [];
       currentCfg.map(value => clone[parseInt(value)] = true);
       setIsProcessNotifyConfig(false);
       setNotiState(clone);
     } else {
       updateNotifyConfig();
     }
-    
+
   }, [notiState]);
 
   useEffect(() => {
@@ -134,7 +141,7 @@ const Profile = () => {
   };
 
   const tabs = [
-    
+
     {
       text: "Thông tin",
       icon: <FaUser size={14} />
@@ -151,10 +158,10 @@ const Profile = () => {
       //element: <TaskPreview />
     },
     {
-        text: "Thông báo",
-        icon: <AiFillEye size={14} />,
-        // element: <TaskPreview />
-      }
+      text: "Thông báo",
+      icon: <AiFillEye size={14} />,
+      // element: <TaskPreview />
+    }
   ];
 
   const onNotiSwitchChange = (e: React.ChangeEvent) => {
@@ -164,11 +171,31 @@ const Profile = () => {
     setNotiState(clone);
   }
 
-  const handleChangePassword = () => {
+  const validateInput = async (): Promise<boolean> => {
+    if (!infoUpdate.fullname.trim()) {
+      snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
+      return false;
+    }
+    
+    if (infoUpdate.phone.trim() && !commonRegex.phone.test(infoUpdate.phone)) {
+      snakeBar.setSnakeBar("Số điện thoại sai định dạng!", "warning", true);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleChangePassword = async () => {
     if (!oldPassword.trim()) {
       snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
       return;
     }
+
+    if (password.trim() !== rePassword.trim()) {
+      snakeBar.setSnakeBar("Nhập lại mật khẩu không khớp!", "warning", true);
+      return false;
+    }
+
     setIsLoading(true);
     APIClientInstance.post("user/ChangePassword", {
       oldPassword: oldPassword.trim(),
@@ -186,19 +213,25 @@ const Profile = () => {
       });
   };
 
-  const handleUpdateInfo = () => {
-    if (!infoUpdate.fullname.trim()) {
-      snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
-      return;
-    }
+  const handleUpdateInfo = async () => {
+    var rs = await validateInput();
+    if (!rs) return;
     setIsProcessUpdate(true);
-    APIClientInstance.post("user/UpdateProfile", infoUpdate)
+    let dataPayload = {...infoUpdate}
+    dataPayload.dob = infoUpdate.dob ? dateToTicks(infoUpdate.dob.toDate()) : undefined
+    APIClientInstance.post("user/UpdateProfile", dataPayload)
       .then(() => {
+        // bind for current person
         const currentData = JSON.parse(localStorage.getItem("user") ?? "");
-        for (const prop in infoUpdate) currentData[prop] = infoUpdate[prop];
+        for (const prop in dataPayload) currentData[prop] = dataPayload[prop];
         currentPerson.setCurrentPerson?.(currentData);
         localStorage.setItem("user", JSON.stringify(currentData));
         window.dispatchEvent(new Event("storage"));
+
+        // bind for current info
+        const currentData1 = {...currentInfo};
+        for (const prop in dataPayload) currentData1[prop] = dataPayload[prop];
+        setCurrentInfo(currentData1);
         snakeBar.setSnakeBar("Cập nhật thông tin thành công!", "success", true);
       })
       .catch(() => {
@@ -215,7 +248,7 @@ const Profile = () => {
     input.setAttribute("accept", "image/png");
     input.click();
     input.onchange = (e: any) => {
-      console.log(input.files);
+      // console.log(input.files);
       const formData = new FormData();
       formData.append("file", e.target.files[0]);
       APIClientInstance.post("user/avatar", formData).then(e => avtRef.setContent(Date.now()));
@@ -227,7 +260,7 @@ const Profile = () => {
       <div className="flex w-1/4 max-w-[300px] flex-col items-start">
         <div className="group relative mb-9 aspect-square w-full cursor-pointer overflow-hidden rounded-md bg-slate-500">
           <img
-            src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content ?? Images.avtPlaceHolder}
+            src={currentInfo?.avatarUrl ? APIUrlHost + "/" + currentInfo?.avatarUrl + "?t=" + avtRef.content : Images.avtPlaceHolder}
             alt=""
             className="w-full object-cover"
           />
@@ -243,10 +276,10 @@ const Profile = () => {
               <div className="mb-[2px] flex-1 border-b-2" />
             </div>
             <p className="font-semibold text-accent">
-              {moment(ticksToDate(currentPerson.createdTime)).format("DD-MM-YYYY") || "..."}
+              {moment(ticksToDate(currentInfo?.createdTime)).format("DD-MM-YYYY") || "..."}
             </p>
           </div>
-          {currentPerson.roleType !== Role.CUSTOMER && (
+          {currentInfo?.roleType !== Role.CUSTOMER && (
             <>
               <div className="mb-4">
                 <div className="mb-2 flex gap-1">
@@ -254,7 +287,7 @@ const Profile = () => {
                   <div className="mb-[2px] flex-1 border-b-2" />
                 </div>
                 <p className="font-semibold text-accent">
-                  {moment(ticksToDate(currentPerson.onboardTime)).format("DD-MM-YYYY") || "..."}
+                  {moment(ticksToDate(currentInfo?.onboardTime)).format("DD-MM-YYYY") || "..."}
                 </p>
               </div>
               <div className="">
@@ -263,8 +296,8 @@ const Profile = () => {
                   <div className="mb-[2px] flex-1 border-b-2" />
                 </div>
                 <p className="font-semibold text-accent">
-                  {currentPerson.offboardTime
-                    ? moment(ticksToDate(currentPerson.offboardTime)).format("DD-MM-YYYY")
+                  {currentInfo?.offboardTime
+                    ? moment(ticksToDate(currentInfo?.offboardTime)).format("DD-MM-YYYY")
                     : "Chưa có thông tin"}
                 </p>
               </div>
@@ -274,19 +307,18 @@ const Profile = () => {
       </div>
       <div className="vertical-grid-container col-span-15">
         <div>
-          <p className="text-primary text-2xl font-bold">{currentPerson.fullname}</p>
+          <p className="text-primary text-2xl font-bold">{currentInfo?.fullname}</p>
           <p className="text-secondary mb-4 font-semibold text-accent">
-            {getRoleText(currentPerson.roleType)}
+            {getRoleText(currentInfo?.roleType)}
           </p>
           <div className="flex w-fit items-end gap-6 border-b-2">
             {tabs.map(tab => (
               <div
                 onClick={() => setSelectedTab(tab.text)}
-                className={`-mb-[2px] flex cursor-pointer items-center gap-2 pb-2 hover:opacity-80 ${
-                  selectedTab === tab.text
-                    ? "border-b-[3px] border-accent text-[#222]"
-                    : "text-[#999]"
-                }`}
+                className={`-mb-[2px] flex cursor-pointer items-center gap-2 pb-2 hover:opacity-80 ${selectedTab === tab.text
+                  ? "border-b-[3px] border-accent text-[#222]"
+                  : "text-[#999]"
+                  }`}
                 key={tab.text}
               >
                 {tab.icon}
@@ -303,8 +335,8 @@ const Profile = () => {
                 <FormGroup>
                   {notiItems.map(v => (
                     <FormControlLabel
-                      style={{marginLeft: "0px"}}
-                      value = {v.value}
+                      style={{ marginLeft: "0px" }}
+                      value={v.value}
                       control={<ASwitchButton checked={notiState[v.value]} disabled={isProcessNotifyConfig} onChange={onNotiSwitchChange} />}
                       label={"Nhận thông báo từ " + v.title}
                       key={v.value}
@@ -312,7 +344,7 @@ const Profile = () => {
                   ))}
                 </FormGroup>
               </div>
-              
+
             </div>
           </div>
         )}
@@ -322,21 +354,21 @@ const Profile = () => {
             <div className="flex flex-col gap-4 pt-6">
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Điện thoại</p>
-                <p className="font-semibold text-accent">{currentPerson.phone}</p>
+                <p className="font-semibold text-accent">{currentInfo?.phone}</p>
               </div>
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Địa chỉ</p>
-                <p className="font-semibold text-accent">{currentPerson.address}</p>
+                <p className="font-semibold text-accent">{currentInfo?.address}</p>
               </div>
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Công ty</p>
                 <p className="font-semibold text-accent">
-                  {currentPerson.company?.companyName || "..."}
+                  {currentInfo?.company?.companyName || "..."}
                 </p>
               </div>
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Email</p>
-                <p className="font-semibold text-accent">{currentPerson.email}</p>
+                <p className="font-semibold text-accent">{currentInfo?.email}</p>
               </div>
             </div>
             <p className="mt-6 opacity-60">Thông tin thêm</p>
@@ -344,19 +376,19 @@ const Profile = () => {
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Ngày sinh</p>
                 <p className="font-semibold text-accent">
-                  {moment(ticksToDate(currentPerson.dob)).format("DD-MM-YYYY")}
+                  {moment(ticksToDate(currentInfo?.dob)).format("DD-MM-YYYY")}
                 </p>
               </div>
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Giới tính</p>
                 <p className="font-semibold text-accent">
-                  {currentPerson.gender === 1 ? "Nam" : "Nữ"}
+                  {currentInfo?.gender === 1 ? "Nam" : "Nữ"}
                 </p>
               </div>
-              {currentPerson.idCardNumber ? (
+              {currentInfo?.idCardNumber ? (
                 <div className="flex items-center">
                   <p className="w-[134px] font-semibold">Mã thẻ</p>
-                  <p className="font-semibold text-accent">{currentPerson.idCardNumber}</p>
+                  <p className="font-semibold text-accent">{currentInfo?.idCardNumber}</p>
                 </div>
               ) : (
                 <></>
@@ -522,7 +554,7 @@ const Profile = () => {
                   "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
                 )}
               />
-              
+
             </div>
             {/* phone number */}
             <div className="group relative flex items-center">
@@ -535,15 +567,44 @@ const Profile = () => {
 
               <input
                 maxLength={150}
-                value={infoUpdate.phone??""}
+                value={infoUpdate.phone ?? ""}
                 onChange={e => onChangeBindInfo(e.target.value, "phone")}
                 type="number"
                 className={cn(
                   "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
                 )}
               />
-              
+
             </div>
+
+            {/* Date of birth */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Ngày sinh
+                </label>
+                <RequireText />
+              </div>
+
+              <DatePicker
+                localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                className="h-[40px] w-full"
+                sx={{
+                  "& .MuiInputBase-root": {
+                    height: "40px"
+                  },
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "1rem"
+                  }
+                }}
+                format="DD-MM-YYYY"
+                closeOnSelect={false}
+                value={infoUpdate.dob ?? null}
+                onChange={(value) => onChangeBindInfo(value, "dob")}
+              />
+
+            </div>
+
             {/* Address */}
             <div className="group relative flex items-center">
               <div className="flex min-w-[100px] items-center">
@@ -555,15 +616,18 @@ const Profile = () => {
 
               <input
                 maxLength={150}
-                value={infoUpdate.address??""}
+                value={infoUpdate.address ?? ""}
                 onChange={e => onChangeBindInfo(e.target.value, "address")}
                 type="text"
                 className={cn(
                   "common-input-border w-full rounded-md p-2 leading-5 shadow-sm"
                 )}
               />
-              
+
             </div>
+
+
+
             <div className="flex justify-end gap-3">
               {isProcessUpdate && <CircularProgress size={18} />}
               <CustomButton onClick={handleUpdateInfo}>Cập nhật thông tin</CustomButton>

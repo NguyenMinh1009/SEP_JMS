@@ -26,7 +26,7 @@ const BreadCrumb = () => {
       key: PathString.CONG_KHAI,
       value: currentPerson.roleType === Role.CUSTOMER ? "Việc đang làm" : "Chờ khách duyệt",
       prefix: "task",
-      clickable: true
+      clickable: false
     },
     {
       key: PathString.VIEC_DU_AN,
@@ -44,7 +44,7 @@ const BreadCrumb = () => {
       key: PathString.VIEC_DA_XONG,
       value: "Việc đã xong",
       prefix: "task",
-      clickable: true
+      clickable: false
     },
     {
       key: PathString.THEM_MOI,
@@ -61,7 +61,7 @@ const BreadCrumb = () => {
     {
       key: PathString.TAI_KHOAN,
       value: "Tài khoản",
-      prefix: "report",
+      prefix: "center",
       clickable: true
     },
     {
@@ -137,9 +137,10 @@ const BreadCrumb = () => {
   };
 
   const getPrefixForBreadCrumb = (): string => {
-    return breadCrumb.find(({ key }) => key === routeList[0])?.prefix === "task"
-      ? "Công việc"
-      : "Báo cáo";
+    var _prx = breadCrumb.find(({ key }) => key === routeList[0])?.prefix 
+    if (_prx === "task") return "Công việc"
+    if (_prx === "report") return "Báo cáo"
+    return "Trung tâm"
   };
 
   const getRouteFromBreadCrumb = (path: string): string => {
@@ -154,7 +155,7 @@ const BreadCrumb = () => {
   const getBreadCrumbText = (path: string, _index: number): string => {
     const crumbItem = breadCrumb.find(({ key }) => key === path);
     const preFix: string = " > ";
-    return crumbItem && breadCrumbTitle.content ? preFix + (shouldRenderTitle(path) ? breadCrumbTitle.content : crumbItem?.value) : "";
+    return preFix + (shouldRenderTitle(path) ? breadCrumbTitle.content : crumbItem?.value);
   };
 
   useEffect(() => {

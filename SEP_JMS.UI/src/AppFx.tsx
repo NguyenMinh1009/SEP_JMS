@@ -447,7 +447,7 @@ function AppFx() {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            {PathRules.map(e => {
+            {PathRules.map((e, idx) => {
               const currentRole =
                 !localStorageUser || !JSON.parse(localStorageUser).userId || isTokenExpired()
                   ? Role.GUEST
@@ -458,19 +458,19 @@ function AppFx() {
                 (currentRole !== Role.GUEST && e.roles?.includes(Role.HAS_AUTH))
               ) {
                 if (currentRole === Role.GUEST) {
-                  return <Route path={`/${e.path}`} element={e.element} />;
+                  return <Route key={idx + "_guest"} path={`/${e.path}`} element={e.element} />;
                 } else {
-                  console.log(e.sub_routes);
+                  // console.log(e.sub_routes);
 
                   return (
-                    <Route element={<MainContent />}>
+                    <Route key={idx + "_auth"} element={<MainContent />}>
                       {!e.path.includes("*") ? (
-                        <Route path={`/${e.path}`} element={e.element} />
+                        <Route key={idx + "_auth_su"} path={`/${e.path}`} element={e.element} />
                       ) : (
-                        <Route path={`/${e.path}`}>
+                        <Route key={idx + "_auth_su"} path={`/${e.path}`}>
                           <Route index element={e.element} />
                           {e.sub_routes?.map(se => (
-                            <Route path={`${se.path}`} element={se.element} />
+                            <Route key={idx + "_rsub"} path={`${se.path}`} element={se.element} />
                           ))}
                         </Route>
                       )}
@@ -480,8 +480,8 @@ function AppFx() {
               }
               // not access and auth
               if (!isAuth() || e.roles?.includes(Role.GUEST))
-                return <Route path={`/${e.path}`} element={<Navigate to={`/`} />} />;
-              else return <Route path={`/${e.path}`} element={<_401Page />} />;
+                return <Route key={idx + "_nguest"} path={`/${e.path}`} element={<Navigate to={`/`} />} />;
+              else return <Route key={idx + "_nguest"} path={`/${e.path}`} element={<_401Page />} />;
             })}
             <Route
               path="/"

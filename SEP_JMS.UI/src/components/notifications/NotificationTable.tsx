@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import { CircularProgress } from "@mui/material";
 
 import Box from "@mui/material/Box";
@@ -35,7 +35,7 @@ const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue }) =>
 
   const getNotifications = async () => {
     setLoading(true);
-    await AlwayxInstance.post("notification", {
+    await APIClientInstance.post("notification", {
       pageIndex: page,
       pageSize: pageSize,
       status: NotificationStatus[status].toLocaleLowerCase()

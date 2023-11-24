@@ -17,6 +17,8 @@ using SEP_JMS.Common;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Common.Utils;
 using Microsoft.AspNetCore.StaticFiles;
+using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Service.Services;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -26,16 +28,19 @@ namespace SEP_JMS.API.Controllers
     {
         private readonly string logPrefix = "[UserController]";
         private readonly IUserService userService;
+        private readonly ICompanyService companyService;
         private readonly IJMSLogger logger;
         private readonly IConfiguration configuration;
         private readonly IMapper mapper;
 
         public UserController(IUserService userService,
+            ICompanyService companyService,
             IMapper mapper,
             IConfiguration configuration,
             IJMSLogger logger)
         {
             this.userService = userService;
+            this.companyService = companyService;
             this.mapper = mapper;
             this.configuration = configuration;
             this.logger = logger;
@@ -78,6 +83,31 @@ namespace SEP_JMS.API.Controllers
             }
         }
 
+        [HttpGet("profile")]
+        public async Task<ActionResult<UserDetailsDisplayModel>> GetUserById()
+        {
+            var id = ApiContext.Current.UserId;
+            try
+            {
+                logger.Info($"{logPrefix} Start to get profile info by id {id}.");
+                var user = await userService.GetUserByIdWithoutRole(id);
+                if (user == null) return NotFound();
+                var userDisplay = mapper.Map<UserDetailsDisplayModel>(user);
+
+                if (user.RoleType == RoleType.Customer && user.CompanyId != null)
+                {
+                    var company = await companyService.GetCompanyById(user.CompanyId.Value);
+                    userDisplay.Company = company == null ? null : mapper.Map<CompanyDisplayModel>(company);
+                }
+                return userDisplay;
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"{logPrefix} Got exception while getting user by id {id}. Error: {ex}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [Authorize(Policy = PolicyConstants.CreateJob)]
         [HttpPost("search")]
         public async Task<ActionResult<PagingModel<UserResponse>>> FindDesigners(UserFilterRequest model)
@@ -113,7 +143,7 @@ namespace SEP_JMS.API.Controllers
                 {
                     return StatusCode(200);
                 }
-                return Content("Người dùng không tồn tại!");
+                return BadRequest("Cant found user");
             }
             catch (Exception ex)
             {

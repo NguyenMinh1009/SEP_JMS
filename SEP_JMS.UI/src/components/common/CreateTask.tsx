@@ -690,7 +690,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             >
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Uu tiên
+                  Ưu tiên
                   <RequireText />
                 </label>
                 <Select

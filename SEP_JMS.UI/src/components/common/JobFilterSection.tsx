@@ -148,17 +148,17 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const handleApply = () => {
     checkInputDateFilter()
       ? filterInfoController.setContent?.({
-          from: from ? dateToTicks(from.toDate()) : 0,
-          to: to ? dateToTicks(to.toDate()) : null,
-          jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
-          jobType: selectedJobType?.key ?? undefined,
-          accountId: selectedAccount?.userId ?? undefined,
-          designerId: selectedDesigner?.userId ?? undefined,
-          companyId: selectedCompany?.companyId ?? undefined,
-          correlationType:
-            selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
-          customerId: selectedCustomer?.userId ?? undefined
-        })
+        from: from ? dateToTicks(from.toDate()) : 0,
+        to: to ? dateToTicks(to.toDate()) : null,
+        jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
+        jobType: selectedJobType?.key ?? undefined,
+        accountId: selectedAccount?.userId ?? undefined,
+        designerId: selectedDesigner?.userId ?? undefined,
+        companyId: selectedCompany?.companyId ?? undefined,
+        correlationType:
+          selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
+        customerId: selectedCustomer?.userId ?? undefined
+      })
       : snakeBar.setSnakeBar("Tìm kiếm không hợp lệ!", "warning", true);
   };
 
@@ -172,8 +172,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-5 gap-3">
-      <div key={location.pathname} className=" col-span-4 grid grid-cols-4 gap-3">
+    <div>
+      <div key={location.pathname} className="grid grid-cols-5 items-end gap-3">
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
             Từ ngày
@@ -231,7 +231,9 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
               setTo(value);
             }}
           />
+
         </div>
+        
         {!report && (
           <>
             <div className="flex flex-col items-start gap-3">
@@ -414,24 +416,25 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 )}
               />
             </div>
+            
           </>
         )}
-      </div>
-      <div className="mt-8 flex flex-col gap-11">
         <button
-          className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
-          onClick={clearAll}
-        >
-          Xóa tất cả
-        </button>
-        <CustomButton
-          primary
-          className=" h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
-          onClick={handleApply}
-        >
-          Áp dụng
-        </CustomButton>
+              className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
+              onClick={clearAll}
+            >
+              Xóa tất cả
+            </button>
+            <CustomButton
+              primary
+              className=" h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
+              onClick={handleApply}
+            >
+              Áp dụng
+            </CustomButton>
       </div>
+
+
     </div>
   );
 };

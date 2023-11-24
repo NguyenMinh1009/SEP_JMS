@@ -92,30 +92,7 @@ const ReportPreview: React.FC<IReportPreview> = () => {
                       {totalProfitCount?.toLocaleString("vi-VN")}
                     </TableCell>
                   </TableRow>
-                  <TableRow className="border-0 bg-gray-50">
-                    <TableCell></TableCell>
-                    <TableCell className="text-center font-extrabold">Doanh thu TB</TableCell>
-                    <TableCell className="text-center font-extrabold"></TableCell>
-                    <TableCell className="text-center font-extrabold">
-                      {parseFloat(((totalExpectedProfitCount ?? 0) / (reportItems.length || 0)).toFixed(0))?.toLocaleString('vi-VN')}
-                    </TableCell>
-                    <TableCell className="text-center font-extrabold"></TableCell>
-                    <TableCell className="text-center font-extrabold">
-                      {parseFloat(((totalProfitCount ?? 0) / (reportItems.length || 0)).toFixed(0))?.toLocaleString('vi-VN')}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className="border-0 bg-slate-50">
-                    <TableCell></TableCell>
-                    <TableCell className="text-center font-extrabold">Đơn giá TB</TableCell>
-                    <TableCell className="text-center font-extrabold"></TableCell>
-                    <TableCell className="text-center font-extrabold">
-                      {parseFloat(((totalExpectedProfitCount ?? 0) / (totalJobCount || 1)).toFixed(0))?.toLocaleString('vi-VN')}
-                    </TableCell>
-                    <TableCell className="text-center font-extrabold"></TableCell>
-                    <TableCell className="text-center font-extrabold">
-                      {parseFloat(((totalProfitCount ?? 0) / (totalJobCount || 1)).toFixed(0))?.toLocaleString('vi-VN')}
-                    </TableCell>
-                  </TableRow>
+                  
                 </TableFooter>
               </Table>
             </TableContainer>

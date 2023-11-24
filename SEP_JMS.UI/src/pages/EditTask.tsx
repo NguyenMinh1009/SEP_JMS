@@ -555,6 +555,23 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
     titleBreadCrumb.setContent(res.data.title);
     const requirementList: FileResponse[] = res.data?.requirements?.files;
     setOldFilesFromApi(requirementList ?? []);
+
+    setFinalFilesFromAPI(res.data.finalProducts?.files ?? []);
+    setPreviewFilesFromAPI(res.data.previewProducts?.files ?? []);
+    setTitle(res.data.title);
+    setValue(res.data.description);
+    setSelectedCompany(res.data.company);
+    setSelectedCustomer(res.data.customer);
+    setQuantity(res.data.quantity);
+    setSelectedJobType(res.data.jobType);
+    setSelectedPriority(res.data.priority);
+    setDeadline(moment(getDeadline(ticksToDate(res.data.deadline))));
+    setSelectedDesigner(res.data.designer);
+    setSelectedAccount(res.data.account);
+    setSelectedStatus(res.data.jobStatus);
+    setSelectedInternalStatus(res.data.internalJobStatus);
+    setLoading(false);
+
     if (requirementList && requirementList.length > 0) {
       for (const requirement of requirementList) {
         let response: any =
@@ -581,21 +598,6 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
         setInitRequirementFiles(prev => [...prev, newFile]);
       }
     }
-    setFinalFilesFromAPI(res.data.finalProducts?.files ?? []);
-    setPreviewFilesFromAPI(res.data.previewProducts?.files ?? []);
-    setTitle(res.data.title);
-    setValue(res.data.description);
-    setSelectedCompany(res.data.company);
-    setSelectedCustomer(res.data.customer);
-    setQuantity(res.data.quantity);
-    setSelectedJobType(res.data.jobType);
-    setSelectedPriority(res.data.priority);
-    setDeadline(moment(getDeadline(ticksToDate(res.data.deadline))));
-    setSelectedDesigner(res.data.designer);
-    setSelectedAccount(res.data.account);
-    setSelectedStatus(res.data.jobStatus);
-    setSelectedInternalStatus(res.data.internalJobStatus);
-    setLoading(false);
   };
 
   const handleDeleteFile = (name: string) => {

@@ -57,22 +57,6 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   const navigate = useNavigate();
   const { taskId, subTaskId } = useParams();
 
-  // ham reset
-  // interface CommentsState {
-  //   items: IComments[];
-  //   count: number;
-  // }
-  // const initialToState = null;
-  // const initialCommentsState: CommentsState = {
-  //   items: [],
-  //   count: 0
-  // };
-
-  // const resetStates = () => {
-  //   setComments(initialCommentsState);
-  //   setTo(initialToState);
-  // };
-
   const getComments = () => {
     setCommentLoading(true);
     getCommentTimes.current += 1;

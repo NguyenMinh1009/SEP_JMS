@@ -89,6 +89,9 @@ const Profile = () => {
       gender: currentInfo?.gender,
       address: currentInfo?.address
     })
+    const currentData = JSON.parse(localStorage.getItem("user") ?? "");
+    currentData.avatarUrl = currentInfo?.avatarUrl;
+    currentPerson.setCurrentPerson?.(currentData);
   }, [currentInfo]);
 
   const notiItems = [
@@ -262,7 +265,11 @@ const Profile = () => {
       // console.log(input.files);
       const formData = new FormData();
       formData.append("file", e.target.files[0]);
-      APIClientInstance.post("user/avatar", formData).then(e => avtRef.setContent(Date.now()));
+      APIClientInstance.post("user/avatar", formData).then(e => {
+        getCurrentInfo();
+        
+        avtRef.setContent(Date.now());
+      });
     };
   };
 

@@ -53,6 +53,7 @@ const Profile = () => {
 
   // Add more notification configurations
   const [notiState, setNotiState] = useState<boolean[]>([]);
+  const [rNum, setRNum] = useState<number>(0);
   const [isProcessNotifyConfig, setIsProcessNotifyConfig] = useState<boolean>(false);
 
   const updateNotifyConfig = async () => {
@@ -109,13 +110,13 @@ const Profile = () => {
   useEffect(() => {
     // console.log(notiState);
     if (notiState.length === 0) {
-      // console.log("Update noti state:", notiState);
       setIsProcessNotifyConfig(true);
       let currentCfg = currentPerson.notificationConfig.replace("[", "").replace("]", "").split(",");
       let clone: boolean[] = [];
       currentCfg.map(value => clone[parseInt(value)] = true);
       setIsProcessNotifyConfig(false);
-      setNotiState(clone);
+      setRNum(rNum+1);
+      if (rNum < 2) setNotiState(clone);
     } else {
       updateNotifyConfig();
     }

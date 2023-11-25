@@ -19,6 +19,8 @@ const Avatar = () => {
 
   const handleLogout = () => {
     currentPerson.logout?.();
+    // reset page when logout
+    window.location.reload();
   };
 
   useClickOutside(panelRef, () => {

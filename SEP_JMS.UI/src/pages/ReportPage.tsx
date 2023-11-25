@@ -13,7 +13,7 @@ const ReportPage: React.FC<ReportPageProps> = () => {
     <div className="h-full overflow-auto scrollbar-hide">
       <div className="mb-10">
         <div className="flex items-end justify-between gap-3">
-          <JobFilterSection report />
+          <JobFilterSection report/>
         </div>
       </div>
       <p className="text-primary mb-6 text-base">Thống kê công việc</p>

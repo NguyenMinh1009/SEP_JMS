@@ -176,22 +176,22 @@ const Profile = () => {
   }
 
   const validateInput = async (): Promise<boolean> => {
-    if (!infoUpdate.fullname.trim()) {
+    if (!infoUpdate.fullname?.trim()) {
       snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
       return false;
     }
 
-    if (infoUpdate.fullname.trim().length > 150) {
+    if (infoUpdate.fullname?.trim().length > 150) {
       snakeBar.setSnakeBar("Họ và tên vượt quá số kí tự cho phép (150)!", "warning", true);
       return false;
     }
 
-    if (infoUpdate.address.trim().length > 150) {
+    if (infoUpdate.address?.trim().length > 150) {
       snakeBar.setSnakeBar("Địa chỉ vượt quá số kí tự cho phép (150)!", "warning", true);
       return false;
     }
     
-    if (infoUpdate.phone.trim() && !commonRegex.phone.test(infoUpdate.phone)) {
+    if (infoUpdate.phone?.trim() && !commonRegex.phone.test(infoUpdate.phone)) {
       snakeBar.setSnakeBar("Số điện thoại sai định dạng!", "warning", true);
       return false;
     }
@@ -580,7 +580,7 @@ const Profile = () => {
                 <label htmlFor="" className="text-secondary whitespace-nowrap">
                   Số điện thoại
                 </label>
-                <RequireText />
+
               </div>
 
               <input
@@ -601,7 +601,6 @@ const Profile = () => {
                 <label htmlFor="" className="text-secondary whitespace-nowrap">
                   Ngày sinh
                 </label>
-                <RequireText />
               </div>
 
               <DatePicker
@@ -629,7 +628,6 @@ const Profile = () => {
                 <label htmlFor="" className="text-secondary whitespace-nowrap">
                   Địa chỉ
                 </label>
-                <RequireText />
               </div>
 
               <input

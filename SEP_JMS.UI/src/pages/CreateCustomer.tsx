@@ -121,20 +121,20 @@ const CreateCustomer = () => {
     !selectedCompany;
 
   const validateInput = async (): Promise<boolean> => {
-    if (password.trim() !== rePassword.trim()) {
+    if (password?.trim() !== rePassword?.trim()) {
       snakeBar.setSnakeBar("Nhập lại mật khẩu không khớp!", "warning", true);
       return false;
     }
-    if (email.trim() && !commonRegex.email.test(email)) {
+    if (email?.trim() && !commonRegex.email.test(email)) {
       snakeBar.setSnakeBar("Email sai định dạng!", "warning", true);
       return false;
     }
-    if (phone.trim() && !commonRegex.phone.test(phone)) {
+    if (phone?.trim() && !commonRegex.phone.test(phone)) {
       snakeBar.setSnakeBar("Số điện thoại sai định dạng!", "warning", true);
       return false;
     }
 
-    if (!commonRegex.username.test(username.trim())) {
+    if (username?.trim() && !commonRegex.username.test(username.trim())) {
       snakeBar.setSnakeBar("Username chỉ gồm kí tự và số, không có dấu cách!", "warning", true);
       return false;
     }

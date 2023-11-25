@@ -488,8 +488,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 Khách hàng
                 <RequireText />
               </label>
-              {currentPerson.roleType === Role.CUSTOMER ||
-              currentPerson.roleType === Role.ACCOUNT ? (
+              {currentPerson.roleType === Role.CUSTOMER ? (
                 <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
                   <span className="col-span-3 p-2 pl-0 opacity-50">
                     {(currentPerson.roleType === Role.CUSTOMER
@@ -690,7 +689,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             >
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Uu tiên
+                  Ưu tiên
                   <RequireText />
                 </label>
                 <Select

@@ -926,7 +926,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
                   <p className="mb-3 mt-16 text-sm font-semibold text-orange-500">
                     <span className="text-[13px] text-[#444]">Ảnh báo cáo </span>
                     <i>
-                      (Để chỉnh trạng thái dã xong, cần tải lên một file ảnh preview tối đa 5MB!)
+                      (Để chỉnh trạng thái đã xong, cần tải lên một file ảnh preview tối đa 5MB!)
                     </i>
                   </p>
                   <div className="flex w-full items-center justify-between">

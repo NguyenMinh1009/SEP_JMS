@@ -53,6 +53,7 @@ const Profile = () => {
 
   // Add more notification configurations
   const [notiState, setNotiState] = useState<boolean[]>([]);
+  const [rNum, setRNum] = useState<number>(0);
   const [isProcessNotifyConfig, setIsProcessNotifyConfig] = useState<boolean>(false);
 
   const updateNotifyConfig = async () => {
@@ -88,6 +89,9 @@ const Profile = () => {
       gender: currentInfo?.gender,
       address: currentInfo?.address
     })
+    const currentData = JSON.parse(localStorage.getItem("user") ?? "");
+    currentData.avatarUrl = currentInfo?.avatarUrl;
+    currentPerson.setCurrentPerson?.(currentData);
   }, [currentInfo]);
 
   const notiItems = [
@@ -109,13 +113,13 @@ const Profile = () => {
   useEffect(() => {
     // console.log(notiState);
     if (notiState.length === 0) {
-      // console.log("Update noti state:", notiState);
       setIsProcessNotifyConfig(true);
       let currentCfg = currentPerson.notificationConfig.replace("[", "").replace("]", "").split(",");
       let clone: boolean[] = [];
       currentCfg.map(value => clone[parseInt(value)] = true);
       setIsProcessNotifyConfig(false);
-      setNotiState(clone);
+      setRNum(rNum+1);
+      if (rNum < 2) setNotiState(clone);
     } else {
       updateNotifyConfig();
     }
@@ -136,7 +140,7 @@ const Profile = () => {
       case Role.ADMIN:
         return "Admin";
       case Role.DESIGNER:
-        return "Thiết kế";
+        return "Nhà thiết kế";
     }
   };
 
@@ -174,6 +178,16 @@ const Profile = () => {
   const validateInput = async (): Promise<boolean> => {
     if (!infoUpdate.fullname.trim()) {
       snakeBar.setSnakeBar("Hãy điền đủ các trường!", "warning", true);
+      return false;
+    }
+
+    if (infoUpdate.fullname.trim().length > 150) {
+      snakeBar.setSnakeBar("Họ và tên vượt quá số kí tự cho phép (150)!", "warning", true);
+      return false;
+    }
+
+    if (infoUpdate.address.trim().length > 150) {
+      snakeBar.setSnakeBar("Địa chỉ vượt quá số kí tự cho phép (150)!", "warning", true);
       return false;
     }
     
@@ -251,7 +265,11 @@ const Profile = () => {
       // console.log(input.files);
       const formData = new FormData();
       formData.append("file", e.target.files[0]);
-      APIClientInstance.post("user/avatar", formData).then(e => avtRef.setContent(Date.now()));
+      APIClientInstance.post("user/avatar", formData).then(e => {
+        getCurrentInfo();
+        
+        avtRef.setContent(Date.now());
+      });
     };
   };
 

@@ -21,7 +21,7 @@ const ExpItem: FC<ExpItemProps> = ({ item }) => {
   return (
     <Box sx={{ textAlign: 'center', mb: { xs: 1, md: 0 } }}>
       <Typography
-        sx={{ color: 'secondary.main', mb: { xs: 1, md: 2 }, fontSize: { xs: 34, md: 44 }, fontWeight: 'bold' }}
+        sx={{ color: '#ffaf35', mb: { xs: 1, md: 2 }, fontSize: { xs: 34, md: 44 }, fontWeight: 'bold' }}
       >
         {value}
       </Typography>
@@ -43,7 +43,7 @@ const HomeHero: FC = () => {
         console.log(res);
         let newData: Array<Exp> = [
           {
-            label: 'Company',
+            label: 'Khách hàng',
             value: res.data.totalCompany,
           },
           {
@@ -51,7 +51,7 @@ const HomeHero: FC = () => {
             value: res.data.totalDesigner,
           },
           {
-            label: 'Total Job',
+            label: 'Dự án',
             value: res.data.totalJob,
           },
         ];
@@ -95,7 +95,7 @@ const HomeHero: FC = () => {
                     component="mark"
                     sx={{
                       position: 'relative',
-                      color: 'primary.main',
+                      color: '#ffaf35',
                       fontSize: 'inherit',
                       fontWeight: 'inherit',
                       backgroundColor: 'unset',
@@ -156,7 +156,7 @@ const HomeHero: FC = () => {
               <Box sx={{ mb: 4, width: { xs: '100%', md: '70%' } }}>
                 <Typography sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
                   {
-                    "Hệ thống quản lý công việc cho công ty Design"
+                    "Hệ thống quản lý công việc thiết kế"
                   }
                 </Typography>
               </Box>

@@ -30,9 +30,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
 }) => {
   const [from, setFrom] = useState<moment.Moment | null>(null);
   const [to, setTo] = useState<moment.Moment | null>(null);
-  const [selectedJobType, setSelectedJobType] = useState<{ key: JobType; text: string } | null>(
-    null
-  );
+  const [selectedJobType, setSelectedJobType] = useState<any | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
   const [selectedDesigner, setSelectedDesigner] = useState<any | null>(null);
   const [selectedAccount, setSelectedAccount] = useState<any | null>(null);
@@ -148,17 +146,17 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const handleApply = () => {
     checkInputDateFilter()
       ? filterInfoController.setContent?.({
-        from: from ? dateToTicks(from.toDate()) : 0,
-        to: to ? dateToTicks(to.toDate()) : null,
-        jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
-        jobType: selectedJobType?.key ?? undefined,
-        accountId: selectedAccount?.userId ?? undefined,
-        designerId: selectedDesigner?.userId ?? undefined,
-        companyId: selectedCompany?.companyId ?? undefined,
-        correlationType:
-          selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
-        customerId: selectedCustomer?.userId ?? undefined
-      })
+          from: from ? dateToTicks(from.toDate()) : 0,
+          to: to ? dateToTicks(to.toDate()) : null,
+          jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
+          jobType: selectedJobType?.typeId ?? undefined,
+          accountId: selectedAccount?.userId ?? undefined,
+          designerId: selectedDesigner?.userId ?? undefined,
+          companyId: selectedCompany?.companyId ?? undefined,
+          correlationType:
+            selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
+          customerId: selectedCustomer?.userId ?? undefined
+        })
       : snakeBar.setSnakeBar("Tìm kiếm không hợp lệ!", "warning", true);
   };
 
@@ -231,9 +229,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
               setTo(value);
             }}
           />
-
         </div>
-        
+
         {!report && (
           <>
             <div className="flex flex-col items-start gap-3">
@@ -416,25 +413,22 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 )}
               />
             </div>
-            
           </>
         )}
         <button
-              className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
-              onClick={clearAll}
-            >
-              Xóa tất cả
-            </button>
-            <CustomButton
-              primary
-              className=" h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
-              onClick={handleApply}
-            >
-              Áp dụng
-            </CustomButton>
+          className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
+          onClick={clearAll}
+        >
+          Xóa tất cả
+        </button>
+        <CustomButton
+          primary
+          className=" h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
+          onClick={handleApply}
+        >
+          Áp dụng
+        </CustomButton>
       </div>
-
-
     </div>
   );
 };

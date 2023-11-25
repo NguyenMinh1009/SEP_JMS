@@ -480,8 +480,15 @@ function AppFx() {
               }
               // not access and auth
               if (!isAuth() || e.roles?.includes(Role.GUEST))
-                return <Route key={idx + "_nguest"} path={`/${e.path}`} element={<Navigate to={`/`} />} />;
-              else return <Route key={idx + "_nguest"} path={`/${e.path}`} element={<_401Page />} />;
+                return (
+                  <Route
+                    key={idx + "_nguest"}
+                    path={`/${e.path}`}
+                    element={<Navigate to={`/`} />}
+                  />
+                );
+              else
+                return <Route key={idx + "_nguest"} path={`/${e.path}`} element={<_401Page />} />;
             })}
             <Route
               path="/"

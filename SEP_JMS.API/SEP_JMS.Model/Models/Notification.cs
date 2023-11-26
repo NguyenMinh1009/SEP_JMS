@@ -26,7 +26,7 @@ namespace SEP_JMS.Model.Models
         // User
         public Guid TriggerBy { get; set; }
 
-        public string Receiver { get; set; } = null!;
+        public Guid Receiver { get; set; }
 
         public long? ReadAt { get; set; }
         public long? ArchivedAt { get; set; }

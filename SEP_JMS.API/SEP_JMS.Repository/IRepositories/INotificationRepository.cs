@@ -10,6 +10,10 @@ namespace SEP_JMS.Repository.IRepositories
         public Task CreateNotification(Notification notification);
         public Task UpdateArchivedTime(Guid notificationId, bool isNull);
         public Task UpdateReadTime(Guid notificationId, bool readAll = false);
+        public Task UpdateTitle(Guid entityId, string newTitle);
         public Task DeleteNotification(Guid notificationId, bool deleteAll = false);
+        public Task DeleteByEntityId(Guid entityId);
+        public Task DeleteByReceiver(Guid entityId, Guid receiverId);
+        public Task DeleteByReceiver(Guid receiverId);
     }
 }

@@ -41,6 +41,16 @@ namespace SEP_JMS.Repository.Repositories
             var count = await Context.Notifications.Where(noti=>noti.NotificationId == notificationId).ExecuteDeleteAsync();
         }
 
+        public async Task DeleteByEntityId(Guid entityId)
+        {
+            var count = await Context.Notifications.Where(noti => noti.EntityIdentifier == entityId).ExecuteDeleteAsync();
+        }
+
+        public async Task DeleteByReceiver(Guid entityId, Guid receiverId)
+        {
+            var count = await Context.Notifications.Where(noti => noti.EntityIdentifier == entityId && noti.Receiver == receiverId).ExecuteDeleteAsync();
+        }
+
         public async Task CreateNotification(Notification notification)
         {
             Context.Notifications.Add(notification);
@@ -51,7 +61,7 @@ namespace SEP_JMS.Repository.Repositories
         {
             var userId = ApiContext.Current.UserId;
             var query = from noti in Context.Notifications
-                        where noti.Receiver.Contains(userId.ToString())
+                        where noti.Receiver == userId
                         select noti;
             model.Status ??= "all";
             if (model.Status.Equals("unread"))
@@ -71,6 +81,18 @@ namespace SEP_JMS.Repository.Repositories
                 Items = notifications,
                 Count = count
             });
+        }
+
+        public async Task UpdateTitle(Guid entityId, string newTitle)
+        {
+            await Context.Notifications.Where(job => job.EntityIdentifier == entityId)
+                .ExecuteUpdateAsync(notis => notis
+                .SetProperty(noti => noti.Title, noti => newTitle));
+        }
+
+        public async Task DeleteByReceiver(Guid receiverId)
+        {
+            await Context.Notifications.Where(noti => noti.Receiver == receiverId).ExecuteDeleteAsync();
         }
     }
 }

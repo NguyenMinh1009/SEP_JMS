@@ -14,6 +14,8 @@ using System.Net;
 using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Repository.Repositories;
+using SEP_JMS.Model.Models.ExtensionModels;
+using System;
 
 namespace SEP_JMS.Service.Services
 {
@@ -150,6 +152,7 @@ namespace SEP_JMS.Service.Services
             if (company == null) return null;
 
             var user = mapper.Map<User>(model);
+            user.NotificationConfig = "[" + string.Join(",", ((NotiType[])Enum.GetValues(typeof(NotiType))).Select(c => (int)c).ToList()) + "]";
             await userRepository.AddUser(user);
             return user.UserId;
         }
@@ -162,6 +165,7 @@ namespace SEP_JMS.Service.Services
             if (model.RoleType == RoleType.Customer) return null;
 
             var user = mapper.Map<User>(model);
+            user.NotificationConfig = "[" + string.Join(",", ((NotiType[])Enum.GetValues(typeof(NotiType))).Select(c => (int)c).ToList()) + "]";
             await userRepository.AddUser(user);
             return user.UserId;
         }

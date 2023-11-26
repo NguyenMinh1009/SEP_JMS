@@ -62,19 +62,20 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
         <div className="flex items-end justify-between gap-3">
           <JobFilterSection finishedOnly isInternal={isInternal} />
           <div className="flex flex-col gap-11">
-            {currentPerson.roleType !== Role.DESIGNER && (
-              <div
-                onClick={() =>
-                  navigate(
-                    `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`
-                  )
-                }
-                className="flex h-10 w-20 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75 3xl:w-auto"
-              >
-                <IoAddCircleOutline size={20} className="text-white" />
-                <span className="hidden 3xl:block">Tạo công việc mới</span>
-              </div>
-            )}
+            {/* {currentPerson.roleType !== Role.DESIGNER ||
+              (currentPerson.roleType !== Role.CUSTOMER && (
+                <div
+                  onClick={() =>
+                    navigate(
+                      `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`
+                    )
+                  }
+                  className="flex h-10 w-20 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75 3xl:w-auto"
+                >
+                  <IoAddCircleOutline size={20} className="text-white" />
+                  <span className="hidden 3xl:block">Tạo công việc mới</span>
+                </div>
+              ))} */}
             {currentPerson.roleType === Role.ADMIN && (
               <div
                 onClick={isExporting ? undefined : handleExport}

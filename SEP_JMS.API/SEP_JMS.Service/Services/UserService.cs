@@ -224,9 +224,9 @@ namespace SEP_JMS.Service.Services
                 Count = customersInfo.Count
             };
         }
-        public async Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model)
+        public async Task<PagingModel<User>> GetCustomerForFilterJobInternalRole(CustomerFilterRequestModel model)
         {
-            return await userRepository.GetCustomerForFilterJobAccountAndDesigner(model);
+            return await userRepository.GetCustomerForFilterJobInternalRole(model);
         }
 
         public async Task<bool> UpdateAvatar(Guid userId, string path)

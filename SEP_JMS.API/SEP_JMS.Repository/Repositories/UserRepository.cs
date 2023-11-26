@@ -136,7 +136,7 @@ namespace SEP_JMS.Repository.Repositories
         {
             return await Context.Users.AsNoTracking().SingleOrDefaultAsync(user => user.UserId == userId && user.RoleType == role);
         }
-        public async Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model)
+        public async Task<PagingModel<User>> GetCustomerForFilterJobInternalRole(CustomerFilterRequestModel model)
         {
             var userId = ApiContext.Current.UserId;
 
@@ -160,7 +160,7 @@ namespace SEP_JMS.Repository.Repositories
                         where data.job.DesignerId == userId
                         select data;
             }
-            else throw new Exception("Not supported role");
+            else if (ApiContext.Current.Role == RoleType.Customer) throw new Exception("Not supported role");
 
             if (model.CompanyId.HasValue)
             {

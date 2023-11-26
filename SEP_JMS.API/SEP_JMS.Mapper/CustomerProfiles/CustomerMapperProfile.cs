@@ -22,4 +22,11 @@ namespace SEP_JMS.Mapper.CustomerProfiles
             CreateMap<Model.Models.User, CustomerBasicDisplayModel>();
         }
     }
+    public class UserModelToCustomerFindDisplayModelMapperProfile : Profile
+    {
+        public UserModelToCustomerFindDisplayModelMapperProfile()
+        {
+            CreateMap<Model.Models.User, CustomerFindDisplayModel>();
+        }
+    }
 }

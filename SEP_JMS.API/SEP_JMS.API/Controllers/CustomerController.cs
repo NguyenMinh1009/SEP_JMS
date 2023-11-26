@@ -63,14 +63,14 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
-        [Authorize(Policy = PolicyConstants.AccountAndDesigner)]
+        [Authorize(Policy = PolicyConstants.Internal)]
         [HttpPost("related")]
         public async Task<ActionResult<PagingModel<CustomerFindDisplayModel>>> GetRelatedCustomer(CustomerFilterRequestModel model)
         {
             try
             {
                 logger.Info($"{logPrefix} Start to get all customers for filter job of account and designer.");
-                var res = await userService.GetCustomerForFilterJobAccountAndDesigner(model);
+                var res = await userService.GetCustomerForFilterJobInternalRole(model);
                 return new PagingModel<CustomerFindDisplayModel>
                 {
                     Count = res.Count,

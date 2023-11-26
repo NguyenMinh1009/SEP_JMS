@@ -136,5 +136,21 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
+        
+        [HttpPost("deleteAll")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to delete all notification read time for user {ApiContext.Current.UserId}.");
+                await notificationService.DeleteByReceiver(ApiContext.Current.UserId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when deleting all notification read time for user {ApiContext.Current.UserId}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
     }
 }

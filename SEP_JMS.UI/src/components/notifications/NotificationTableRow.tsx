@@ -185,7 +185,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             <div style={{ color: 'blue' }}>
             {"[" + moment(ticksToDate(row.createdTime)).fromNow() + "]"}
             </div>
-            {row.readAt == null || row.readAt == 0 ? (<b>{row.message ?? "..."}</b>) : (row.message ?? "...")}
+            {row.readAt == null || row.readAt == 0 ? (<b>{row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? " giao cho bạn" : "") ?? "..."}</b>) : (row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? " giao cho bạn" : "") ?? "...")}
           
           </div>
         </TableCell>

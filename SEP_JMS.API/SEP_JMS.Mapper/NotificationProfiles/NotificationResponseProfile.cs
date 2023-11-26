@@ -22,7 +22,7 @@ namespace SEP_JMS.Mapper.NotificationProfiles
                 .ForMember(dest => dest.TriggerBy, opt => opt.MapFrom(src => src.TriggerBy))
                 .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime));
             CreateMap<Notification, NotificationResponse>()
-                .ForMember(dest => dest.Receiver, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Guid>>(src.Receiver)));
+                .ForMember(dest => dest.Receiver, opt => opt.MapFrom(src => src.Receiver));
         }
     }
 }

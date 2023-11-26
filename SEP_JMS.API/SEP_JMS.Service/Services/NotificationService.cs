@@ -34,15 +34,14 @@ namespace SEP_JMS.Service.Services
         }
         public async Task<Guid> CreateNotification(NotiCreationRequest model, NotiAction action)
         {
-            var receivers = await userRepository.GetAll(user=>model.Receivers.Contains(user.UserId));
-            model.Message = GenerateMassage(action, ApiContext.Current.Username, model);
-            foreach (var user in receivers)
+            var receivers = await userRepository.GetAll(user=>model.Receiver==user.UserId);
+            var user = receivers.FirstOrDefault();
+            var firstMess = ApiContext.Current.UserId == model.Receiver ? "Bạn" : $"[{ApiContext.Current.Username}]";
+            model.Message = GenerateMassage(action, firstMess, model);
+            var notiConfig = user != null ? JsonConvert.DeserializeObject<List<NotiType>>(user.NotificationConfig) : null;
+            if (notiConfig == null || !notiConfig.Contains(model.NotiType))
             {
-                var notiConfig = JsonConvert.DeserializeObject<List<NotiType>>(user.NotificationConfig);
-                if (notiConfig==null || !notiConfig.Contains(model.NotiType))
-                {
-                    model.Receivers.Remove(user.UserId);
-                }
+                return Guid.Empty;
             }
             var notiModel = mapper.Map<Notification>(model);
             var notification = await notificationRepository.Add(notiModel);
@@ -84,11 +83,11 @@ namespace SEP_JMS.Service.Services
             switch (action)
             {
                 case NotiAction.CreateJob:
-                    return $"{userName} đã {(notiReq.EntityName.Equals("CreateJob") ? ActionConstants.CreateJob : ActionConstants.CreateProject) } [{notiReq.Title}]!";
+                    return $"{userName} đã {(notiReq.EntityName.Equals("CreateJob") ? ActionConstants.CreateJob : ActionConstants.CreateProject)}";
                 case NotiAction.UpdateJob:
-                    return $"{userName} đã {ActionConstants.UpdateJob} [{notiReq.Title}]!";
+                    return $"{userName} đã {(notiReq.EntityName.Equals("UpdateJob") ? ActionConstants.UpdateJob : ActionConstants.UpdateProject)}";
                 case NotiAction.Comment:
-                    return $"{userName} đã {ActionConstants.Comment} trong [{notiReq.Title}]!";
+                    return $"{userName} đã {ActionConstants.Comment}";
                 default:
                     break;
             }
@@ -98,6 +97,26 @@ namespace SEP_JMS.Service.Services
         public async Task UnArchiveNotification(Guid id)
         {
             await notificationRepository.UpdateArchivedTime(id, true);
+        }
+
+        public async Task DeleteByEntityId(Guid entityId)
+        {
+            await notificationRepository.DeleteByEntityId(entityId);
+        }
+
+        public async Task DeleteByReceiver(Guid entityId, Guid receiverId)
+        {
+            await notificationRepository.DeleteByReceiver(entityId, receiverId);
+        }
+
+        public async Task UpdateTitle(Guid entityId, string newTitle)
+        {
+            await notificationRepository.UpdateTitle(entityId, newTitle);
+        }
+
+        public async Task DeleteByReceiver(Guid receiverId)
+        {
+            await notificationRepository.DeleteByReceiver(receiverId);
         }
     }
 }

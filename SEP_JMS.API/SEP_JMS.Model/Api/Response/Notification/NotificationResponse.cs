@@ -9,7 +9,7 @@
         public string Message { get; set; } = null!;
         public string Data { get; set; } = null!;
         public Guid TriggerBy { get; set; }
-        public List<Guid> Receiver { get; set; } = new List<Guid>();
+        public Guid Receiver { get; set; }
         public long? ReadAt { get; set; }
         public long? ArchivedAt { get; set; }
         public long CreatedTime { get; set; }

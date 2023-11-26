@@ -52,6 +52,9 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const location = useLocation();
   const snakeBar = useSnakeBar();
 
+  // reset state when prop change
+  useEffect(()=>handleApply(), [report]);
+
   useEffect(() => {
     getCompanyList();
     getDesignerList();

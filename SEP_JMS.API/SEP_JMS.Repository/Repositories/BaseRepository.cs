@@ -29,7 +29,9 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task<T?> Get(object identifier)
         {
-            return await _context.Set<T>().FindAsync(identifier);
+            var entity = await _context.Set<T>().FindAsync(identifier);
+            if (entity != null) _context.Entry(entity).State = EntityState.Detached;
+            return entity;
         }
 
         public async Task<T> Add(T entity)

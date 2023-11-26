@@ -45,6 +45,16 @@ namespace SEP_JMS.Service.Services
             this.logger = logger;
         }
 
+        public async Task<Comment?> GetComment(Guid commentId)
+        {
+            return await commentRepository.Get(commentId);
+        }
+
+        public async Task<int> UpdateComment(Comment comment)
+        {
+            return await commentRepository.Update(comment);
+        }
+
         public async Task<bool> CreateComment(Guid jobId, CommentCreateRequestModel model)
         {
             var userId = ApiContext.Current.UserId;

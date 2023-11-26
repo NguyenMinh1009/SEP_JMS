@@ -5,7 +5,7 @@ using SEP_JMS.Model;
 
 namespace SEP_JMS.Repository.IRepositories
 {
-    public interface ICommentRepository
+    public interface ICommentRepository : IBaseRepository<Comment>
     {
         public Task CreateComment(Comment comment);
 

@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SEP_JMS.Common.Constants;
 using SEP_JMS.Common;
 using SEP_JMS.Model.Api.Request.Comment;
 using SEP_JMS.Model.Enums.System;
-using SEP_JMS.Service.Services;
 using SEP_JMS.Service.IServices;
 using SEP_JMS.Common.Logger;
 using SEP_JMS.Model.Api.Response.Comment;
 using SEP_JMS.Model;
+using Newtonsoft.Json;
+using SEP_JMS.Common.Utils;
+using SEP_JMS.Model.Models.ExtensionModels;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -77,6 +78,42 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when hidding comment {commentId}. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpPut("{commentId}")]
+        public async Task<IActionResult> UpdateComment([FromRoute] Guid commentId, [FromForm] CommentUpdateRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update comment {commentId}.");
+                var comment = await commentService.GetComment(commentId) ?? throw new Exception($"Not found comment {commentId}");
+                if (comment.UserId != ApiContext.Current.UserId) throw new Exception($"User is not the owner of the comment {commentId}");
+
+                var keepingFiles = JsonConvert.DeserializeObject<List<FileItem>>(model.OldFiles) ?? new();
+                var jobFolderPath = FileUtility.GetFolderPath(ApiConstants.CommentUploadFolder, commentId.ToString());
+                FileUtility.RemoveOldFiles(jobFolderPath, keepingFiles);
+                var folderModel = new FolderItem
+                {
+                    Folder = commentId.ToString(),
+                    Files = keepingFiles
+                };
+                foreach (var file in model.Files)
+                {
+                    var fileModel = await FileUtility.SaveFile(ApiConstants.CommentUploadFolder, commentId.ToString(), file);
+                    folderModel.Files.Add(fileModel);
+                }
+                comment.Content = model.Content;
+                comment.Attachments = JsonConvert.SerializeObject(folderModel);
+                var count = await commentService.UpdateComment(comment);
+                if (count < 1) throw new Exception("Update comment failed: 0 rows effected");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when updating comment {commentId}. Error: {ex}");
                 return StatusCode(500);
             }
         }

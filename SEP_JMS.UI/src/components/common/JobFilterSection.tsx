@@ -53,7 +53,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const snakeBar = useSnakeBar();
 
   // reset state when prop change
-  useEffect(()=>handleApply(), [report]);
+  useEffect(() => handleApply(), [report]);
 
   useEffect(() => {
     getCompanyList();
@@ -170,6 +170,43 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       setSelectedDesigner(null),
       setSelectedStatus(allKey.key),
       setSelectedAccount(null);
+  };
+
+  const renderCompanyFilter = () => {
+    if (currentPerson.roleType === Role.CUSTOMER) {
+      return (
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            Khách hàng
+          </label>
+          <Autocomplete
+            noOptionsText="Không có lựa chọn"
+            id="companies"
+            value={selectedCompany}
+            onChange={(_, newValue) => {
+              setSelectedCompany(newValue);
+            }}
+            getOptionLabel={option => option.companyName}
+            size="small"
+            options={companies}
+            fullWidth
+            // disabled
+            renderInput={params => (
+              <TextField
+                {...params}
+                sx={{
+                  "& .MuiInputBase-sizeSmall": {
+                    height: "40px !important"
+                  },
+                  "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                }}
+                placeholder="-- Chọn khách hàng --"
+              />
+            )}
+          />
+        </div>
+      );
+    }
   };
 
   return (
@@ -291,36 +328,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 )}
               </Select>
             </div>
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Khách hàng
-              </label>
-              <Autocomplete
-                noOptionsText="Không có lựa chọn"
-                id="companies"
-                value={selectedCompany}
-                onChange={(_, newValue) => {
-                  setSelectedCompany(newValue);
-                }}
-                getOptionLabel={option => option.companyName}
-                size="small"
-                options={companies}
-                fullWidth
-                // disabled
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    sx={{
-                      "& .MuiInputBase-sizeSmall": {
-                        height: "40px !important"
-                      },
-                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                    }}
-                    placeholder="-- Chọn khách hàng --"
-                  />
-                )}
-              />
-            </div>
+            {renderCompanyFilter()}
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Người order
@@ -336,7 +344,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 size="small"
                 options={customers}
                 fullWidth
-                // disabled
+                disabled={selectedCompany === null && currentPerson.roleType !== Role.CUSTOMER}
                 renderInput={params => (
                   <TextField
                     {...params}

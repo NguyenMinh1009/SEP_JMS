@@ -117,14 +117,25 @@ namespace SEP_JMS.Repository.Repositories
                         where data.job.Title.ToLower().Contains(model.SearchText.ToLower())
                         select data;
             }
+            
+            // job status != null khi filter hoặc là truyền job status  = completed
             if (model.JobStatus != null)
             {
-                if (model.ParentId == null)
+
+                if(model.JobStatus != JobStatus.Completed)
+                {
+                    query = from data in query
+                            where data.job.JobStatus == model.JobStatus
+                            select data;
+                }               
+                // đang lấy all finished job
+                else if (model.ParentId == null && model.JobStatus == JobStatus.Completed)
                 {
                     query = from data in query
                                     where data.job.JobStatus == JobStatus.Completed
                                     select data;
                 }
+                // đang lấy sub task của finished job
                 else
                 {
                     query = from data in query
@@ -132,16 +143,18 @@ namespace SEP_JMS.Repository.Repositories
                             select data;
                 }
                 }
+            // viec dang làm thì đang không truyền JobStatus
             else
             {
-                
+                // Viec dang lam thi lay tat ca status job tru CompletedJob
                 if (model.ParentId == null) 
                 {
                     query = from data in query
                            where data.job.JobStatus != JobStatus.Completed
                           select data;
                 }
-                else 
+                // nếu mà là lấy sub task thì nó lấy all status
+                else
                 {
                     query = from data in query
                             select data;

@@ -13,42 +13,40 @@ using System.Threading.Tasks;
 
 namespace SEP_JMS.Repository.Repositories
 {
-    public class CommentRepository : ICommentRepository
+    public class CommentRepository : BaseRepository<Comment>, ICommentRepository
     {
-        private readonly JSMContext dbcontext;
-
-        public CommentRepository(JSMContext dbcontext)
+        public CommentRepository(JSMContext dbcontext) : base(dbcontext)
         {
-            this.dbcontext = dbcontext;
+
         }
 
         public async Task CreateComment(Comment comment)
         {
-            await dbcontext.Comments.AddAsync(comment);
-            await dbcontext.SaveChangesAsync();
+            await Context.Comments.AddAsync(comment);
+            await Context.SaveChangesAsync();
         }
 
         public async Task<Comment?> GetCommentByCorrelationJobId(Guid jobId, Guid commentId, VisibleType visible)
         {
-            return await dbcontext.Comments.Where(comment => comment.CorrelationJobId == jobId
+            return await Context.Comments.Where(comment => comment.CorrelationJobId == jobId
                 && comment.CommentId == commentId && comment.VisibleType == visible).AsNoTracking().SingleOrDefaultAsync();
         }
 
         public async Task<PagingModel<Tuple<Comment, User, Comment, User>>> GetComments(CommentFilterRequestModel model)
         {
             var role = ApiContext.Current.Role;
-            var query = from comment in dbcontext.Comments
-                        join user in dbcontext.Users
+            var query = from comment in Context.Comments
+                        join user in Context.Users
                         on comment.UserId equals user.UserId
                         into users
 
                         from user in users.DefaultIfEmpty()
-                        join replyComment in dbcontext.Comments
+                        join replyComment in Context.Comments
                         on comment.ReplyCommentId equals replyComment.CommentId
                         into replyComments
 
                         from replyComment in replyComments.DefaultIfEmpty()
-                        join replyCommentUser in dbcontext.Users
+                        join replyCommentUser in Context.Users
                         on replyComment.UserId equals replyCommentUser.UserId
                         into replyCommentUsers
 
@@ -70,7 +68,7 @@ namespace SEP_JMS.Repository.Repositories
                         where data.comment.CreatedTime < model.To
                         select data;
             }
-            var comments = await query.OrderByDescending(data => data.comment.CreatedTime)
+            var comments = await query.OrderBy(data => data.comment.CreatedTime)
                 .Skip((model.PageIndex - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .Select(data => Tuple.Create(data.comment, data.user, data.replyComment, data.replyCommentUser))
@@ -88,17 +86,17 @@ namespace SEP_JMS.Repository.Repositories
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
-            var comment = await dbcontext.Comments.FirstAsync(comm => comm.CommentId == commentId
+            var comment = await Context.Comments.FirstAsync(comm => comm.CommentId == commentId
                     && (comm.UserId == userId || role == RoleType.Admin));
 
-            var job = await dbcontext.Jobs.Where(job => job.JobId == comment.CorrelationJobId).FirstAsync();
+            var job = await Context.Jobs.Where(job => job.JobId == comment.CorrelationJobId).FirstAsync();
             var jobStatus = job.JobStatus;
 
             if (jobStatus == JobStatus.Completed && RoleType.Admin != role) throw new Exception("modify a completed job comment");
             else
             {
                 comment.CommentStatus = status;
-                await dbcontext.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
         }
     }

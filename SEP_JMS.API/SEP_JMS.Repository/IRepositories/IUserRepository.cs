@@ -25,7 +25,7 @@ namespace SEP_JMS.Repository.IRepositories
         public Task<PagingModel<User>> FindDesigners(UserFilterRequest model);
         public Task<PagingModel<User>> FindAccounts(UserFilterRequest model);
         public Task<PagingModel<Tuple<User, User, Company>>> FindCustomers(CustomerFilterRequestModel model);
-        public Task<PagingModel<User>> GetCustomerForFilterJobAccountAndDesigner(CustomerFilterRequestModel model);
+        public Task<PagingModel<User>> GetCustomerForFilterJobInternalRole(CustomerFilterRequestModel model);
 
         public Task<bool> UpdateAvatar(Guid userId, string path);
         public Task<string> GetAvatar(Guid userId);

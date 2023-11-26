@@ -28,28 +28,12 @@ const Home: React.FC<ICreatePageProps> = ({
         <p className="text-primary mb-6 text-base">Tạo mới công việc</p>
       )}
       {isParentId ? (
-        finishedOnly ? (
-          <CreateSubTask
-            visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
-            correlationJobType={isCorrelationJobType}
-            label="Tạo việc mới của dự án"
-            parentId={taskId}
-            finishedOnly
-          />
-        ) : (
-          <CreateSubTask
-            visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
-            correlationJobType={isCorrelationJobType}
-            label="Tạo việc mới của dự án"
-            parentId={taskId}
-          />
-        )
-      ) : finishedOnly ? (
-        <CreateTask
+        // viec dang lam, tao sub ttask
+        <CreateSubTask
           visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
           correlationJobType={isCorrelationJobType}
-          label="Tạo việc mới"
-          finishedOnly
+          label="Tạo việc mới của dự án"
+          parentId={taskId}
         />
       ) : (
         <CreateTask

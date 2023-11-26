@@ -28,7 +28,7 @@ const FinishedProjects: React.FC<IFinishedProjects> = ({ isInternal }) => {
         <div className="mb-10">
           <div className="flex items-end justify-between gap-3">
             <JobFilterSection finishedOnly isInternal={isInternal} />
-            {currentPerson.roleType !== Role.DESIGNER && (
+            {/* {currentPerson.roleType !== Role.DESIGNER && (
               <div
                 onClick={() =>
                   navigate(
@@ -40,7 +40,7 @@ const FinishedProjects: React.FC<IFinishedProjects> = ({ isInternal }) => {
                 <IoAddCircleOutline size={20} className="text-white" />
                 <span className="hidden 3xl:block">Tạo công việc mới</span>
               </div>
-            )}
+            )} */}
           </div>
         </div>
         <p className="text-primary mb-6 text-base">Dự án đã hoàn thành</p>

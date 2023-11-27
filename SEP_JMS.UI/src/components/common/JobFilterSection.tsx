@@ -2,7 +2,7 @@ import { DateTimePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { dateToTicks, getDefaultDeadline, getDefaultFilterStart } from "../../utils/Datetime";
-import { Autocomplete, MenuItem, Select, TextField } from "@mui/material";
+import { Autocomplete, CircularProgress, MenuItem, Select, TextField } from "@mui/material";
 import { JobType, jobOptions } from "../../enums/jobType";
 import { internalStatusOptions, statusOptions } from "./StatusSection";
 import { JobStatusType } from "../../enums/jobStatusType";
@@ -46,25 +46,40 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const [designers, setDesigners] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [jobtypes, setJobtypes] = useState<any[]>([]);
+  const [currentInfo, setCurrentInfo] = useState<any>(null);
 
   const currentPerson = useCurrentPerson();
   const filterInfoController = useFilterInfo();
   const location = useLocation();
   const snakeBar = useSnakeBar();
 
+  const [isLoading, setLoading] = useState<boolean>(false);
+
   // reset state when prop change
   useEffect(() => handleApply(), [report]);
 
   useEffect(() => {
-    getCompanyList();
-    getDesignerList();
-    getAccountList();
-    getJobTypeList();
+    const fetchData = async () => {
+      getCompanyList();
+      getDesignerList();
+      getAccountList();
+      getJobTypeList();
+      await getCurrentInfo();
+    };
+    fetchData();
   }, [currentPerson.roleType]);
 
   useEffect(() => {
-    setSelectedCustomer(null);
-    getCustomerListForStaff();
+    if (currentPerson.roleType !== Role.CUSTOMER && currentPerson.roleType) {
+      const fetchData = async () => {
+        setSelectedCustomer(null);
+        setCustomers([]);
+
+        await getCustomerListForStaff();
+        renderCustomerFilter();
+      };
+      fetchData();
+    }
   }, [selectedCompany, currentPerson.roleType]);
 
   const getCompanyList = () => {
@@ -82,7 +97,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
     }
   };
   const getDesignerList = () => {
-    if (currentPerson.roleType) {
+    if (currentPerson.roleType !== Role.DESIGNER) {
       APIClientInstance.post("user/search", {
         pageIndex: 1,
         pageSize: 2147483647,
@@ -95,12 +110,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   };
 
   const getAccountList = () => {
-    if (
-      !currentPerson.roleType ||
-      currentPerson.roleType === Role.ACCOUNT ||
-      currentPerson.roleType === Role.DESIGNER
-    )
-      return;
+    if (currentPerson.roleType === Role.ACCOUNT || currentPerson.roleType === Role.DESIGNER) return;
     APIClientInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
@@ -112,17 +122,18 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   };
 
   const getCustomerListForStaff = () => {
-    if (currentPerson.roleType) {
-      APIClientInstance.post(
-        currentPerson.roleType === Role.ADMIN ? "user/search" : "customer/related",
-        {
-          pageIndex: 1,
-          pageSize: 2147483647,
-          companyId: selectedCompany?.companyId ?? undefined,
-          role: Role.CUSTOMER
-        }
-      )
-        .then(res => setCustomers(res.data.items))
+    if (currentPerson.roleType !== Role.CUSTOMER) {
+      setLoading(true);
+      APIClientInstance.post("customer/related", {
+        pageIndex: 1,
+        pageSize: 2147483647,
+        companyId: selectedCompany?.companyId ?? undefined,
+        role: Role.CUSTOMER
+      })
+        .then(res => {
+          setCustomers(res.data.items);
+          setLoading(false);
+        })
         .catch(err => console.error(err));
     }
   };
@@ -172,41 +183,60 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       setSelectedAccount(null);
   };
 
-  const renderCompanyFilter = () => {
-    if (currentPerson.roleType === Role.CUSTOMER) {
-      return (
-        <div className="flex flex-col items-start gap-3">
-          <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Khách hàng
-          </label>
-          <Autocomplete
-            noOptionsText="Không có lựa chọn"
-            id="companies"
-            value={selectedCompany}
-            onChange={(_, newValue) => {
-              setSelectedCompany(newValue);
-            }}
-            getOptionLabel={option => option.companyName}
-            size="small"
-            options={companies}
-            fullWidth
-            // disabled
-            renderInput={params => (
-              <TextField
-                {...params}
-                sx={{
-                  "& .MuiInputBase-sizeSmall": {
-                    height: "40px !important"
-                  },
-                  "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                }}
-                placeholder="-- Chọn khách hàng --"
-              />
-            )}
-          />
-        </div>
-      );
-    }
+  const getCurrentInfo = async () => {
+    await APIClientInstance.get("user/profile").then(res => {
+      setCurrentInfo(res.data);
+    });
+  };
+
+  // const renderCompanyFilter = () => {
+  //   return (
+
+  //   );
+  // };
+
+  const renderCustomerFilter = () => {
+    return (
+      <div className="flex flex-col items-start gap-3">
+        <label htmlFor="" className="text-primary col-span-2 mr-4">
+          Người order
+        </label>
+        <Autocomplete
+          loading={isLoading}
+          noOptionsText="Không có lựa chọn"
+          id="customers"
+          value={
+            currentPerson.roleType === Role.CUSTOMER
+              ? `${currentInfo?.fullname} (${currentInfo?.username})` || "..."
+              : selectedCustomer
+          }
+          onChange={(_, newValue) => {
+            setSelectedCustomer(newValue);
+          }}
+          getOptionLabel={
+            currentPerson.roleType === Role.CUSTOMER
+              ? undefined
+              : option => `${option.fullname} (${option.username})`
+          }
+          size="small"
+          options={customers}
+          fullWidth
+          disabled={selectedCompany === null || currentPerson.roleType === Role.CUSTOMER}
+          renderInput={params => (
+            <TextField
+              {...params}
+              sx={{
+                "& .MuiInputBase-sizeSmall": {
+                  height: "40px !important"
+                },
+                "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+              }}
+              placeholder={currentPerson.roleType === Role.CUSTOMER ? "" : "-- Chọn người order --"}
+            />
+          )}
+        />
+      </div>
+    );
   };
 
   return (
@@ -328,23 +358,30 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 )}
               </Select>
             </div>
-            {renderCompanyFilter()}
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Người order
+                Khách hàng
               </label>
               <Autocomplete
                 noOptionsText="Không có lựa chọn"
-                id="customers"
-                value={selectedCustomer}
+                id="companies"
+                value={
+                  currentPerson.roleType === Role.CUSTOMER
+                    ? currentInfo?.company?.companyName || "..."
+                    : selectedCompany
+                }
                 onChange={(_, newValue) => {
-                  setSelectedCustomer(newValue);
+                  setSelectedCompany(newValue);
                 }}
-                getOptionLabel={option => `${option.fullname} (${option.username})`}
+                getOptionLabel={
+                  currentPerson.roleType === Role.CUSTOMER
+                    ? undefined
+                    : option => option.companyName
+                }
                 size="small"
-                options={customers}
+                options={companies}
                 fullWidth
-                disabled={selectedCompany === null && currentPerson.roleType !== Role.CUSTOMER}
+                disabled={currentPerson.roleType === Role.CUSTOMER}
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -354,11 +391,14 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                       },
                       "& .MuiAutocomplete-input": { fontSize: "13px !important" }
                     }}
-                    placeholder="-- Chọn người order --"
+                    placeholder={
+                      currentPerson.roleType === Role.CUSTOMER ? "" : "-- Chọn khách hàng --"
+                    }
                   />
                 )}
               />
             </div>
+            {renderCustomerFilter()}
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Designer
@@ -367,11 +407,18 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 disabled={currentPerson.roleType === Role.DESIGNER}
                 noOptionsText="Không có lựa chọn"
                 id="designers"
-                value={selectedDesigner}
+                value={
+                  currentPerson.roleType === Role.DESIGNER
+                    ? currentInfo?.fullname || "..."
+                    : selectedDesigner
+                }
                 onChange={(_, newValue) => {
                   setSelectedDesigner(newValue);
                 }}
-                getOptionLabel={option => option.fullname}
+                getOptionLabel={
+                  // currentPerson.roleType === Role.ACCOUNT
+                  currentPerson.roleType === Role.DESIGNER ? undefined : option => option.fullname
+                }
                 size="small"
                 options={designers}
                 fullWidth
@@ -385,7 +432,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                       },
                       "& .MuiAutocomplete-input": { fontSize: "13px !important" }
                     }}
-                    placeholder="-- Chọn NTK --"
+                    placeholder={currentPerson.roleType === Role.DESIGNER ? "" : "-- Chọn NTK --"}
                   />
                 )}
               />
@@ -401,11 +448,21 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 }
                 noOptionsText="Không có lựa chọn"
                 id="designers"
-                value={selectedAccount}
+                value={
+                  currentPerson.roleType === Role.ACCOUNT
+                    ? // || currentPerson.roleType === Role.DESIGNER
+                      currentInfo?.fullname || "..."
+                    : selectedAccount
+                }
                 onChange={(_, newValue) => {
                   setSelectedAccount(newValue);
                 }}
-                getOptionLabel={option => option.fullname}
+                getOptionLabel={
+                  currentPerson.roleType === Role.ACCOUNT
+                    ? // || currentPerson.roleType === Role.DESIGNER
+                      undefined
+                    : option => option.fullname
+                }
                 size="small"
                 options={accounts}
                 fullWidth
@@ -419,7 +476,9 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                       },
                       "& .MuiAutocomplete-input": { fontSize: "13px !important" }
                     }}
-                    placeholder="-- Chọn Account --"
+                    placeholder={
+                      currentPerson.roleType === Role.ACCOUNT ? "" : "-- Chọn Account --"
+                    }
                   />
                 )}
               />

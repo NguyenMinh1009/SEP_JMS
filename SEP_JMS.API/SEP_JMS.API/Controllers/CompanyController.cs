@@ -34,7 +34,7 @@ namespace SEP_JMS.API.Controllers
             this.logger = logger;
         }
 
-        [Authorize(Policy = PolicyConstants.Assign)]
+        //[Authorize(Policy = PolicyConstants.Assign)]
         [HttpPost("search")]
         public async Task<ActionResult<PagingModel<CompanyResponse>>> FindCompany(CompanyFilterRequest model)
         {

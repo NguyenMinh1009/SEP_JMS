@@ -65,6 +65,47 @@ export const internalStatusOptions = [
     text: "Chờ khách duyệt"
   }
 ];
+export const statusFilterOptions = [
+  {
+    key: JobStatusType.NotDo,
+    text: "Chưa làm"
+  },
+  {
+    key: JobStatusType.Doing,
+    text: "Đang làm"
+  },
+  {
+    key: JobStatusType.CustomerReview,
+    text: "Chờ khách duyệt"
+  },
+  {
+    key: JobStatusType.Pending,
+    text: "Pending"
+  }
+];
+
+export const internalStatusFilterOptions = [
+  {
+    key: InternalJobStatusType.NotDo,
+    text: "Chưa làm"
+  },
+  {
+    key: InternalJobStatusType.Doing,
+    text: "Đang làm"
+  },
+  {
+    key: InternalJobStatusType.InternalReview,
+    text: "Chờ duyệt NB"
+  },
+  {
+    key: InternalJobStatusType.Pending,
+    text: "Pending"
+  },
+  {
+    key: InternalJobStatusType.CustomerReview,
+    text: "Chờ khách duyệt"
+  }
+];
 
 const StatusSection: React.FC<IStatusSection> = ({
   handleUpdate,

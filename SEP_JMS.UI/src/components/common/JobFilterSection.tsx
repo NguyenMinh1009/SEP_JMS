@@ -4,7 +4,12 @@ import React, { useEffect, useState } from "react";
 import { dateToTicks, getDefaultDeadline, getDefaultFilterStart } from "../../utils/Datetime";
 import { Autocomplete, CircularProgress, MenuItem, Select, TextField } from "@mui/material";
 import { JobType, jobOptions } from "../../enums/jobType";
-import { internalStatusOptions, statusOptions } from "./StatusSection";
+import {
+  internalStatusFilterOptions,
+  internalStatusOptions,
+  statusFilterOptions,
+  statusOptions
+} from "./StatusSection";
 import { JobStatusType } from "../../enums/jobStatusType";
 import { allKey, correlationJobOptions, defaultCompany } from "../../constants";
 import { CorrelationJobType } from "../../enums/correlationJobType";
@@ -159,18 +164,31 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
 
   const handleApply = () => {
     checkInputDateFilter()
-      ? filterInfoController.setContent?.({
-          from: from ? dateToTicks(from.toDate()) : 0,
-          to: to ? dateToTicks(to.toDate()) : null,
-          jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
-          jobType: selectedJobType?.typeId ?? undefined,
-          accountId: selectedAccount?.userId ?? undefined,
-          designerId: selectedDesigner?.userId ?? undefined,
-          companyId: selectedCompany?.companyId ?? undefined,
-          correlationType:
-            selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
-          customerId: selectedCustomer?.userId ?? undefined
-        })
+      ? isInternal
+        ? filterInfoController.setContent?.({
+            from: from ? dateToTicks(from.toDate()) : 0,
+            to: to ? dateToTicks(to.toDate()) : null,
+            internalJobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
+            jobType: selectedJobType?.typeId ?? undefined,
+            accountId: selectedAccount?.userId ?? undefined,
+            designerId: selectedDesigner?.userId ?? undefined,
+            companyId: selectedCompany?.companyId ?? undefined,
+            correlationType:
+              selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
+            customerId: selectedCustomer?.userId ?? undefined
+          })
+        : filterInfoController.setContent?.({
+            from: from ? dateToTicks(from.toDate()) : 0,
+            to: to ? dateToTicks(to.toDate()) : null,
+            jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
+            jobType: selectedJobType?.typeId ?? undefined,
+            accountId: selectedAccount?.userId ?? undefined,
+            designerId: selectedDesigner?.userId ?? undefined,
+            companyId: selectedCompany?.companyId ?? undefined,
+            correlationType:
+              selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
+            customerId: selectedCustomer?.userId ?? undefined
+          })
       : snakeBar.setSnakeBar("Tìm kiếm không hợp lệ!", "warning", true);
   };
 
@@ -349,13 +367,16 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                   }
                 }}
               >
-                {(isInternal ? [allKey, ...internalStatusOptions] : [allKey, ...statusOptions]).map(
-                  ({ key, text }) => (
-                    <MenuItem key={key} value={key}>
-                      {text}
-                    </MenuItem>
-                  )
-                )}
+                {(finishedOnly
+                  ? [allKey, ...statusOptions]
+                  : isInternal
+                  ? [allKey, ...internalStatusFilterOptions]
+                  : [allKey, ...statusFilterOptions]
+                ).map(({ key, text }) => (
+                  <MenuItem key={key} value={key}>
+                    {text}
+                  </MenuItem>
+                ))}
               </Select>
             </div>
             <div className="flex flex-col items-start gap-3">

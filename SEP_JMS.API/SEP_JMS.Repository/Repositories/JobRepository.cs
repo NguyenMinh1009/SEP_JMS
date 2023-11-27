@@ -694,28 +694,36 @@ namespace SEP_JMS.Repository.Repositories
             }
             if (model.InternalJobStatus != null)
             {
-                if (model.ParentId == null)
-                {
+                //if (model.InternalJobStatus != InternalJobStatus.Completed)
+                //{
                     query = from data in query
-                            where data.job.InternalJobStatus == InternalJobStatus.Completed
+                            where data.job.InternalJobStatus == model.InternalJobStatus
                             select data;
-                }
-                else
-                {
-                    query = from data in query
-                            where data.job.InternalJobStatus == InternalJobStatus.Completed
-                            select data;
-                }
+                //}
+                //else if (model.ParentId == null)
+                //{
+                //    query = from data in query
+                //            where data.job.InternalJobStatus == InternalJobStatus.Completed
+                //            select data;
+                //}
+                //else
+                //{
+                //    query = from data in query
+                //            where data.job.InternalJobStatus == InternalJobStatus.Completed
+                //            select data;
+                //}
             }
             else
             {
 
+                // lay all job tru completed job
                 if (model.ParentId == null)
                 {
                     query = from data in query
                             where data.job.InternalJobStatus != InternalJobStatus.Completed
                             select data;
                 }
+                // lau all sub task
                 else
                 {
                     query = from data in query

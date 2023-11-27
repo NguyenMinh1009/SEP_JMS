@@ -19,16 +19,19 @@ import NotificationTable from "../components/notifications/NotificationTable";
 import { NotificationStatus } from "../enums/NotificationStatus";
 import { BsCheckAll } from "react-icons/bs";
 import useSnakeBar from "../hooks/store/useSnakeBar";
+import { MdDelete } from "react-icons/md";
+import CustomDialog from "../components/common/CustomDialog";
 
 
-interface IFinishedTasks {}
+interface IFinishedTasks { }
 const UsersPage: React.FC<IFinishedTasks> = () => {
   const navigate = useNavigate();
-  
-  const [value, setValue] = useState<string>("");
+
+  const [totalNum, setTotal] = useState<number>(0);
   const [searchValue, setSearchValue] = useState<string>("");
   const [timeRefresh, setTimeRefresh] = useState<number>(Date.now());
   const [selectedStatus, setSelectedStatus] = useState<NotificationStatus>(NotificationStatus.ALL);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   const snakeBar = useSnakeBar();
 
@@ -36,25 +39,54 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
     APIClientInstance.post(
       `/notification/readAll`
     )
-    .then(() => {
-      snakeBar.setSnakeBar("Successfully", "success", true);
-      // setSelectedStatus(NotificationStatus.ALL);
-      setTimeRefresh(Date.now());
-    })
-    .catch(err => {
-      console.log(err);
-      snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
-    });
-    
+      .then(() => {
+        snakeBar.setSnakeBar("Successfully", "success", true);
+        // setSelectedStatus(NotificationStatus.ALL);
+        setTimeRefresh(Date.now());
+      })
+      .catch(err => {
+        console.log(err);
+        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+      });
+
+  };
+
+  const handleDeleteAllNoti = () => {
+    APIClientInstance.post(
+      `/notification/deleteAll`
+    )
+      .then(() => {
+        snakeBar.setSnakeBar("Successfully", "success", true);
+        // setSelectedStatus(NotificationStatus.ALL);
+        setTimeRefresh(Date.now());
+      })
+      .catch(err => {
+        console.log(err);
+        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+      });
+
+  };
+
+  const handleClose = () => {
+    setOpenConfirmDialog(false);
   };
 
   return (
     <>
-      
+      <CustomDialog
+        openDialog={openConfirmDialog}
+        handleClose={handleClose}
+        title="Xoá tất cả thông báo"
+        description={`Bạn có muốn xoá tất cả thông báo không?`}
+        primaryBtnText="Quay trở lại"
+        secondaryBtnText="Tiếp tục"
+        primaryBtnCallback={handleClose}
+        secondaryBtnCallback={handleDeleteAllNoti}
+      />
       <div className="mb-10 flex items-center justify-between">
         <div className="gp-4 grid flex-1 grid-cols-3 xl:grid-cols-4">
           <div className="flex items-start gap-3">
-          <Select
+            <Select
               fullWidth
               size="small"
               labelId="demo-simple-select-label"
@@ -74,26 +106,39 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
                 </MenuItem>
               ))}
             </Select>
-           
+
           </div>
         </div>
-        <div
-          onClick={() => {
-            handleMarkReadAllNoti();
-          }}
-          className="flex cursor-pointer items-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75"
-        >
-          <BsCheckAll size={20} className="text-white" />
-          <span>Đánh dấu đã đọc tất cả</span>
+        <div className="flex items-start gap-3">
+          <div
+            onClick={() => {
+              handleMarkReadAllNoti();
+            }}
+            className="flex cursor-pointer items-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75"
+          >
+            <BsCheckAll size={20} className="text-white" />
+            <span>Đánh dấu đã đọc tất cả</span>
+          </div>
+
+          <div
+            onClick={() => {
+              setOpenConfirmDialog(true);
+            }}
+            className="flex cursor-pointer items-center gap-2 rounded-md bg-orange-600 p-3 text-white hover:opacity-75"
+          >
+            <MdDelete  size={20} className="text-white" />
+            <span>Xoá tất cả thông báo</span>
+          </div>
         </div>
+
       </div>
       <p className="text-primary mb-6 text-base">
-       Thông báo
+        Thông báo ({totalNum})
       </p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
-			<NotificationTable key={timeRefresh} status={selectedStatus as unknown as NotificationStatus} searchValue={searchValue}/>
-		</div>
+          <NotificationTable key={timeRefresh} status={selectedStatus as unknown as NotificationStatus} searchValue={searchValue} onGetNewNotification={(e) => setTotal(e)} />
+        </div>
       </div>
     </>
   );

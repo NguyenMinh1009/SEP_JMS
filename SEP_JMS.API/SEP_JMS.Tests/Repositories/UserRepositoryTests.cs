@@ -79,8 +79,8 @@ namespace SEP_JMS.Tests.Repositories
         [Test]
         public async Task FindUsers_WithSearchText_ShouldReturnCorrect()
         {
-            var results = await _userRepository.FindUsers(new Model.Api.Request.GetUsersRequestModel { PageIndex = 1, PageSize = 10, Role = Model.Enums.System.RoleType.Customer, SearchText = "_demo_"});
-            Assert.That(results.Items.Count, Is.EqualTo(5));
+            var results = await _userRepository.FindUsers(new Model.Api.Request.GetUsersRequestModel { PageIndex = 1, PageSize = 10, Role = Model.Enums.System.RoleType.Customer, SearchText = "Demo"});
+            Assert.That(results.Items.Count, Is.EqualTo(6));
 
         }
     }

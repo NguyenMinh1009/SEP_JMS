@@ -21,11 +21,12 @@ import { NotificationStatus } from "../../enums/NotificationStatus";
 interface INotifyPreview {
   status: NotificationStatus;
   searchValue: string;
+  onGetNewNotification: (value: number) => void;
 }
 
 const pageSize = 10;
 
-const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue }) => {
+const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue, onGetNewNotification }) => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = React.useState<number>(0);
@@ -41,6 +42,7 @@ const NotificationTable: React.FC<INotifyPreview> = ({ status, searchValue }) =>
       status: NotificationStatus[status].toLocaleLowerCase()
     }).then(res => {
       setLoading(false);
+      onGetNewNotification(res.data.item2.count);
       setNotifications(res.data.item2.items);
       setPageCount(Math.ceil(res.data.item2.count / pageSize));
     });

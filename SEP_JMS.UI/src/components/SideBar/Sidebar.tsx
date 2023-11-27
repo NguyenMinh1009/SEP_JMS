@@ -29,6 +29,7 @@ import StarBorder from "@mui/icons-material/StarBorder";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { TiThMenuOutline } from "react-icons/ti";
 import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
+import APIClientInstance from "../../api/AxiosInstance";
 //-------------
 interface ISidebarItem {
   parent: {
@@ -63,6 +64,7 @@ const SideBar = () => {
   const currentPerson = useCurrentPerson();
   const sidebar = useSideBarPanel();
   const [nestedOpenArr, setNestedOpenArr] = React.useState<boolean[]>([]);
+  const [hasNewNotification, setHasNewNotification] = React.useState<number>(0);
 
   const handleNestedsClick = (index: number) => {
     const clone = recursiveStructuredClone(nestedOpenArr);
@@ -304,6 +306,19 @@ const SideBar = () => {
   };
 
   React.useEffect(() => {
+    const interval = setInterval(() => {
+      APIClientInstance.post("notification", {
+        pageIndex: 1,
+        pageSize: 10,
+        status: "unread"
+      }).then(res => {
+        setHasNewNotification(res.data.item1);
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  React.useEffect(() => {
     // Update screen width state on window resize
     const handleResize = () => {
       setScreenWidth(window.innerWidth);
@@ -404,7 +419,7 @@ const SideBar = () => {
                           >
                             <div className="relative flex items-center justify-center">
                               {contentItem.parent.Icon}
-                              {contentItem.parent.to === `${PathString.THONG_BAO}` && (
+                              {contentItem.parent.to === `${PathString.THONG_BAO}` && hasNewNotification > 0 && (
                                 <div
                                   className={`absolute right-0 top-0 flex -translate-y-[2px] items-center justify-center rounded-full bg-accent  p-1 text-xs font-semibold text-white`}
                                 />

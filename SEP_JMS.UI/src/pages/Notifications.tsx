@@ -25,7 +25,7 @@ interface IFinishedTasks {}
 const UsersPage: React.FC<IFinishedTasks> = () => {
   const navigate = useNavigate();
   
-  const [value, setValue] = useState<string>("");
+  const [totalNum, setTotal] = useState<number>(0);
   const [searchValue, setSearchValue] = useState<string>("");
   const [timeRefresh, setTimeRefresh] = useState<number>(Date.now());
   const [selectedStatus, setSelectedStatus] = useState<NotificationStatus>(NotificationStatus.ALL);
@@ -88,11 +88,11 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
         </div>
       </div>
       <p className="text-primary mb-6 text-base">
-       Thông báo
+       Thông báo ({totalNum})
       </p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
-			<NotificationTable key={timeRefresh} status={selectedStatus as unknown as NotificationStatus} searchValue={searchValue}/>
+			<NotificationTable key={timeRefresh} status={selectedStatus as unknown as NotificationStatus} searchValue={searchValue} onGetNewNotification={(e) => setTotal(e)}/>
 		</div>
       </div>
     </>

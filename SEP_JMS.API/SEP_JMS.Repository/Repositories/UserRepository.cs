@@ -71,7 +71,8 @@ namespace SEP_JMS.Repository.Repositories
             {
                 query = from data in query
                         where data.user.Fullname.ToLower().Contains(model.SearchText.ToLower())
-                        || (data.user.Email != null && data.user.Email.ToLower().Contains(model.SearchText.ToLower()))
+                        || data.user.Email != null && data.user.Email.ToLower().Contains(model.SearchText.ToLower())
+                        || data.user.Username.ToLower().Contains(model.SearchText.ToLower())
                         select data;
             }
             var accounts = await query.OrderBy(data => data.user.Fullname)

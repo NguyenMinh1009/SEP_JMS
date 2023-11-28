@@ -112,7 +112,7 @@ const EditPriceGroup: React.FC<ICompanyPreview> = ({ searchValue }) => {
       })
       .catch(err => {
         console.error(err);
-        snakeBar.setSnakeBar("Chỉnh sửa không thành công!", "error", true);
+        snakeBar.setSnakeBar("Chỉnh sửa không thành công! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setLoading(false);

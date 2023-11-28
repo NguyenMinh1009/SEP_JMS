@@ -80,7 +80,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when create price group {model.Name}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
         [HttpPut("group/{id}")]
@@ -95,7 +95,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when create price group {id}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
         [HttpDelete("group/{id}")]
@@ -202,7 +202,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when importing template. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
             finally
             {

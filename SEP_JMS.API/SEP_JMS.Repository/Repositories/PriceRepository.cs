@@ -21,7 +21,7 @@ namespace SEP_JMS.Repository.Repositories
         public async Task<PagingModel<PriceGroup>> GetPriceGroups(PriceGroupFilterRequestModel model)
         {
             var query = dbcontext.PriceGroups.AsNoTracking().AsQueryable();
-            if (!string.IsNullOrEmpty(model.Name)) query = query.Where(group => group.Name.ToLower().Contains(model.Name.ToLower()));
+            if (!string.IsNullOrEmpty(model.Name)) query = query.Where(group => group.Name.ToLower().Contains(model.Name.ToLower()) || (group.Description != null && group.Description.ToLower().Contains(model.Name.ToLower())));
 
             var count = await query.CountAsync();
             var items = await query.OrderBy(p => p.PriceGroupId)
@@ -45,15 +45,16 @@ namespace SEP_JMS.Repository.Repositories
             using var transaction = await dbcontext.Database.BeginTransactionAsync();
             try
             {
+                if (await IsDuplicateName(null, model.Name)) throw new Exception("duplicate name");
                 var priceGr = new PriceGroup
                 {
                     PriceGroupId = Guid.NewGuid(),
-                    Name = model.Name,
+                    Name = model.Name.Trim(),
                     Description = model.Description
                 };
                 await dbcontext.AddAsync(priceGr);
                 await dbcontext.SaveChangesAsync();
-
+                
                 var jobTypes = await dbcontext.TypeOfJobs.AsNoTracking().ToListAsync();
                 foreach (var jobType in jobTypes)
                 {
@@ -79,10 +80,10 @@ namespace SEP_JMS.Repository.Repositories
                 dbcontext.Entry(priceGr).State = EntityState.Detached;
                 return priceGr;
             }
-            catch
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw;
+                throw ex ?? new Exception("database error");
             }
         }
         public async Task<PriceGroup> UpdatePriceGroup(Guid id, UpdatePriceGroupRequestModel model)
@@ -90,6 +91,7 @@ namespace SEP_JMS.Repository.Repositories
             using var transaction = await dbcontext.Database.BeginTransactionAsync();
             try
             {
+                if (await IsDuplicateName(id, model.Name)) throw new Exception("duplicate name");
                 foreach (var priceModel in model.Prices)
                 {
                     var price = new Price
@@ -107,7 +109,7 @@ namespace SEP_JMS.Repository.Repositories
                 var group = new PriceGroup
                 {
                     PriceGroupId = id,
-                    Name = model.Name,
+                    Name = model.Name.Trim(),
                     Description = model.Description
                 };
                 dbcontext.Update(group);
@@ -117,10 +119,10 @@ namespace SEP_JMS.Repository.Repositories
                 dbcontext.Entry(group).State = EntityState.Detached;
                 return group;
             }
-            catch
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw;
+                throw ex ?? new Exception("database error");
             }
         }
         public async Task<bool> UsedInCompany(Guid groupId)
@@ -142,6 +144,11 @@ namespace SEP_JMS.Repository.Repositories
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        private async Task<bool> IsDuplicateName(Guid? id, string name)
+        {
+            return await dbcontext.PriceGroups.AnyAsync(e => e.Name.ToLower().Equals(name.Trim().ToLower()) && (id == null || e.PriceGroupId != id));
         }
     }
 }

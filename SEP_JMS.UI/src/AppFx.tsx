@@ -493,7 +493,7 @@ function AppFx() {
             <Route
               path="/"
               element={
-                !localStorageUser || JSON.parse(localStorageUser ?? "").roleType === Role.GUEST ? (
+                !localStorageUser || isTokenExpired() || JSON.parse(localStorageUser ?? "").roleType === Role.GUEST ? (
                   <LandingPage />
                 ) : (
                   <Navigate to={`/${PathString.THONG_BAO}`} />

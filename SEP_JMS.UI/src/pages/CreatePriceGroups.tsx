@@ -125,7 +125,7 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
         navigate(`/${PathString.PRICES}`);
       })
       .catch(err => {
-        snakeBar.setSnakeBar("Tạo không thành công!", "error", true);
+        snakeBar.setSnakeBar("Tạo không thành công! [" + err.response.data + "]", "error", true);
         console.error(err);
       })
       .finally(() => {
@@ -195,7 +195,7 @@ const CreatePriceGroups: React.FC<ICompanyPreview> = ({ searchValue }) => {
         })
         .catch(err => {
           console.log(err);
-          snakeBar.setSnakeBar("Có lỗi xảy ra khi import", "error", true);
+          snakeBar.setSnakeBar("Có lỗi xảy ra khi import [" + err.response.data + "]", "error", true);
         })
         .finally(() => setProcessing(false));
     };

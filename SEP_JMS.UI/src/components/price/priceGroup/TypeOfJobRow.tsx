@@ -40,16 +40,16 @@ const TypeOfJobRow: React.FC<IRowProps> = ({
   };
 
   const handleDeleteJobType = () => {
-    // APIClientInstance.delete(`jobtype/${row.typeId}`)
-    //   .then(() => {
+    APIClientInstance.delete(`jobtype/${row.typeId}`)
+      .then(() => {
         
-    //     snakeBar.setSnakeBar("Xoá thiết kế thành công!", "success", true);
-    //   })
-    //   .catch(err => {
+        snakeBar.setSnakeBar("Xoá thiết kế thành công!", "success", true);
+      })
+      .catch(err => {
         
-    //     snakeBar.setSnakeBar("Có lỗi xảy ra khi xoá!", "error", true);
+        snakeBar.setSnakeBar("Có lỗi xảy ra khi xoá!", "error", true);
         
-    //   });
+      });
     removeRow(row.typeId ?? 0);
   };
 

@@ -13,5 +13,7 @@ namespace SEP_JMS.Model.Models
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; } = null;
+
+        public long CreatedTime { get; set; }
     }
 }

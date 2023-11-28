@@ -9,5 +9,7 @@ namespace SEP_JMS.Model.Models
         public Guid TypeId { get; set; }
 
         public string TypeName { get; set; } = null!;
+
+        public long CreatedTime { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace SEP_JMS.Repository.Repositories
             if (!string.IsNullOrEmpty(model.Name)) query = query.Where(group => group.Name.ToLower().Contains(model.Name.ToLower()) || (group.Description != null && group.Description.ToLower().Contains(model.Name.ToLower())));
 
             var count = await query.CountAsync();
-            var items = await query.OrderBy(p => p.PriceGroupId)
+            var items = await query.OrderBy(p => p.CreatedTime)
                 .Skip((model.PageIndex - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .ToListAsync();
@@ -50,7 +50,8 @@ namespace SEP_JMS.Repository.Repositories
                 {
                     PriceGroupId = Guid.NewGuid(),
                     Name = model.Name.Trim(),
-                    Description = model.Description
+                    Description = model.Description,
+                    CreatedTime = DateTime.UtcNow.Ticks
                 };
                 await dbcontext.AddAsync(priceGr);
                 await dbcontext.SaveChangesAsync();
@@ -106,12 +107,10 @@ namespace SEP_JMS.Repository.Repositories
                     await dbcontext.SaveChangesAsync();
                 }
 
-                var group = new PriceGroup
-                {
-                    PriceGroupId = id,
-                    Name = model.Name.Trim(),
-                    Description = model.Description
-                };
+                var group = await dbcontext.PriceGroups.FirstOrDefaultAsync(e => e.PriceGroupId == id);
+                if (group == null) throw new Exception("cant find price group");
+                group.Name = model.Name.Trim();
+                group.Description = model.Description;
                 dbcontext.Update(group);
                 await dbcontext.SaveChangesAsync();
                 await transaction.CommitAsync();

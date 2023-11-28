@@ -9,7 +9,7 @@ import { PathString } from "../../../enums/MapRouteToBreadCrumb";
 import useTitle from "../../../hooks/store/useCurrentTitle";
 import { cn } from "../../../utils/className";
 import CustomDialog from "../../common/CustomDialog";
-import AlwayxInstance from "../../../api/AxiosInstance";
+import APIClientInstance from "../../../api/AxiosInstance";
 import useSnakeBar from "../../../hooks/store/useSnakeBar";
 
 interface IRowProps {
@@ -41,7 +41,7 @@ const PriceGroupPreviewRow: React.FC<IRowProps> = ({
   };
 
   const handleDeletePriceGroup = () => {
-    AlwayxInstance.delete(`price/group/${row.priceGroupId}`)
+    APIClientInstance.delete(`price/group/${row.priceGroupId}`)
       .then(() => {
         removePriceGroupPreview(row.priceGroupId ?? 0);
         snakeBar.setSnakeBar("Xoá nhóm giá thành công!", "success", true);

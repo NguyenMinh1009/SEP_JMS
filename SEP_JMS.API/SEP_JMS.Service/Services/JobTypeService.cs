@@ -40,6 +40,7 @@ namespace SEP_JMS.Service.Services
         public async Task<List<JobTypeResponse>> GetJobTypes()
         {
             var types = await jobTypeRepository.GetAll(type => true, 0, int.MaxValue);
+            types = types.OrderBy(e => e.CreatedTime).ToList();
             return mapper.Map<List<JobTypeResponse>>(types);
         } 
         public async Task<bool> CreateJobType(string name)
@@ -48,6 +49,7 @@ namespace SEP_JMS.Service.Services
             {
                 TypeId = Guid.NewGuid(),
                 TypeName = name,
+                CreatedTime = DateTime.UtcNow.Ticks
             };
             await jobTypeRepository.Add(jobType);
             return true;

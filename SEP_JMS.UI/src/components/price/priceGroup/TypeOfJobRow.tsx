@@ -44,13 +44,14 @@ const TypeOfJobRow: React.FC<IRowProps> = ({
       .then(() => {
         
         snakeBar.setSnakeBar("Xoá thiết kế thành công!", "success", true);
+        removeRow(row.typeId ?? 0);
       })
       .catch(err => {
         
-        snakeBar.setSnakeBar("Có lỗi xảy ra khi xoá!", "error", true);
+        snakeBar.setSnakeBar("Có lỗi xảy ra khi xoá! [" + err.response.data + "]", "error", true);
         
       });
-    removeRow(row.typeId ?? 0);
+    
   };
 
   const handleEditTypeName = () => {
@@ -64,7 +65,7 @@ const TypeOfJobRow: React.FC<IRowProps> = ({
         setEditable(false);
       })
       .catch(err => {
-        snakeBar.setSnakeBar("Có lỗi xảy ra khi lưu!", "error", true);
+        snakeBar.setSnakeBar("Có lỗi xảy ra khi lưu! [" + err.response.data + "]", "error", true);
       }).finally(()=>{
         setIsProcess(false);
       });

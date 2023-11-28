@@ -61,7 +61,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Info($"{logPrefix} Got exception when creating job type. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
         [Authorize]
@@ -77,7 +77,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Info($"{logPrefix} Got exception when updating job type {name}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
         [Authorize]
@@ -87,7 +87,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to check whether duplicate name of job type {name}.");
-                return await jobTypeService.IsExistName(name);
+                return await jobTypeService.IsExistName(null, name);
             }
             catch (Exception ex)
             {
@@ -108,7 +108,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Info($"{logPrefix} Got exception when deleting job type {id}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -37,7 +37,6 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
         var results: any[] = jobTypeData.map(function (it: any) {
           for (var i = 0; i < priceList.length; ++i) {
             if (it.typeId == priceList[i].jobTypeId) return priceList[i];
-
           }
         });
         setPriceList(results.filter(e=>e) as PriceItem[]);

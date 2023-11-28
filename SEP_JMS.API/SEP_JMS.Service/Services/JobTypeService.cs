@@ -45,22 +45,23 @@ namespace SEP_JMS.Service.Services
         } 
         public async Task<bool> CreateJobType(string name)
         {
+            if (await IsExistName(null, name.Trim())) throw new Exception("duplicate name");
             var jobType = new JobType()
             {
                 TypeId = Guid.NewGuid(),
-                TypeName = name,
+                TypeName = name.Trim(),
                 CreatedTime = DateTime.UtcNow.Ticks
             };
-            await jobTypeRepository.Add(jobType);
-            return true;
+            return await jobTypeRepository.CreateJobType(jobType);
         }
-        public async Task<bool> IsExistName(string name)
+        public async Task<bool> IsExistName(Guid? id, string name)
         {
-            var jobTypes = await jobTypeRepository.GetAll(x=>x.TypeName == name);
+            var jobTypes = await jobTypeRepository.GetAll(x=>x.TypeName == name.Trim() && (id == null || id != x.TypeId));
             return jobTypes.Count > 0;
         }
         public async Task<bool> UpdateJobType(Guid id, string name)
         {
+            if (await IsExistName(id, name.Trim())) throw new Exception("duplicate name");
             var jobType = await jobTypeRepository.Get(id);
             if(jobType == null) return false;
             jobType.TypeName = name;
@@ -70,8 +71,8 @@ namespace SEP_JMS.Service.Services
         public async Task<bool> DeleteJobType(Guid id)
         {
             var jobType = await jobTypeRepository.Get(id);
-            if( jobType == null) return false;
-            await jobTypeRepository.Delete(jobType);
+            if( jobType == null) throw new Exception("not found job type");
+            await jobTypeRepository.DeleteJobType(id);
             return true;
         }
     }

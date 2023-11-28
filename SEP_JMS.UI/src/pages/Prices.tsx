@@ -61,34 +61,11 @@ const PricesPage: React.FC<IFinishedTasks> = () => {
     }
   };
 
-  const handleNavigate = () => {
-    switch (selectedCreateRole) {
-      case CreateRole.COMPANY:
-        navigate(`/${PathString.USERS}/${PathString.CREATE_COMPANY}`);
-        break;
-      case CreateRole.CUSTOMER:
-        navigate(`/${PathString.USERS}/${PathString.CREATE_CUSTOMER}`);
-        break;
-      default:
-        navigate(`/${PathString.USERS}/${PathString.CREATE_EMPLOYEE}`);
-        break;
-    }
-  };
+  
 
   return (
     <>
-      <CustomDialog
-        openDialog={openConfirmDialog}
-        handleClose={handleClose}
-        title="Tạo tải khoản/company mới!"
-        description="Lựa chọn loại tài khoản/company để tạo:"
-        primaryBtnText={getCreateAccountDialogText()}
-        secondaryBtnText={"Quay trở lại"}
-        primaryBtnCallback={handleNavigate}
-        secondaryBtnCallback={handleClose}
-        renderCustomChildren={renderDialogDropdownSelection}
-        customSecondaryBtnClass="text-[#aaa] text-opacity-75 hover:text-opacity-100"
-      />
+      
       <div className="mb-10 flex items-center justify-between">
         <div className="gp-4 grid flex-1 grid-cols-3 xl:grid-cols-4">
           <div className="flex flex-col gap-3">

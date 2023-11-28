@@ -45,7 +45,7 @@ const Avatar = () => {
         )}
       >
         <img
-          src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content ?? Images.avtPlaceHolder}
+          src={currentPerson?.avatarUrl ? APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content : Images.avtPlaceHolder}
           className="h-full w-full rounded-full object-cover"
           alt=""
         />
@@ -67,7 +67,7 @@ const Avatar = () => {
               {roleOptions.find(item => item.key === currentPerson.roleType)?.text}
             </p>
             <div className="h-16 w-16 overflow-hidden rounded-full">
-              <img src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content ?? Images.avtPlaceHolder} alt="" />
+              <img src={currentPerson?.avatarUrl ? APIUrlHost + "/" + currentPerson.avatarUrl + "?t=" + avtRef.content : Images.avtPlaceHolder} alt="" />
             </div>
           </div>
         </div>

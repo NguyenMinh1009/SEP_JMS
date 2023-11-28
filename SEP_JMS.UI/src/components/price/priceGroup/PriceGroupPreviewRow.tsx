@@ -115,6 +115,16 @@ const PriceGroupPreviewRow: React.FC<IRowProps> = ({
                 </span>
                 <span
                   onClick={() => {
+                    
+                    navigate(`/${PathString.PRICES}/${row.priceGroupId}/${PathString.CHINH_SUA}`);
+                  }}
+                  className="group relative cursor-pointer border-r-[1px] border-[#999] px-1 pr-2 hover:scale-105"
+                >
+                  <IoCreateOutline color="#666" size={18} />
+                  <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
+                </span>
+                <span
+                  onClick={() => {
                     setOpenConfirmDialog(true);
                   }}
                   className="group relative cursor-pointer px-1 hover:scale-105"

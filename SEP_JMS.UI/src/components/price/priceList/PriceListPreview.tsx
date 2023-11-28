@@ -57,13 +57,13 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
 
   const renderPriceListTableBody = () => {
     if (priceList.length === 0) return <></>;
-    const getJobIdFromSearchText = jobOptions.find(item =>
-      item.text.toLowerCase().includes(searchValue.trim().toLocaleLowerCase())
-    )?.key;
+    const getJobIdsFromSearchText = jobTypes.filter(item =>
+      item.typeName.toLowerCase().includes(searchValue.trim().toLocaleLowerCase())
+    ).map(e => e.typeId);
     return (
       searchValue.trim() === ""
         ? priceList
-        : priceList.filter(item => item.jobTypeId === getJobIdFromSearchText)
+        : priceList.filter(item => getJobIdsFromSearchText.includes(item.jobTypeId))
     ).map((row: any, index: number) => {
       return (
         <PriceListPreviewRow

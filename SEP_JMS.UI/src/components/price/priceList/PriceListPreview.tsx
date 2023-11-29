@@ -63,7 +63,7 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
     return (
       searchValue.trim() === ""
         ? priceList
-        : priceList.filter(item => getJobIdsFromSearchText.includes(item.jobTypeId) || item.description.toLowerCase().includes(searchValue.trim().toLocaleLowerCase()))
+        : priceList.filter(item => getJobIdsFromSearchText.includes(item.jobTypeId) || item.description?.toLowerCase().includes(searchValue.trim().toLocaleLowerCase()))
     ).map((row: any, index: number) => {
       return (
         <PriceListPreviewRow

@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
 namespace SEP_JMS.Tests.Repositories
 {
-    // [TestFixture]
-    public class UserRepositoryTests
+    [TestFixture]
+    public class PriceRepositoryTests
     {
         IUserRepository _userRepository;
         List<User> testUsers;
@@ -53,35 +53,5 @@ namespace SEP_JMS.Tests.Repositories
             Assert.IsFalse(await _userRepository.IsValidUsername(testUsers[0].Username));
         }
 
-        [Test]
-        public async Task Login_WithCorrectInfo_ShouldReturnNotNull()
-        {
-            // login
-            var user = await _userRepository.Login(new Model.Api.Request.User.UserLoginRequest { Username = testUsers[0].Username, Password = testUsers[0].Password });
-            Assert.IsNotNull(user);
-        }
-
-        [Test]
-        public async Task GetUsers_WithAdminRole_ShouldReturn4()
-        {
-            var results = await _userRepository.GetUsers(new Model.Api.Request.User.UserFilterRequest { PageIndex = 1 , PageSize = 10, Role = Model.Enums.System.RoleType.Admin, SearchText = ""});
-            Assert.That(results.Count, Is.EqualTo(_adminCount));
-        }
-
-        [Test]
-        public async Task GetUsers_WithSearchText_ShouldReturnCorrect()
-        {
-            var results = await _userRepository.GetUsers(new Model.Api.Request.User.UserFilterRequest { PageIndex = 1, PageSize = 10, Role = Model.Enums.System.RoleType.Admin, SearchText = "demo_1" });
-            Assert.That(results.Count, Is.EqualTo(1));
-
-        }
-        
-        [Test]
-        public async Task FindUsers_WithSearchText_ShouldReturnCorrect()
-        {
-            var results = await _userRepository.FindUsers(new Model.Api.Request.GetUsersRequestModel { PageIndex = 1, PageSize = 10, Role = Model.Enums.System.RoleType.Customer, SearchText = "Demo"});
-            Assert.That(results.Items.Count, Is.EqualTo(6));
-
-        }
     }
 }

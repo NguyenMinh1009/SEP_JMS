@@ -10,41 +10,29 @@ import useTitle from "../../../hooks/store/useCurrentTitle";
 import { jobOptions } from "../../../enums/jobType";
 
 interface IPriceListPreview {
+  prices?: any;
   searchValue: string;
 }
 
-interface ListResponse {
-  group: PriceGroup;
-  prices: PriceItem[];
-}
-
-const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
+const PriceListPreviewAccount: React.FC<IPriceListPreview> = ({ searchValue, prices }) => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [priceList, setPriceList] = useState<PriceItem[]>([]);
   const [jobTypes, setJobTypes] = useState<any[]>([]);
 
-  const { priceGroupId } = useParams();
-
-  const title = useTitle();
-
   const getPriceLists = async (jobTypeData: any) => {
+    if (prices === null) return;
     setLoading(true);
-    await APIClientInstance.get(`price/group/${priceGroupId}`)
-      .then(res => {
-        const { group, prices = [] } = res.data as ListResponse;
-        title.setContent(group.name);
-        const priceList = prices.map(item => ({ ...item, priceGroupName: group.name }));
-        var results: any[] = jobTypeData.map(function (it: any) {
-          for (var i = 0; i < priceList.length; ++i) {
-            if (it.typeId == priceList[i].jobTypeId) return priceList[i];
-          }
-        });
-        setPriceList(results.filter(e=>e) as PriceItem[]);
-        
-      })
-      .finally(() => {
-        setLoading(false);
+    const groupName = "Mặc định";
+    const priceList = prices?.map((item: any) => ({ ...item, priceGroupName: groupName }));
+    if (priceList) {
+      var results: any[] = jobTypeData.map(function (it: any) {
+        for (var i = 0; i < priceList.length; ++i) {
+          if (it.typeId == priceList[i].jobTypeId) return priceList[i];
+        }
       });
+      setPriceList(results.filter(e => e) as PriceItem[]);
+      setLoading(false);
+    }
   };
 
   const getJobTypes = async () => {
@@ -78,13 +66,13 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
     });
   };
 
-  useEffect(() => {
+  useEffect(()=>{
     async function loadData() {
       const jobTypesData = await getJobTypes();
       await getPriceLists(jobTypesData);
     }
     loadData();
-  }, []);
+  }, [prices]);
 
   return !isLoading ? (
     <div>
@@ -111,4 +99,4 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
   );
 };
 
-export default PriceListPreview;
+export default PriceListPreviewAccount;

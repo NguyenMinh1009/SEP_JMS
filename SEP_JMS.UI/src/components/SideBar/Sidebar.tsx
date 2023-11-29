@@ -30,6 +30,7 @@ import { AiOutlineArrowRight } from "react-icons/ai";
 import { TiThMenuOutline } from "react-icons/ti";
 import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
 import APIClientInstance from "../../api/AxiosInstance";
+import { MdOutlineAttachMoney } from "react-icons/md";
 //-------------
 interface ISidebarItem {
   parent: {
@@ -79,143 +80,186 @@ const SideBar = () => {
   const sidebarCommonItems: ISidebarItem[] =
     currentPerson.roleType !== Role.CUSTOMER
       ? [
-          {
-            parent: {
-              text: "Duyệt nội bộ",
-              to: `#nested`,
-              Icon: <BiLockAlt size={18} />,
-              prefix: `${PathString.NOI_BO}`,
-              items: [
-                {
-                  parent: {
-                    text: "Việc dự án",
-                    to: `${PathString.NOI_BO}/${PathString.VIEC_DU_AN}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
-                  }
-                },
-                {
-                  parent: {
-                    text: "Việc hàng ngày",
-                    to: `${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
-                  }
+        {
+          parent: {
+            text: "Duyệt nội bộ",
+            to: `#nested`,
+            Icon: <BiLockAlt size={18} />,
+            prefix: `${PathString.NOI_BO}`,
+            items: [
+              {
+                parent: {
+                  text: "Việc dự án",
+                  to: `${PathString.NOI_BO}/${PathString.VIEC_DU_AN}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_DU_AN}`
                 }
-              ]
-            }
-          },
-          {
-            parent: {
-              text: "Chờ khách duyệt",
-              to: `#nested`,
-              Icon: <BiListUl size={18} />,
-              prefix: `${PathString.CONG_KHAI}`,
-              items: [
-                {
-                  parent: {
-                    text: "Việc dự án",
-                    to: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
-                  }
-                },
-                {
-                  parent: {
-                    text: "Việc hàng ngày",
-                    to: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
-                  }
+              },
+              {
+                parent: {
+                  text: "Việc hàng ngày",
+                  to: `${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_HANG_NGAY}`
                 }
-              ]
-            }
-          },
-          {
-            parent: {
-              text: "Việc đã xong",
-              to: `#nested`,
-              Icon: <BsCheckAll size={18} />,
-              prefix: `${PathString.VIEC_DA_XONG}`,
-              items: [
-                {
-                  parent: {
-                    text: "Việc dự án",
-                    to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
-                  }
-                },
-                {
-                  parent: {
-                    text: "Việc hàng ngày",
-                    to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
-                  }
-                }
-              ]
-            }
+              }
+            ]
           }
-        ]
+        },
+        {
+          parent: {
+            text: "Chờ khách duyệt",
+            to: `#nested`,
+            Icon: <BiListUl size={18} />,
+            prefix: `${PathString.CONG_KHAI}`,
+            items: [
+              {
+                parent: {
+                  text: "Việc dự án",
+                  to: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_DU_AN}`
+                }
+              },
+              {
+                parent: {
+                  text: "Việc hàng ngày",
+                  to: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_HANG_NGAY}`
+                }
+              }
+            ]
+          }
+        },
+        {
+          parent: {
+            text: "Việc đã xong",
+            to: `#nested`,
+            Icon: <BsCheckAll size={18} />,
+            prefix: `${PathString.VIEC_DA_XONG}`,
+            items: [
+              {
+                parent: {
+                  text: "Việc dự án",
+                  to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_DU_AN}`
+                }
+              },
+              {
+                parent: {
+                  text: "Việc hàng ngày",
+                  to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_HANG_NGAY}`
+                }
+              }
+            ]
+          }
+        }
+      ]
       : [
-          {
-            parent: {
-              text: "Việc đang làm",
-              to: `#nested`,
-              Icon: <BiListUl size={18} />,
-              prefix: `${PathString.CONG_KHAI}`,
-              items: [
-                {
-                  parent: {
-                    text: "Việc dự án",
-                    to: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
-                  }
-                },
-                {
-                  parent: {
-                    text: "Việc hàng ngày",
-                    to: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
-                  }
+        {
+          parent: {
+            text: "Việc đang làm",
+            to: `#nested`,
+            Icon: <BiListUl size={18} />,
+            prefix: `${PathString.CONG_KHAI}`,
+            items: [
+              {
+                parent: {
+                  text: "Việc dự án",
+                  to: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_DU_AN}`
                 }
-              ]
-            }
-          },
-          {
-            parent: {
-              text: "Việc đã xong",
-              to: `#nested`,
-              Icon: <BsCheckAll size={18} />,
-              prefix: `${PathString.VIEC_DA_XONG}`,
-              items: [
-                {
-                  parent: {
-                    text: "Việc dự án",
-                    to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
-                  }
-                },
-                {
-                  parent: {
-                    text: "Việc hàng ngày",
-                    to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`,
-                    Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
-                  }
+              },
+              {
+                parent: {
+                  text: "Việc hàng ngày",
+                  to: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_HANG_NGAY}`
                 }
-              ]
-            }
+              }
+            ]
           }
-        ];
+        },
+        {
+          parent: {
+            text: "Việc đã xong",
+            to: `#nested`,
+            Icon: <BsCheckAll size={18} />,
+            prefix: `${PathString.VIEC_DA_XONG}`,
+            items: [
+              {
+                parent: {
+                  text: "Việc dự án",
+                  to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_DU_AN}`
+                }
+              },
+              {
+                parent: {
+                  text: "Việc hàng ngày",
+                  to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`,
+                  Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
+                  prefix: `${PathString.VIEC_HANG_NGAY}`
+                }
+              }
+            ]
+          }
+        }
+      ];
 
   const sidebarDetailItems: ISidebarItem[] =
     currentPerson.roleType === Role.ADMIN
       ? [
+        {
+          parent: {
+            text: "Thông báo",
+            to: `${PathString.THONG_BAO}`,
+            Icon: <BiBell size={18} />,
+            prefix: `${PathString.THONG_BAO}`
+          }
+        },
+        {
+          parent: {
+            text: "Quản lý users",
+            to: `${PathString.USERS}`,
+            Icon: <PiUsersThreeLight size={18} />,
+            prefix: `${PathString.USERS}`
+          }
+        },
+        {
+          parent: {
+            text: "Quản lý giá",
+            to: `${PathString.PRICES}`,
+            Icon: <IoPricetagsOutline size={18} />,
+            prefix: `${PathString.PRICES}`
+          }
+        },
+        {
+          parent: {
+            text: "Thống kê",
+            to: `${PathString.REPORT}`,
+            Icon: <TbReport size={18} className="opacity-90" />,
+            prefix: `${PathString.REPORT}`
+          }
+        }
+        // {
+        //   parent: {
+        //     text: "Tài khoản",
+        //     to: `${PathString.TAI_KHOAN}`,
+        //     Icon: <BiUser size={18} />,
+        //     prefix: `${PathString.TAI_KHOAN}`
+        //   }
+        // }
+      ]
+      : (currentPerson.roleType === Role.ACCOUNT || (currentPerson.roleType === Role.CUSTOMER && !currentPerson.hiddenPrice))
+        ? [
           {
             parent: {
               text: "Thông báo",
@@ -226,38 +270,14 @@ const SideBar = () => {
           },
           {
             parent: {
-              text: "Quản lý users",
-              to: `${PathString.USERS}`,
-              Icon: <PiUsersThreeLight size={18} />,
-              prefix: `${PathString.USERS}`
-            }
-          },
-          {
-            parent: {
-              text: "Quản lý giá",
-              to: `${PathString.PRICES}`,
-              Icon: <IoPricetagsOutline size={18} />,
-              prefix: `${PathString.PRICES}`
-            }
-          },
-          {
-            parent: {
-              text: "Thống kê",
-              to: `${PathString.REPORT}`,
-              Icon: <TbReport size={18} className="opacity-90" />,
-              prefix: `${PathString.REPORT}`
+              text: "Bảng giá",
+              to: `${PathString.VIEW_PRICES}`,
+              Icon: <MdOutlineAttachMoney size={18} />,
+              prefix: `${PathString.VIEW_PRICES}`
             }
           }
-          // {
-          //   parent: {
-          //     text: "Tài khoản",
-          //     to: `${PathString.TAI_KHOAN}`,
-          //     Icon: <BiUser size={18} />,
-          //     prefix: `${PathString.TAI_KHOAN}`
-          //   }
-          // }
         ]
-      : [
+        : [
           {
             parent: {
               text: "Thông báo",
@@ -352,9 +372,8 @@ const SideBar = () => {
       <Box className="h-screen border-r-[1px] border-[rgba(0,0,0,0.12)] transition-all">
         {/* sidebar header */}
         <DrawerHeader
-          className={`flex min-h-[75px] border-solid ${
-            sidebar.isExpand ? "justify-between px-10 pr-4" : "justify-center"
-          } mb-2`}
+          className={`flex min-h-[75px] border-solid ${sidebar.isExpand ? "justify-between px-10 pr-4" : "justify-center"
+            } mb-2`}
         >
           <Box
             className={`flex items-center justify-center gap-4 ${sidebar.isExpand ? "" : "hidden"}`}
@@ -378,11 +397,11 @@ const SideBar = () => {
             onClick={
               screenWidth < 1500
                 ? () => {
-                    if (currentPerson.roleType !== Role.CUSTOMER) navigate(`${PathString.NOI_BO}`);
-                    else {
-                      navigate(`${PathString.CONG_KHAI}`);
-                    }
+                  if (currentPerson.roleType !== Role.CUSTOMER) navigate(`${PathString.NOI_BO}`);
+                  else {
+                    navigate(`${PathString.CONG_KHAI}`);
                   }
+                }
                 : handleOpenDrawer
             }
           >
@@ -400,22 +419,19 @@ const SideBar = () => {
                   {item.content.map((contentItem, _index) =>
                     contentItem.parent.to !== "#nested" ? (
                       <ListItem
-                        className={`group relative py-0 ${
-                          sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
-                        }`}
+                        className={`group relative py-0 ${sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
+                          }`}
                         key={contentItem.parent.text}
                       >
                         <ListItemButton
                           onClick={() => handleClickListItem(contentItem)}
                           // title={contentItem.parent.text}
-                          className={`relative w-full items-center overflow-hidden rounded-md ${
-                            sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
-                          } ${getSelectedBackgroundColor(contentItem.parent.text)}`}
+                          className={`relative w-full items-center overflow-hidden rounded-md ${sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
+                            } ${getSelectedBackgroundColor(contentItem.parent.text)}`}
                         >
                           <ListItemIcon
-                            className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
-                              sidebar.isExpand ? "mr-4" : "auto"
-                            } text-[#334155]`}
+                            className={`mb-[2px] min-w-0 items-center justify-center transition-all ${sidebar.isExpand ? "mr-4" : "auto"
+                              } text-[#334155]`}
                           >
                             <div className="relative flex items-center justify-center">
                               {contentItem.parent.Icon}
@@ -427,9 +443,8 @@ const SideBar = () => {
                             </div>
                           </ListItemIcon>
                           <ListItemText
-                            className={`${
-                              sidebar.isExpand ? "" : "hidden"
-                            } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                            className={`${sidebar.isExpand ? "" : "hidden"
+                              } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
                             primary={contentItem.parent.text}
                           />
                         </ListItemButton>
@@ -443,31 +458,27 @@ const SideBar = () => {
                     ) : (
                       <React.Fragment key={contentItem.parent.text + "-sub"}>
                         <ListItem
-                          className={`group relative py-0 ${
-                            sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
-                          }`}
+                          className={`group relative py-0 ${sidebar.isExpand ? "flex flex-col items-start px-8" : "justify-center"
+                            }`}
                           key={contentItem.parent.text}
                         >
                           <ListItemButton
                             onClick={() => handleNestedsClick(_index)}
                             // title={contentItem.parent.text}
-                            className={`relative w-full items-center overflow-hidden rounded-md ${
-                              sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
-                            } ${getSelectedBackgroundColor(contentItem.parent.text)}`}
+                            className={`relative w-full items-center overflow-hidden rounded-md ${sidebar.isExpand ? "justify-start pl-7 pr-4" : "justify-center px-5"
+                              } ${getSelectedBackgroundColor(contentItem.parent.text)}`}
                           >
                             <ListItemIcon
-                              className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
-                                sidebar.isExpand ? "mr-4" : "auto"
-                              } text-[#334155]`}
+                              className={`mb-[2px] min-w-0 items-center justify-center transition-all ${sidebar.isExpand ? "mr-4" : "auto"
+                                } text-[#334155]`}
                             >
                               <div className="relative flex items-center justify-center">
                                 {contentItem.parent.Icon}
                               </div>
                             </ListItemIcon>
                             <ListItemText
-                              className={`${
-                                sidebar.isExpand ? "" : "hidden"
-                              } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                              className={`${sidebar.isExpand ? "" : "hidden"
+                                } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
                               primary={contentItem.parent.text}
                             />
                             {nestedOpenArr[_index] ? <ExpandLess /> : <ExpandMore />}
@@ -485,26 +496,23 @@ const SideBar = () => {
                               (subItem, _rIdx) =>
                                 subItem && (
                                   <ListItem
-                                    className={`group relative py-0 ${
-                                      sidebar.isExpand
+                                    className={`group relative py-0 ${sidebar.isExpand
                                         ? "flex flex-col items-start px-8"
                                         : "justify-center"
-                                    }`}
+                                      }`}
                                     key={subItem.parent.text}
                                   >
                                     <ListItemButton
                                       onClick={() => handleClickListItem(subItem)}
                                       // title={contentItem.parent.text}
-                                      className={`relative w-full items-center overflow-hidden rounded-md ${
-                                        sidebar.isExpand
+                                      className={`relative w-full items-center overflow-hidden rounded-md ${sidebar.isExpand
                                           ? "justify-start pl-7 pr-4"
                                           : "justify-center px-5"
-                                      } ${getSelectedBackgroundColor(subItem.parent.text)}`}
+                                        } ${getSelectedBackgroundColor(subItem.parent.text)}`}
                                     >
                                       <ListItemIcon
-                                        className={`mb-[2px] min-w-0 items-center justify-center transition-all ${
-                                          sidebar.isExpand ? "mr-4" : "auto"
-                                        } text-[#334155]`}
+                                        className={`mb-[2px] min-w-0 items-center justify-center transition-all ${sidebar.isExpand ? "mr-4" : "auto"
+                                          } text-[#334155]`}
                                       >
                                         <div className="relative flex items-center justify-center">
                                           {subItem.parent.Icon}
@@ -516,9 +524,8 @@ const SideBar = () => {
                                         </div>
                                       </ListItemIcon>
                                       <ListItemText
-                                        className={`${
-                                          sidebar.isExpand ? "" : "hidden"
-                                        } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
+                                        className={`${sidebar.isExpand ? "" : "hidden"
+                                          } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
                                         primary={subItem.parent.text}
                                       />
                                     </ListItemButton>

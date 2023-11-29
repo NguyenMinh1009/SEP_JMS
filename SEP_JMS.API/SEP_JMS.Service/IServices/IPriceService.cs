@@ -19,5 +19,7 @@ namespace SEP_JMS.Service.IServices
         public Task<bool> UsedInCompany(Guid groupId);
         public Task DeletePriceGroup(Guid groupId);
         public Task<string> ExportTemplate();
+        public Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForAccount(Guid accountId);
+        public Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForCustomer(Guid customerId);
     }
 }

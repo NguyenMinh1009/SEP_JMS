@@ -113,5 +113,15 @@ namespace SEP_JMS.Service.Services
             package.Save();
             return filePath;
         }
+
+        public async Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForAccount(Guid accountId)
+        {
+            return await priceRepository.GetPricesForAccount(accountId);
+        }
+
+        public async Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForCustomer(Guid customerId)
+        {
+            return await priceRepository.GetPricesForCustomer(customerId);
+        }
     }
 }

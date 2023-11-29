@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using SEP_JMS.Common.Utils;
 using SEP_JMS.Service.Services;
 using OfficeOpenXml;
+using SEP_JMS.Common;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -38,6 +39,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to get price groups.");
+                
                 var priceGroups = await priceService.GetPriceGroups(model);
                 return priceGroups;
             }
@@ -47,6 +49,31 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
+
+        [AllowAnonymous]
+        [HttpPost("view")]
+        public async Task<ActionResult> GetPricesAuth()
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get price groups.");
+                if (ApiContext.Current.Role == Model.Enums.System.RoleType.Account) {
+                    var rst = await priceService.GetPricesForAccount(ApiContext.Current.UserId);
+                    return Ok(rst);
+                } else
+                {
+                    var rst = await priceService.GetPricesForCustomer(ApiContext.Current.UserId);
+                    return Ok(rst);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when getting price groups. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
         [HttpGet("group/{id}")]
         public async Task<ActionResult<PriceListDisplayModel>> GetPrices([FromRoute] Guid id)
         {

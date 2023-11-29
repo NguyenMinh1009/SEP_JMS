@@ -48,6 +48,7 @@ import ReportPage from "./pages/ReportPage";
 import LandingPage from "./pages/Landing";
 import _401Page from "./pages/401Page";
 import _404Page from "./pages/404Page";
+import PriceListAccount from "./pages/PriceListAccount";
 
 const theme = createTheme(
   {
@@ -152,6 +153,11 @@ const PathRules: RouteRule[] = [
         element: <EditPriceGroup />
       }
     ]
+  },
+  {
+    path: PathString.VIEW_PRICES,
+    roles: [Role.ACCOUNT, Role.CUSTOMER],
+    element: <PriceListAccount />,
   },
   {
     path: `${PathString.REPORT}/*`,

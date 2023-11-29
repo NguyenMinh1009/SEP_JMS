@@ -129,6 +129,12 @@ const BreadCrumb = () => {
       value: "Thống kê",
       prefix: "report",
       clickable: false
+    },
+    {
+      key: PathString.VIEW_PRICES,
+      value: "Xem giá thiết kế",
+      prefix: "report",
+      clickable: true
     }
   ];
 

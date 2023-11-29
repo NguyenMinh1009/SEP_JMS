@@ -7,7 +7,7 @@ namespace SEP_JMS.Service.IServices
     {
         public Task<List<JobTypeResponse>> GetJobTypes();
         public Task<bool> CreateJobType(string name);
-        public Task<bool> IsExistName(string name);
+        public Task<bool> IsExistName(Guid? id, string name);
         public Task<bool> UpdateJobType(Guid id, string name);
         public Task<bool> DeleteJobType(Guid id);
     }

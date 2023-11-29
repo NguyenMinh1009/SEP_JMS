@@ -116,7 +116,7 @@ const EditTypeOfJobs: React.FC<ICompanyPreview> = ({ searchValue }) => {
       getJobTypes();
     })
     .catch(err => {
-      snakeBar.setSnakeBar("Có lỗi xảy ra khi lưu!", "error", true);
+      snakeBar.setSnakeBar("Có lỗi xảy ra khi lưu! [" + err.response.data + "]", "error", true);
     }).finally(()=>{
       
     });

@@ -27,14 +27,20 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
 
   const title = useTitle();
 
-  const getPriceLists = async () => {
+  const getPriceLists = async (jobTypeData: any) => {
     setLoading(true);
     await APIClientInstance.get(`price/group/${priceGroupId}`)
       .then(res => {
         const { group, prices = [] } = res.data as ListResponse;
         title.setContent(group.name);
         const priceList = prices.map(item => ({ ...item, priceGroupName: group.name }));
-        setPriceList(priceList);
+        var results: any[] = jobTypeData.map(function (it: any) {
+          for (var i = 0; i < priceList.length; ++i) {
+            if (it.typeId == priceList[i].jobTypeId) return priceList[i];
+          }
+        });
+        setPriceList(results.filter(e=>e) as PriceItem[]);
+        
       })
       .finally(() => {
         setLoading(false);
@@ -43,25 +49,21 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
 
   const getJobTypes = async () => {
     setLoading(true);
-    await APIClientInstance.get(`jobtype/all`)
-      .then(res => {
-        
-        setJobTypes(res.data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    const res = await APIClientInstance.get(`jobtype/all`)
+    setJobTypes(res.data);
+    setLoading(false);
+    return res.data;
   };
 
   const renderPriceListTableBody = () => {
     if (priceList.length === 0) return <></>;
-    const getJobIdFromSearchText = jobOptions.find(item =>
-      item.text.toLowerCase().includes(searchValue.trim().toLocaleLowerCase())
-    )?.key;
+    const getJobIdsFromSearchText = jobTypes.filter(item =>
+      item.typeName.toLowerCase().includes(searchValue.trim().toLocaleLowerCase())
+    ).map(e => e.typeId);
     return (
       searchValue.trim() === ""
         ? priceList
-        : priceList.filter(item => item.jobTypeId === getJobIdFromSearchText)
+        : priceList.filter(item => getJobIdsFromSearchText.includes(item.jobTypeId) || item.description.toLowerCase().includes(searchValue.trim().toLocaleLowerCase()))
     ).map((row: any, index: number) => {
       return (
         <PriceListPreviewRow
@@ -77,8 +79,11 @@ const PriceListPreview: React.FC<IPriceListPreview> = ({ searchValue }) => {
   };
 
   useEffect(() => {
-    getJobTypes();
-    getPriceLists();
+    async function loadData() {
+      const jobTypesData = await getJobTypes();
+      await getPriceLists(jobTypesData);
+    }
+    loadData();
   }, []);
 
   return !isLoading ? (

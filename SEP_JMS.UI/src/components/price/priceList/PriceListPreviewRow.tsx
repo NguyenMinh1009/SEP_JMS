@@ -32,7 +32,7 @@ const PriceListPreviewRow: React.FC<IRowProps> = ({
   handleChangeDescription
 }) => {
   const labelId = `enhanced-table-checkbox-${index}`;
-  if (!row) return <></>;
+  if (!row || !jobTypes.find(item => item.typeId === row.jobTypeId)) return <></>;
   return (
     <TableRow hover role="checkbox" tabIndex={-1} key={row.jobTypeId}>
       <TableCell

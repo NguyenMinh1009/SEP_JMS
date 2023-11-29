@@ -42,8 +42,11 @@ const EditPriceGroup: React.FC<ICompanyPreview> = ({ searchValue }) => {
   const snakeBar = useSnakeBar();
 
   useEffect(() => {
-    getPriceInfo();
-    getJobTypes();
+    async function loadData() {
+      const jobTypesData = await getJobTypes();
+      await getPriceInfo(jobTypesData);
+    }
+    loadData();
   }, []);
 
   const handleGoBack = () => {
@@ -52,17 +55,13 @@ const EditPriceGroup: React.FC<ICompanyPreview> = ({ searchValue }) => {
 
   const getJobTypes = async () => {
     setLoading(true);
-    await APIClientInstance.get(`jobtype/all`)
-      .then(res => {
-        
-        setJobTypes(res.data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    const res = await APIClientInstance.get(`jobtype/all`)
+    setJobTypes(res.data);
+    setLoading(false);
+    return res.data;
   };
 
-  const getPriceInfo = async () => {
+  const getPriceInfo = async (jobTypesData: any) => {
     setLoading(true);
     await APIClientInstance.get(`price/group/${priceGroupId}`)
       .then(res => {
@@ -71,7 +70,12 @@ const EditPriceGroup: React.FC<ICompanyPreview> = ({ searchValue }) => {
         setPriceGroupName(group.name);
         setPriceGroupDescription(group.description);
         const priceList = prices.map(item => ({ ...item, priceGroupName: group.name }));
-        setPriceList(priceList);
+        var results: any[] = jobTypesData.map(function (it: any) {
+          for (var i = 0; i < priceList.length; ++i) {
+            if (it.typeId == priceList[i].jobTypeId) return priceList[i];
+          }
+        });
+        setPriceList(results.filter(e=>e) as PriceItem[]);
       })
       .finally(() => {
         setLoading(false);
@@ -112,7 +116,7 @@ const EditPriceGroup: React.FC<ICompanyPreview> = ({ searchValue }) => {
       })
       .catch(err => {
         console.error(err);
-        snakeBar.setSnakeBar("Chỉnh sửa không thành công!", "error", true);
+        snakeBar.setSnakeBar("Chỉnh sửa không thành công! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setLoading(false);

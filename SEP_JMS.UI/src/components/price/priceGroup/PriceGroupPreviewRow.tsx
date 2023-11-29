@@ -9,7 +9,7 @@ import { PathString } from "../../../enums/MapRouteToBreadCrumb";
 import useTitle from "../../../hooks/store/useCurrentTitle";
 import { cn } from "../../../utils/className";
 import CustomDialog from "../../common/CustomDialog";
-import AlwayxInstance from "../../../api/AxiosInstance";
+import APIClientInstance from "../../../api/AxiosInstance";
 import useSnakeBar from "../../../hooks/store/useSnakeBar";
 
 interface IRowProps {
@@ -41,7 +41,7 @@ const PriceGroupPreviewRow: React.FC<IRowProps> = ({
   };
 
   const handleDeletePriceGroup = () => {
-    AlwayxInstance.delete(`price/group/${row.priceGroupId}`)
+    APIClientInstance.delete(`price/group/${row.priceGroupId}`)
       .then(() => {
         removePriceGroupPreview(row.priceGroupId ?? 0);
         snakeBar.setSnakeBar("Xoá nhóm giá thành công!", "success", true);
@@ -111,6 +111,16 @@ const PriceGroupPreviewRow: React.FC<IRowProps> = ({
                   className="group relative cursor-pointer border-r-[1px] border-[#999] px-1 pr-2 hover:scale-105"
                 >
                   <HiOutlineEye color="#666" size={18} />
+                  <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
+                </span>
+                <span
+                  onClick={() => {
+                    
+                    navigate(`/${PathString.PRICES}/${row.priceGroupId}/${PathString.CHINH_SUA}`);
+                  }}
+                  className="group relative cursor-pointer border-r-[1px] border-[#999] px-1 pr-2 hover:scale-105"
+                >
+                  <IoCreateOutline color="#666" size={18} />
                   <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
                 </span>
                 <span

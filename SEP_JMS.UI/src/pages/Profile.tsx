@@ -267,8 +267,10 @@ const Profile = () => {
       formData.append("file", e.target.files[0]);
       APIClientInstance.post("user/avatar", formData).then(e => {
         getCurrentInfo();
-        
+        snakeBar.setSnakeBar("Cập nhật ảnh đại diện thành công", "success", true);
         avtRef.setContent(Date.now());
+      }).catch(e=>{
+        snakeBar.setSnakeBar("Kiểm tra lại tệp ảnh", "error", true);
       });
     };
   };

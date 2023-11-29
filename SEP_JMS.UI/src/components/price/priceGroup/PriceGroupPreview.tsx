@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AlwayxInstance from "../../../api/AxiosInstance";
+import APIClientInstance from "../../../api/AxiosInstance";
 import { useIsFirstRender } from "../../../hooks/useIsFirstRender";
 import {
   Box,
@@ -33,8 +33,10 @@ const PriceGroupPreview: React.FC<ICompanyPreview> = ({ searchValue }) => {
 
   const getPriceGroups = async () => {
     setLoading(true);
-    await AlwayxInstance.post("price/all", {
-      name: searchValue
+    await APIClientInstance.post("price/all", {
+      name: searchValue,
+      pageIndex: page,
+      pageSize: pageSize
     }).then(res => {
       setLoading(false);
       setPriceGroups(res.data.items);

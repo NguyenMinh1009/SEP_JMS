@@ -65,7 +65,10 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOn
                         <TaskPropertiesLabel type="statusTask" info={task.jobStatus} />
                       )}
                       {/*label assigned person  */}
-                      <TaskPropertiesLabel type="assignedPerson" info={task.designer.fullname} />
+                      <TaskPropertiesLabel
+                        type="assignedPerson"
+                        info={task?.designer?.fullname ?? "Còn trống"}
+                      />
                     </div>
                   </div>
                   {/*actions */}

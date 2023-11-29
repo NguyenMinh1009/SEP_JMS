@@ -432,12 +432,12 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
   const editStatusForDesignerPromise = () => {
     if (currentPerson.roleType === Role.DESIGNER)
       return AlwayxInstance.put(`job/designer/${taskId}`, {
-        jobStatus: selectedStatus
+        jobStatus: isInternal ? selectedInternalStatus : selectedStatus
       });
     return Promise.resolve(null);
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     const totalSizeInBytes = files.reduce((total, file) => total + file.size, 0);
     if (totalSizeInBytes / (1024 * 1024) > 100) {
       snakeBar.setSnakeBar("Tổng file vượt quá 100MB!", "warning", true);
@@ -456,7 +456,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
     if (errors.length !== 0) return;
 
     if (subTaskId === undefined && isCorrelationJobType === CorrelationJobType.Project) {
-      var checkStatusProjectEdit = checkStatusCompletedProjectEdit(
+      var checkStatusProjectEdit = await checkStatusCompletedProjectEdit(
         taskId,
         selectedStatus || selectedInternalStatus
       );
@@ -480,7 +480,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             if (isCorrelationJobType === CorrelationJobType.Job) {
               // edit noi bo viec-hang-ngay
               if (subTaskId === undefined) {
-                if (selectedStatus === JobStatusType.Completed) {
+                if (selectedInternalStatus === InternalJobStatusType.Completed) {
                   navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
                 } else {
                   navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
@@ -493,9 +493,11 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             }
             // edit noi bo project
             else {
-              if (selectedStatus === JobStatusType.Completed)
+              if (selectedInternalStatus === InternalJobStatusType.Completed) {
                 navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
-              navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
+              } else {
+                navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
+              }
             }
           } else {
             if (isCorrelationJobType === CorrelationJobType.Job) {
@@ -509,21 +511,17 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               }
               // Edit sub task
               else {
-                if (finishedOnly) {
-                  navigate(
-                    `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
-                  );
-                } else {
-                  navigate(
-                    `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
-                  );
-                }
+                navigate(
+                  `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
+                );
               }
               // Edit project
             } else {
-              if (selectedStatus === JobStatusType.Completed)
+              if (selectedStatus === JobStatusType.Completed) {
                 navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
-              navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
+              } else {
+                navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
+              }
             }
           }
         }
@@ -662,9 +660,11 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
           </label>
           <Select
             disabled={
-              currentPerson.roleType === Role.DESIGNER ||
+              // currentPerson.roleType === Role.DESIGNER ||
               (currentPerson.roleType !== Role.ADMIN &&
-                selectedInternalStatus === InternalJobStatusType.Completed)
+                selectedInternalStatus === InternalJobStatusType.Completed) ||
+              (selectedInternalStatus === InternalJobStatusType.Pending &&
+                currentPerson.roleType === Role.DESIGNER)
             }
             fullWidth
             size="small"
@@ -676,9 +676,11 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               <MenuItem
                 key={key}
                 disabled={
-                  key === InternalJobStatusType.Completed &&
-                  (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
-                    currentPerson.roleType === Role.CUSTOMER)
+                  (key === InternalJobStatusType.Completed &&
+                    (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
+                      currentPerson.roleType === Role.DESIGNER)) ||
+                  (key === InternalJobStatusType.Pending &&
+                    currentPerson.roleType === Role.DESIGNER)
                 }
                 value={key}
                 title={
@@ -708,8 +710,10 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
           </label>
           <Select
             disabled={
-              currentPerson.roleType === Role.DESIGNER ||
-              (currentPerson.roleType !== Role.ADMIN && selectedStatus === JobStatusType.Completed)
+              // currentPerson.roleType === Role.DESIGNER ||
+              (currentPerson.roleType !== Role.ADMIN &&
+                selectedStatus === JobStatusType.Completed) ||
+              (selectedStatus === JobStatusType.Pending && currentPerson.roleType === Role.DESIGNER)
             }
             fullWidth
             size="small"
@@ -721,9 +725,11 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               <MenuItem
                 key={key}
                 disabled={
-                  key === JobStatusType.Completed &&
-                  (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
-                    currentPerson.roleType === Role.CUSTOMER)
+                  (key === JobStatusType.Completed &&
+                    (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
+                      currentPerson.roleType === Role.CUSTOMER ||
+                      currentPerson.roleType === Role.DESIGNER)) ||
+                  (key === JobStatusType.Pending && currentPerson.roleType === Role.DESIGNER)
                 }
                 value={key}
                 title={
@@ -749,13 +755,14 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
         getDesignerList();
         getOrderList();
         getAccountList();
-        getJobTypeList();
       }
+      getJobTypeList();
+
       getTaskDetails();
     }
-    if (currentPerson.roleType === Role.CUSTOMER) {
-      setSelectedAccount(currentPerson.account);
-    }
+    // if (currentPerson.roleType === Role.CUSTOMER) {
+    //   setSelectedAccount(currentPerson.account);
+    // }
   }, [currentPerson.roleType]);
 
   return isLoading ? (
@@ -1049,7 +1056,12 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
                 <RequireText />
               </label>
               <Autocomplete
-                disabled={currentPerson.roleType === Role.CUSTOMER || subTaskId !== undefined}
+                disabled={
+                  currentPerson.roleType === Role.CUSTOMER ||
+                  subTaskId !== undefined ||
+                  currentPerson.roleType === Role.ACCOUNT ||
+                  currentPerson.roleType === Role.DESIGNER
+                }
                 noOptionsText="Không có lựa chọn"
                 id="accounts"
                 value={selectedAccount}
@@ -1159,6 +1171,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               </label>
               <DateTimePicker
                 localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+                disabled={currentPerson.roleType === Role.DESIGNER}
                 className="h-[40px] w-full"
                 sx={{
                   "& .MuiInputBase-root": {

@@ -185,7 +185,10 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
                   ((selectedStatus === InternalJobStatusType.Completed ||
                     initStatus === JobStatusType.Completed) &&
                     currentPerson.roleType !== Role.ADMIN) ||
-                  currentPerson.roleType === Role.DESIGNER
+                  ((selectedStatus === InternalJobStatusType.Pending ||
+                    initStatus === JobStatusType.Pending) &&
+                    currentPerson.roleType === Role.DESIGNER)
+                  // currentPerson.roleType === Role.DESIGNER
                 }
                 fullWidth
                 size="small"
@@ -203,11 +206,13 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
                   <MenuItem
                     key={key}
                     disabled={
-                      key === InternalJobStatusType.Completed &&
-                      ((taskDetail?.previewProducts !== null
-                        ? taskDetail?.previewProducts.files.length <= 0
-                        : true) ||
-                        currentPerson.roleType === Role.CUSTOMER)
+                      (key === InternalJobStatusType.Completed &&
+                        ((taskDetail?.previewProducts !== null
+                          ? taskDetail?.previewProducts.files.length <= 0
+                          : true) ||
+                          currentPerson.roleType === Role.DESIGNER)) ||
+                      (key === InternalJobStatusType.Pending &&
+                        currentPerson.roleType === Role.DESIGNER)
                     }
                     value={key}
                   >

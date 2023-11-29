@@ -42,23 +42,19 @@ const checkInputCreateJob = (quantity: number, deadline: any) => {
 };
 
 const checkStatusCompletedProjectEdit = async (taskId: any, jobStatusEdit: number) => {
-  let successJob = 0;
-  let totalJob = 0;
-  let result = false;
-  if (jobStatusEdit === JobStatusType.Completed) {
-    await AlwayxInstance.get(`job/${taskId}/projectdetailstatistics`)
-      .then(res => {
-        successJob = res.data.successJob;
-        totalJob = res.data.totalJob;
-        result = successJob === totalJob ? true : false;
-      })
-      .catch(err => {
-        console.error(err);
-      });
-    return result;
-  } else {
-    result = true;
-    return result;
+  try {
+    if (jobStatusEdit === JobStatusType.Completed) {
+      const res = await AlwayxInstance.get(`job/${taskId}/projectdetailstatistics`);
+      const successJob = res.data.successJob;
+      const totalJob = res.data.totalJob;
+      const result = successJob === totalJob;
+      return result;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 };
 

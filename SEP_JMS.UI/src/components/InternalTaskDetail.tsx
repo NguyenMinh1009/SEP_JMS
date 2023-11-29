@@ -25,6 +25,7 @@ import { FileResponse } from "../interface/fileResponse";
 import CustomDialog from "./common/CustomDialog";
 import { RiAddCircleLine } from "react-icons/ri";
 import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
+import { JobStatusType } from "../enums/jobStatusType";
 
 interface ITaskDetail {
   isCorrelationJobType: number;
@@ -33,6 +34,7 @@ interface ITaskDetail {
 const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) => {
   const [jobDetail, setJobDetail] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [isLoadingGetJobDetail, setLoadingGetJobDetail] = useState<boolean>(true);
   const [isOpenDialog, setOpenDialog] = useState<boolean>(false);
   const [isImagesLoading, setImagesLoading] = useState<boolean>(false);
   const [isCommentLoading, setCommentLoading] = useState<boolean>(false);
@@ -166,23 +168,41 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
       });
   };
 
-  {
-    useEffect(() => {
-      getTaskDetails(
-        setLoading,
-        setImagesLoading,
-        setJobDetail,
-        breadCrumbTitle,
-        setDocFiles,
-        setImgFiles,
-        setOpenDialog,
-        `internal/job/${taskId}`,
-        `file/job/${taskId}`
-      )
-        .then()
-        .catch(err => err);
-    }, [taskId]);
-  }
+  const renderButtonCreateNewSubTask = () => {
+    if (jobDetail?.internalJobStatus !== JobStatusType.Completed) {
+      return (
+        <button
+          onClick={handleCreateTask}
+          className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 "
+        >
+          <RiAddCircleLine size={16} color="#0655a7" />
+          <p>
+            <i className="text-[13px] font-[500]"> Thêm công việc</i>
+          </p>
+        </button>
+      );
+    }
+  };
+
+  // useEffect(() => {
+  //   renderButtonCreateNewSubTask();
+  // }, [isLoadingGetJobDetail]);
+
+  useEffect(() => {
+    getTaskDetails(
+      setLoading,
+      setImagesLoading,
+      setJobDetail,
+      breadCrumbTitle,
+      setDocFiles,
+      setImgFiles,
+      setOpenDialog,
+      `internal/job/${taskId}`,
+      `file/job/${taskId}`
+    )
+      .then(res => setLoadingGetJobDetail(false))
+      .catch(err => err);
+  }, [taskId]);
 
   useEffect(() => {
     if (isObserverVisible && hasOlderComment) {
@@ -266,15 +286,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
                     <p className="text-primary //border-r-2 mr-3 w-fit pr-4 text-base leading-5">
                       Sub công việc
                     </p>
-                    <button
-                      onClick={handleCreateTask}
-                      className=" flex items-center rounded-full text-[#0655a7] hover:opacity-75 "
-                    >
-                      <RiAddCircleLine size={16} color="#0655a7" />
-                      <p>
-                        <i className="text-[13px] font-[500]"> Thêm công việc</i>
-                      </p>
-                    </button>
+                    {!isLoadingGetJobDetail ? renderButtonCreateNewSubTask() : ""}
                   </div>
                   <SubTasksSection parentId={taskId} visibleType={VisibleType.Internal} />
                 </div>

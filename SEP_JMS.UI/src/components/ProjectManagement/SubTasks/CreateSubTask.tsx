@@ -30,7 +30,8 @@ import { dateToTicks } from "../../../utils/Datetime";
 import FileSection from "../../FileSection";
 import ImageSection from "../../../components/common/ImageSection";
 import RequireText from "../../../components/common/RequireText";
-import { statusOptions } from "../../../components/common/StatusSection";
+import { statusFilterOptions, statusOptions } from "../../../components/common/StatusSection";
+import APIClientInstance from "../../../api/AxiosInstance";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -104,6 +105,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
   const [companies, setCompanies] = useState<any[]>([]);
   const [jobtypes, setJobtypes] = useState<any[]>([]);
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
+  const [currentInfo, setCurrentInfo] = useState<any>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -234,8 +236,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
   };
 
   const getAccountId = () => {
-    if (currentPerson.roleType !== Role.CUSTOMER) return selectedAccount?.userId ?? "";
-    return currentPerson?.account?.userId;
+    return selectedAccount?.userId ?? "";
   };
 
   const handlePost = () => {
@@ -329,22 +330,25 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (currentPerson.roleType !== Role.CUSTOMER) {
-      getDesignerList();
-      getOrderList();
-      getAccountList();
-      getJobTypeList();
-
-      getTaskDetailParent();
-    }
-  }, [currentPerson.roleType]);
+  const getCurrentInfo = async () => {
+    await APIClientInstance.get("user/profile").then(res => {
+      setCurrentInfo(res.data);
+    });
+  };
 
   useEffect(() => {
-    if (currentPerson.roleType === Role.CUSTOMER) {
-      setSelectedAccount(currentPerson.account);
-    }
+    getDesignerList();
+    getOrderList();
+    getAccountList();
+    getJobTypeList();
+
+    getTaskDetailParent();
+    getCurrentInfo();
   }, [currentPerson.roleType]);
+
+  // useEffect(() => {
+  //   setSelectedAccount(currentPerson.account);
+  // }, [currentPerson.roleType]);
 
   return (
     <div className="create-task relative -mx-2 -mt-2 grid h-max grid-cols-12 gap-6 px-2">
@@ -454,104 +458,68 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Khách hàng
-                <RequireText />
               </label>
-              {currentPerson.roleType === Role.CUSTOMER ||
-              currentPerson.roleType === Role.ACCOUNT ? (
-                <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-                  <span className="col-span-3 p-2 pl-0 opacity-50">
-                    {(currentPerson.roleType === Role.CUSTOMER
-                      ? currentPerson?.company?.companyName
-                      : selectedCustomer?.company?.companyName) ?? "..."}
-                  </span>
-                </div>
-              ) : (
-                <Autocomplete
-                  noOptionsText="Không có lựa chọn"
-                  id="companies"
-                  value={selectedCompany}
-                  onChange={(_, newValue) => {
-                    if (newValue) setSelectedCompany(newValue);
-                  }}
-                  getOptionLabel={option => option.companyName}
-                  size="small"
-                  options={companies}
-                  fullWidth
-                  disabled
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      sx={{
-                        "& .MuiInputBase-sizeSmall": {
-                          height: "40px !important"
-                        },
-                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                      }}
-                      placeholder="-- Chọn khách hàng --"
-                    />
-                  )}
-                />
-              )}
+              <Autocomplete
+                noOptionsText="Không có lựa chọn"
+                id="companies"
+                value={currentInfo?.company?.companyName || "..."}
+                onChange={(_, newValue) => {
+                  setSelectedCompany(newValue);
+                }}
+                // getOptionLabel={
+                //   currentPerson.roleType === Role.CUSTOMER
+                //     ? undefined
+                //     : option => option.companyName
+                // }
+                size="small"
+                options={companies}
+                fullWidth
+                disabled
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                  />
+                )}
+              />
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Người order
                 <RequireText />
               </label>
-              {currentPerson.roleType === Role.CUSTOMER ? (
-                <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-                  <span className="col-span-3 p-2 pl-0 opacity-50">
-                    {currentPerson?.fullname ?? "..."}
-                  </span>
-                </div>
-              ) : (
-                <Autocomplete
-                  noOptionsText="Không có lựa chọn"
-                  id="customers"
-                  value={selectedCustomer}
-                  onChange={(_, newValue) => {
-                    setSelectedCustomer(newValue);
-                  }}
-                  getOptionLabel={option => `${option.fullname} (${option.username})`}
-                  size="small"
-                  options={customers}
-                  fullWidth
-                  disabled
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      sx={{
-                        "& .MuiInputBase-sizeSmall": {
-                          height: "40px !important"
-                        },
-                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                      }}
-                      placeholder="-- Chọn người order --"
-                    />
-                  )}
-                />
-              )}
-            </div>
-            {/* <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Account
-            </label>
-            <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-              {currentPerson.roleType === Role.ADMIN && (
-                <span className="col-span-3 p-2 pl-0">
-                  {
-                    customers.find(item => item.userId === selectedCustomer?.userId)?.account
-                      ?.fullname
-                  }
-                </span>
-              )}
 
-              {currentPerson.roleType === Role.ACCOUNT && (
-                <span className="col-span-3 p-2 pl-0">{currentPerson?.fullname}</span>
-              )}
+              <Autocomplete
+                noOptionsText="Không có lựa chọn"
+                id="customers"
+                value={selectedCustomer}
+                onChange={(_, newValue) => {
+                  setSelectedCustomer(newValue);
+                }}
+                getOptionLabel={option => `${option.fullname} (${option.username})`}
+                size="small"
+                options={customers}
+                fullWidth
+                disabled
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                    placeholder="-- Chọn người order --"
+                  />
+                )}
+              />
             </div>
-          </div> */}
-
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Account
@@ -713,46 +681,24 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
                 Trạng thái
                 <RequireText />
               </label>
-              {finishedOnly ? (
-                <Select
-                  disabled={true}
-                  fullWidth
-                  size="small"
-                  id="demo-simple-select"
-                  value={JobStatusType.Completed}
-                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-                  sx={{
-                    "& .MuiInputBase-inputSizeSmall": {
-                      fontSize: "13px !important"
-                    }
-                  }}
-                >
-                  {statusOptions.map(({ key, text }) => (
-                    <MenuItem key={key} value={key}>
-                      {text}
-                    </MenuItem>
-                  ))}
-                </Select>
-              ) : (
-                <Select
-                  fullWidth
-                  size="small"
-                  id="demo-simple-select"
-                  value={selectedStatus}
-                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-                  sx={{
-                    "& .MuiInputBase-inputSizeSmall": {
-                      fontSize: "13px !important"
-                    }
-                  }}
-                >
-                  {statusOptions.map(({ key, text }) => (
-                    <MenuItem key={key} value={key}>
-                      {text}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+              <Select
+                fullWidth
+                size="small"
+                id="demo-simple-select"
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                sx={{
+                  "& .MuiInputBase-inputSizeSmall": {
+                    fontSize: "13px !important"
+                  }
+                }}
+              >
+                {statusFilterOptions.map(({ key, text }) => (
+                  <MenuItem key={key} value={key}>
+                    {text}
+                  </MenuItem>
+                ))}
+              </Select>
             </div>
             {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">

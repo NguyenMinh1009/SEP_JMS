@@ -462,15 +462,11 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
               <Autocomplete
                 noOptionsText="Không có lựa chọn"
                 id="companies"
-                value={currentInfo?.company?.companyName || "..."}
+                value={selectedCompany}
                 onChange={(_, newValue) => {
                   setSelectedCompany(newValue);
                 }}
-                // getOptionLabel={
-                //   currentPerson.roleType === Role.CUSTOMER
-                //     ? undefined
-                //     : option => option.companyName
-                // }
+                getOptionLabel={option => option.companyName}
                 size="small"
                 options={companies}
                 fullWidth

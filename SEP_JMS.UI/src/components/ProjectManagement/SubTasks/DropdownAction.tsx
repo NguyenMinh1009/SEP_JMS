@@ -10,6 +10,7 @@ import useSnakeBar from "../../../hooks/store/useSnakeBar";
 import { IComments } from "../../../interface/comment";
 import useCurrentPerson from "../../../hooks/store/useCurrentPerson";
 import { Role } from "../../../enums/role";
+import { render } from "react-dom";
 
 interface IDropdownAction {
   visibleType: VisibleType;
@@ -89,6 +90,41 @@ const DropdownAction: React.FC<IDropdownAction> = ({
     }
   };
 
+  const renderUpdateButton = () => {
+    if (finishedOnly && currentPerson.roleType === Role.ADMIN) {
+      return (
+        <button
+          className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+          onClick={handleUpdateClick}
+        >
+          Update
+        </button>
+      );
+    } else {
+      return (
+        <button
+          className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+          onClick={handleUpdateClick}
+        >
+          Update
+        </button>
+      );
+    }
+  };
+
+  const renderDeleteButton = () => {
+    if (currentPerson.roleType === Role.ADMIN) {
+      return (
+        <button
+          className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+          onClick={handleClickDeleteTask}
+        >
+          Delete
+        </button>
+      );
+    }
+  };
+
   return (
     <>
       <CustomDialog
@@ -124,23 +160,8 @@ const DropdownAction: React.FC<IDropdownAction> = ({
               >
                 View
               </button>
-              {currentPerson.roleType !== Role.CUSTOMER && (
-                <button
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={handleUpdateClick}
-                >
-                  Update
-                </button>
-              )}
-
-              {currentPerson.roleType !== Role.CUSTOMER && (
-                <button
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={handleClickDeleteTask}
-                >
-                  Delete
-                </button>
-              )}
+              {renderUpdateButton()}
+              {renderDeleteButton()}
             </div>
           </div>
         )}

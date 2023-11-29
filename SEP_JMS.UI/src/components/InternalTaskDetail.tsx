@@ -169,6 +169,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
   };
 
   const renderButtonCreateNewSubTask = () => {
+    if (currentPerson.roleType === Role.DESIGNER) return;
     if (jobDetail?.internalJobStatus !== JobStatusType.Completed) {
       return (
         <button

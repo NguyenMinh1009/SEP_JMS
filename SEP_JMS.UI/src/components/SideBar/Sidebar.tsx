@@ -258,7 +258,7 @@ const SideBar = () => {
         //   }
         // }
       ]
-      : (currentPerson.roleType === Role.ACCOUNT || currentPerson.roleType === Role.CUSTOMER) && (!currentPerson.hiddenPrice)
+      : (currentPerson.roleType === Role.ACCOUNT || (currentPerson.roleType === Role.CUSTOMER && !currentPerson.hiddenPrice))
         ? [
           {
             parent: {

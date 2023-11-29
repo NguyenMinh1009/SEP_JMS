@@ -1,4 +1,5 @@
-﻿using SEP_JMS.Model.Models;
+﻿using SEP_JMS.Model.CustomAttributes;
+using SEP_JMS.Model.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace SEP_JMS.Model.Api.Request
@@ -18,6 +19,7 @@ namespace SEP_JMS.Model.Api.Request
     {
         public Guid JobTypeId { get; set; }
 
+        [MinValue(0)]
         public int UnitPrice { get; set; }
 
         public string? Description { get; set; } = null;

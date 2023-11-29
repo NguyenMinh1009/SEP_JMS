@@ -201,7 +201,7 @@ namespace SEP_JMS.Service.Services
 
             var index = 2;
             decimal mdw = worksheet.Workbook.MaxFontWidth;
-            var sum = 0;
+            var sum = 0L;
             foreach (var group in jobGroups)
             {
                 var prices = await priceRepository.GetAll((price) => price.PriceGroupId == group.First().Item2.PriceGroupId);
@@ -219,7 +219,7 @@ namespace SEP_JMS.Service.Services
                     var unitPrice = price == null ? 0 : price.UnitPrice;
                     worksheet.Cells[$"G{index}"].Value = unitPrice.ToString("N0");
 
-                    var totalPrice = unitPrice * jobInfo.Item1.Quantity;
+                    var totalPrice = (long)unitPrice * jobInfo.Item1.Quantity;
                     sum += totalPrice;
                     worksheet.Cells[$"H{index}"].Value = totalPrice.ToString("N0");
 

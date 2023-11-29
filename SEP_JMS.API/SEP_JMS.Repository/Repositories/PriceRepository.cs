@@ -3,6 +3,7 @@ using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Models;
 using SEP_JMS.Repository.IRepositories;
+using System.Reflection.Metadata.Ecma335;
 
 namespace SEP_JMS.Repository.Repositories
 {
@@ -148,6 +149,32 @@ namespace SEP_JMS.Repository.Repositories
         private async Task<bool> IsDuplicateName(Guid? id, string name)
         {
             return await dbcontext.PriceGroups.AnyAsync(e => e.Name.ToLower().Equals(name.Trim().ToLower()) && (id == null || e.PriceGroupId != id));
+        }
+
+        public async Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForAccount(Guid accountId)
+        {
+            var query = dbcontext.Companies.AsQueryable();
+            var rst = from comp in query
+                      join price in dbcontext.Prices
+                      on comp.PriceGroupId equals price.PriceGroupId
+                      where comp.AccountId == accountId
+                      group new { comp, price } by comp.CompanyId into gr
+                      select Tuple.Create(gr.Key, gr.First().comp, gr.Select(s=>s.price).ToList());
+            return await rst.ToListAsync();
+        }
+
+        public async Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForCustomer(Guid customerId)
+        {
+            var compId = (await dbcontext.Users.Where(e => e.UserId == customerId).FirstOrDefaultAsync())?.CompanyId;
+            if (compId == null) return new List<Tuple<Guid, Company, List<Price>>>();
+            var query = dbcontext.Companies.AsQueryable();
+            var rst = from comp in query
+                      join price in dbcontext.Prices
+                      on comp.PriceGroupId equals price.PriceGroupId
+                      where comp.CompanyId == compId
+                      group new { comp, price } by comp.CompanyId into gr
+                      select Tuple.Create(gr.Key, gr.First().comp, gr.Select(s => s.price).ToList());
+            return await rst.ToListAsync();
         }
     }
 }

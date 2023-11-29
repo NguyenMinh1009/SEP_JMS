@@ -14,5 +14,7 @@ namespace SEP_JMS.Repository.IRepositories
         public Task<bool> UsedInCompany(Guid groupId);
 
         public Task DeletePriceGroup(Guid groupId);
+        public Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForAccount(Guid accountId);
+        public Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForCustomer(Guid customerId);
     }
 }

@@ -23,7 +23,12 @@ import { CorrelationJobType } from "../../enums/correlationJobType";
 import { Role } from "../../enums/role";
 import { VisibleType } from "../../enums/visibleType";
 import { Autocomplete, MenuItem, Select, TextField } from "@mui/material";
-import { statusOptions } from "./StatusSection";
+import {
+  internalStatusFilterOptions,
+  internalStatusOptions,
+  statusFilterOptions,
+  statusOptions
+} from "./StatusSection";
 import { JobStatusType } from "../../enums/jobStatusType";
 import RequireText from "./RequireText";
 import { allowFileTypes, correlationJobOptions, defaultCompany } from "../../constants";
@@ -33,6 +38,8 @@ import { MdOutlineExpandCircleDown } from "react-icons/md";
 import { DateTimePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
 import { checkInputCreateJob } from "../../utils/checkInputJob";
+import APIClientInstance from "../../api/AxiosInstance";
+import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -94,7 +101,9 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
   const [quantity, setQuantity] = useState<number>(1);
   // const [price, setPrice] = useState<number | undefined>();
   const [selectedPriority, setSelectedPriority] = useState<Priority>(Priority.MEDIUM);
-  const [selectedStatus, setSelectedStatus] = useState<JobStatusType>(JobStatusType.NotDo);
+  const [selectedStatus, setSelectedStatus] = useState<JobStatusType | InternalJobStatusType>(
+    JobStatusType.NotDo | InternalJobStatusType.NotDo
+  );
   // const [selectedCorrelationJobType, setSelectedCorrelationJobType] =
   // useState<CorrelationJobType>(correlationJobType);
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -103,6 +112,8 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
   const [accounts, setAccounts] = useState<any[]>([]);
   const [companies, setCompanies] = useState<any[]>([]);
   const [jobtypes, setJobtypes] = useState<any[]>([]);
+  const [currentInfo, setCurrentInfo] = useState<any>(null);
+
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -155,17 +166,18 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
   };
 
   const getCustomerListForStaff = () => {
-    AlwayxInstance.post("user/search", {
+    setLoading(true);
+    AlwayxInstance.post("customer/related", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: null,
-      companyId:
-        currentPerson.roleType === Role.ADMIN
-          ? selectedCompany?.companyId ?? defaultCompany.companyId
-          : undefined,
+      companyId: selectedCompany?.companyId ?? defaultCompany.companyId,
       role: Role.CUSTOMER
     })
-      .then(res => setCustomers(res.data.items))
+      .then(res => {
+        setCustomers(res.data.items);
+        setLoading(false);
+      })
       .catch(err => {
         console.error(err);
       });
@@ -184,7 +196,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
   };
 
   const getAccountList = () => {
-    if (!currentPerson.roleType || currentPerson.roleType === Role.DESIGNER) return;
+    if (currentPerson.roleType === Role.ACCOUNT || currentPerson.roleType === Role.DESIGNER) return;
     AlwayxInstance.post("user/search", {
       pageIndex: 1,
       pageSize: 2147483647,
@@ -251,8 +263,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
   };
 
   const getAccountId = () => {
-    if (currentPerson.roleType !== Role.CUSTOMER) return selectedAccount?.userId ?? "";
-    return currentPerson?.account?.userId;
+    return selectedAccount?.userId ?? "";
   };
 
   const handlePost = () => {
@@ -279,7 +290,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
       designerId: selectedDesigner?.userId ?? "",
       quantity: correlationJobType === CorrelationJobType.Job ? quantity : 1,
       jobType: selectedJobType?.typeId,
-      jobStatus: finishedOnly ? JobStatusType.Completed : selectedStatus,
+      jobStatus: selectedStatus,
       deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
       priority: selectedPriority,
       correlationType: correlationJobType
@@ -356,26 +367,77 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
   };
 
   useEffect(() => {
-    if (currentPerson.roleType !== Role.CUSTOMER) {
-      getDesignerList();
-      getOrderList();
-      getAccountList();
-      getJobTypeList();
-    }
+    getDesignerList();
+    getOrderList();
+    getAccountList();
+    getJobTypeList();
+    getCurrentInfo();
   }, [currentPerson.roleType]);
 
   useEffect(() => {
+    if (currentPerson.roleType === Role.ACCOUNT) {
+      setSelectedAccount(currentPerson);
+    }
+
     if (currentPerson.roleType === Role.CUSTOMER) {
-      setSelectedAccount(currentPerson.account);
+      setSelectedCustomer(currentPerson);
     }
   }, [currentPerson.roleType]);
 
+  const getCurrentInfo = async () => {
+    await APIClientInstance.get("user/profile").then(res => {
+      setCurrentInfo(res.data);
+    });
+  };
+
   useEffect(() => {
-    if (currentPerson.roleType !== Role.CUSTOMER) {
-      setSelectedCustomer(null);
-      getCustomerListForStaff();
+    if (currentPerson.roleType !== Role.CUSTOMER && currentPerson.roleType) {
+      const fetchData = async () => {
+        setSelectedCustomer(null);
+        setCustomers([]);
+
+        await getCustomerListForStaff();
+        renderCustomerCreate();
+      };
+      fetchData();
     }
   }, [selectedCompany, currentPerson.roleType]);
+
+  const renderCustomerCreate = () => {
+    return (
+      <div className="flex flex-col items-start gap-3">
+        <label htmlFor="" className="text-primary col-span-2 mr-4">
+          Người order
+        </label>
+        <Autocomplete
+          loading={isLoading}
+          noOptionsText="Không có lựa chọn"
+          id="customers"
+          value={selectedCustomer}
+          onChange={(_, newValue) => {
+            setSelectedCustomer(newValue);
+          }}
+          getOptionLabel={option => `${option.fullname} (${option.username})`}
+          size="small"
+          options={customers}
+          fullWidth
+          disabled={selectedCompany === null || currentPerson.roleType === Role.CUSTOMER}
+          renderInput={params => (
+            <TextField
+              {...params}
+              sx={{
+                "& .MuiInputBase-sizeSmall": {
+                  height: "40px !important"
+                },
+                "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+              }}
+              placeholder={currentPerson.roleType === Role.CUSTOMER ? "" : "-- Chọn người order --"}
+            />
+          )}
+        />
+      </div>
+    );
+  };
   return (
     <div className="create-task relative -mx-2 -mt-2 grid h-max grid-cols-12 gap-6 px-2">
       <div
@@ -486,110 +548,53 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Khách hàng
-                <RequireText />
               </label>
-              {currentPerson.roleType === Role.CUSTOMER ? (
-                <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-                  <span className="col-span-3 p-2 pl-0 opacity-50">
-                    {(currentPerson.roleType === Role.CUSTOMER
-                      ? currentPerson?.company?.companyName
-                      : selectedCustomer?.company?.companyName) ?? "..."}
-                  </span>
-                </div>
-              ) : (
-                <Autocomplete
-                  noOptionsText="Không có lựa chọn"
-                  id="companies"
-                  value={selectedCompany}
-                  onChange={(_, newValue) => {
-                    if (newValue) setSelectedCompany(newValue);
-                  }}
-                  getOptionLabel={option => option.companyName}
-                  size="small"
-                  options={companies}
-                  fullWidth
-                  //disabled
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      sx={{
-                        "& .MuiInputBase-sizeSmall": {
-                          height: "40px !important"
-                        },
-                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                      }}
-                      placeholder="-- Chọn khách hàng --"
-                    />
-                  )}
-                />
-              )}
+              <Autocomplete
+                noOptionsText="Không có lựa chọn"
+                id="companies"
+                value={
+                  currentPerson.roleType === Role.CUSTOMER
+                    ? currentInfo?.company?.companyName || "..."
+                    : selectedCompany
+                }
+                onChange={(_, newValue) => {
+                  setSelectedCompany(newValue);
+                }}
+                getOptionLabel={
+                  currentPerson.roleType === Role.CUSTOMER
+                    ? undefined
+                    : option => option.companyName
+                }
+                size="small"
+                options={companies}
+                fullWidth
+                disabled={currentPerson.roleType === Role.CUSTOMER}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    sx={{
+                      "& .MuiInputBase-sizeSmall": {
+                        height: "40px !important"
+                      },
+                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                    }}
+                    placeholder={
+                      currentPerson.roleType === Role.CUSTOMER ? "" : "-- Chọn khách hàng --"
+                    }
+                  />
+                )}
+              />
             </div>
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Người order
-                <RequireText />
-              </label>
-              {currentPerson.roleType === Role.CUSTOMER ? (
-                <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-                  <span className="col-span-3 p-2 pl-0 opacity-50">
-                    {currentPerson?.fullname ?? "..."}
-                  </span>
-                </div>
-              ) : (
-                <Autocomplete
-                  noOptionsText="Không có lựa chọn"
-                  id="customers"
-                  value={selectedCustomer}
-                  onChange={(_, newValue) => {
-                    setSelectedCustomer(newValue);
-                  }}
-                  getOptionLabel={option => `${option.fullname} (${option.username})`}
-                  size="small"
-                  options={customers}
-                  fullWidth
-                  // disabled
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      sx={{
-                        "& .MuiInputBase-sizeSmall": {
-                          height: "40px !important"
-                        },
-                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                      }}
-                      placeholder="-- Chọn người order --"
-                    />
-                  )}
-                />
-              )}
-            </div>
-            {/* <div className="flex flex-col items-start gap-3">
-            <label htmlFor="" className="text-primary col-span-2 mr-4">
-              Account
-            </label>
-            <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-              {currentPerson.roleType === Role.ADMIN && (
-                <span className="col-span-3 p-2 pl-0">
-                  {
-                    customers.find(item => item.userId === selectedCustomer?.userId)?.account
-                      ?.fullname
-                  }
-                </span>
-              )}
-
-              {currentPerson.roleType === Role.ACCOUNT && (
-                <span className="col-span-3 p-2 pl-0">{currentPerson?.fullname}</span>
-              )}
-            </div>
-          </div> */}
-
+            {renderCustomerCreate()}
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Account
-                <RequireText />
               </label>
               <Autocomplete
-                disabled={currentPerson.roleType === Role.CUSTOMER}
+                disabled={
+                  currentPerson.roleType === Role.ACCOUNT ||
+                  currentPerson.roleType === Role.DESIGNER
+                }
                 noOptionsText="Không có lựa chọn"
                 id="accounts"
                 value={selectedAccount}
@@ -610,7 +615,9 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                       },
                       "& .MuiAutocomplete-input": { fontSize: "13px !important" }
                     }}
-                    placeholder="-- Chọn Account --"
+                    placeholder={
+                      currentPerson.roleType === Role.ACCOUNT ? "" : "-- Chọn Account --"
+                    }
                   />
                 )}
               />
@@ -648,7 +655,6 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 />
               </div>
             )}
-
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại thiết kế
@@ -745,46 +751,24 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 Trạng thái
                 <RequireText />
               </label>
-              {finishedOnly ? (
-                <Select
-                  disabled={true}
-                  fullWidth
-                  size="small"
-                  id="demo-simple-select"
-                  value={JobStatusType.Completed}
-                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-                  sx={{
-                    "& .MuiInputBase-inputSizeSmall": {
-                      fontSize: "13px !important"
-                    }
-                  }}
-                >
-                  {statusOptions.map(({ key, text }) => (
-                    <MenuItem key={key} value={key}>
-                      {text}
-                    </MenuItem>
-                  ))}
-                </Select>
-              ) : (
-                <Select
-                  fullWidth
-                  size="small"
-                  id="demo-simple-select"
-                  value={selectedStatus}
-                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-                  sx={{
-                    "& .MuiInputBase-inputSizeSmall": {
-                      fontSize: "13px !important"
-                    }
-                  }}
-                >
-                  {statusOptions.map(({ key, text }) => (
-                    <MenuItem key={key} value={key}>
-                      {text}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+              <Select
+                fullWidth
+                size="small"
+                id="demo-simple-select"
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                sx={{
+                  "& .MuiInputBase-inputSizeSmall": {
+                    fontSize: "13px !important"
+                  }
+                }}
+              >
+                {statusFilterOptions.map(({ key, text }) => (
+                  <MenuItem key={key} value={key}>
+                    {text}
+                  </MenuItem>
+                ))}
+              </Select>
             </div>
             {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">

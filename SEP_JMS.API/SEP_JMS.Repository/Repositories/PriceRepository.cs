@@ -165,8 +165,10 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForCustomer(Guid customerId)
         {
-            var compId = (await dbcontext.Users.Where(e => e.UserId == customerId).FirstOrDefaultAsync())?.CompanyId;
-            if (compId == null) return new List<Tuple<Guid, Company, List<Price>>>();
+            var current = await dbcontext.Users.Where(e => e.UserId == customerId).FirstOrDefaultAsync();
+            if (current?.HiddenPrice ?? true) throw new Exception();
+            var compId = current?.CompanyId;
+            if (compId == null) throw new Exception();
             var query = dbcontext.Companies.AsQueryable();
             var rst = from comp in query
                       join price in dbcontext.Prices

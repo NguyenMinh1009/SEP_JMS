@@ -95,6 +95,7 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
+        
         [HttpPost("group")]
         public async Task<ActionResult<PriceGroup>> CreateGroup(AddGroupPriceRequestModel model)
         {
@@ -110,6 +111,7 @@ namespace SEP_JMS.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+       
         [HttpPut("group/{id}")]
         public async Task<ActionResult<PriceGroup>> UpdateGroup([FromRoute] Guid id, [FromBody] UpdatePriceGroupRequestModel model)
         {
@@ -125,6 +127,7 @@ namespace SEP_JMS.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
         [HttpDelete("group/{id}")]
         public async Task<IActionResult> DeletePriceGroup([FromRoute] Guid id)
         {

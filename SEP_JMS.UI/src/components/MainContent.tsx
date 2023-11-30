@@ -18,7 +18,7 @@ const MainContent: React.FC<any> = () => {
           <Avatar />
         </header>
         <Divider />
-        <div className="main-content-container h-[calc(100vh-75px)] overflow-hidden px-6 lg:px-12 pt-6">
+        <div className="main-content-container h-[calc(100vh-75px)] px-6 lg:px-12 pt-6">
           <Outlet />
         </div>
       </div>

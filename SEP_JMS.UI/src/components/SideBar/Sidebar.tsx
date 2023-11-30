@@ -353,7 +353,7 @@ const SideBar = () => {
   }, []);
 
   React.useEffect(() => {
-    // if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
+    if (screenWidth < 1500 && sidebar.isExpand) sidebar.setExpand(false);
   }, [screenWidth]);
 
   React.useEffect(() => {
@@ -380,12 +380,7 @@ const SideBar = () => {
           >
             {/* logo */}
             <img
-              onClick={() => {
-                if (currentPerson.roleType !== Role.CUSTOMER) navigate(`${PathString.NOI_BO}`);
-                else {
-                  navigate(`${PathString.CONG_KHAI}`);
-                }
-              }}
+              onClick={() => {}}
               src={Images.logo}
               className="w-28 cursor-pointer transition-all hover:opacity-70"
               alt=""
@@ -395,14 +390,7 @@ const SideBar = () => {
             className={``}
             // disabled={screenWidth < 1500}
             onClick={
-              screenWidth < 1500
-                ? () => {
-                  if (currentPerson.roleType !== Role.CUSTOMER) navigate(`${PathString.NOI_BO}`);
-                  else {
-                    navigate(`${PathString.CONG_KHAI}`);
-                  }
-                }
-                : handleOpenDrawer
+              handleOpenDrawer
             }
           >
             {sidebar.isExpand ? <ChevronLeftIcon /> : <MenuIcon />}

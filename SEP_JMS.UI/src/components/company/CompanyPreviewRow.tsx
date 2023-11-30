@@ -80,18 +80,18 @@ const CompanyPreviewRow: React.FC<IRowProps> = ({ row, index, pageSize, page }) 
                     }`
                   );
                 }}
-                className="group relative cursor-pointer border-r-[1px] border-[#999] px-1 pr-2 hover:scale-105"
+                className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
               >
                 <IoCreateOutline size={18} />
                 <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
               </span>
-              <span
+              {/* <span
                 // onClick={handleClickDeleteTask}
                 className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
               >
                 <BiTrashAlt size={18} color="#666" />
                 <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
-              </span>
+              </span> */}
             </>
           </div>
         </div>

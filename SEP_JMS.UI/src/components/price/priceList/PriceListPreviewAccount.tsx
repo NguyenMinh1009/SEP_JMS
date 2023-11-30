@@ -21,7 +21,7 @@ const PriceListPreviewAccount: React.FC<IPriceListPreview> = ({ searchValue, pri
 
   const getPriceLists = async (jobTypeData: any) => {
     if (prices === null) return;
-    setLoading(true);
+
     const groupName = "Mặc định";
     const priceList = prices?.map((item: any) => ({ ...item, priceGroupName: groupName }));
     if (priceList) {
@@ -31,15 +31,15 @@ const PriceListPreviewAccount: React.FC<IPriceListPreview> = ({ searchValue, pri
         }
       });
       setPriceList(results.filter(e => e) as PriceItem[]);
-      setLoading(false);
+
     }
   };
 
   const getJobTypes = async () => {
-    setLoading(true);
+
     const res = await APIClientInstance.get(`jobtype/all`)
     setJobTypes(res.data);
-    setLoading(false);
+
     return res.data;
   };
 

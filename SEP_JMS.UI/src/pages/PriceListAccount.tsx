@@ -41,7 +41,7 @@ const PriceListAccount = () => {
   }, []);
 
   useEffect(() => {
-    setCompany(companies ? companies[0].companyId : "");
+    setCompany(companies && companies.length > 0 ? companies[0].companyId : "");
   }, [companies]);
 
   useEffect(()=>{

@@ -45,7 +45,7 @@ const PriceListPreviewRow: React.FC<IRowProps> = ({
       >
         {index + 1 + pageSize * (page - 1)}
       </TableCell>
-      {row.priceGroupName !== "" && (
+      
       <TableCell
         padding="none"
         className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
@@ -53,7 +53,7 @@ const PriceListPreviewRow: React.FC<IRowProps> = ({
       >
         {row.priceGroupName}
       </TableCell>
-      )}
+      
       
       <TableCell
         padding="none"

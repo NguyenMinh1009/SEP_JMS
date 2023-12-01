@@ -144,7 +144,7 @@ namespace SEP_JMS.API.Controllers
                 {
                     return StatusCode(200);
                 }
-                return BadRequest("Cant found user");
+                return BadRequest("Mật khẩu cũ không đúng");
             }
             catch (Exception ex)
             {

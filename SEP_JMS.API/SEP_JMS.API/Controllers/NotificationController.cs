@@ -51,12 +51,12 @@ namespace SEP_JMS.API.Controllers
         {
             try
             {
-                logger.Info($"{logPrefix} Start to get notifications for user {ApiContext.Current.UserId}.");
+                // logger.Info($"{logPrefix} Start to get notifications for user {ApiContext.Current.UserId}.");
                 return await notificationService.GetNotifications(requestModel);
             }
             catch (Exception ex)
             {
-                logger.Error($"{logPrefix} Got exception when getting notifications for user {ApiContext.Current.UserId}. Error: {ex}");
+                // logger.Error($"{logPrefix} Got exception when getting notifications for user {ApiContext.Current.UserId}. Error: {ex}");
                 return StatusCode(500);
             }
         }

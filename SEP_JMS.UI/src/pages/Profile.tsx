@@ -210,8 +210,13 @@ const Profile = () => {
       return false;
     }
 
+    if (!commonRegex.password.test(password)) {
+      snakeBar.setSnakeBar("Mật khẩu mới không đúng định dạng!", "warning", true);
+      return false;
+    }
+
     setIsLoading(true);
-    APIClientInstance.post("user/ChangePassword", {
+    APIClientInstance.post("user/change_password", {
       oldPassword: oldPassword.trim(),
       newPassword: password.trim(),
       userName: currentPerson.username
@@ -219,8 +224,8 @@ const Profile = () => {
       .then(() => {
         snakeBar.setSnakeBar("Đổi mật khẩu thành công!", "success", true);
       })
-      .catch(() => {
-        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+      .catch(err => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setIsLoading(false);
@@ -233,7 +238,7 @@ const Profile = () => {
     setIsProcessUpdate(true);
     let dataPayload = {...infoUpdate}
     dataPayload.dob = infoUpdate.dob ? dateToTicks(infoUpdate.dob.toDate()) : undefined
-    APIClientInstance.post("user/UpdateProfile", dataPayload)
+    APIClientInstance.post("user/update_profile", dataPayload)
       .then(() => {
         // bind for current person
         const currentData = JSON.parse(localStorage.getItem("user") ?? "");
@@ -248,8 +253,8 @@ const Profile = () => {
         setCurrentInfo(currentData1);
         snakeBar.setSnakeBar("Cập nhật thông tin thành công!", "success", true);
       })
-      .catch(() => {
-        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+      .catch(err => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setIsProcessUpdate(false);

@@ -334,7 +334,7 @@ const SideBar = () => {
       }).then(res => {
         setHasNewNotification(res.data.item1);
       });
-    }, 1000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 

@@ -131,8 +131,8 @@ const EditEmployee = () => {
         snakeBar.setSnakeBar(`Chỉnh sửa ${employeeText} thành công`, "success", true);
         handleCancelJob();
       })
-      .catch(() => {
-        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+      .catch(err => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setButtonLoading(false);

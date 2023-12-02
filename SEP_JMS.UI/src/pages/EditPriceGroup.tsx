@@ -105,6 +105,10 @@ const EditPriceGroup: React.FC<ICompanyPreview> = ({ searchValue }) => {
       snakeBar.setSnakeBar("Tên nhóm giá là bắt buộc!", "warning", true);
       return;
     }
+    if (priceList.find(e=>parseFloat(e.unitPrice?.toString() ?? "-1") < 0)) {
+      snakeBar.setSnakeBar("Giá bắt buộc phải lớn hơn bằng 0!", "warning", true);
+      return;
+    }
     setLoading(true);
     APIClientInstance.put(`price/group/${priceGroupId}`, {
       name: priceGroupName,

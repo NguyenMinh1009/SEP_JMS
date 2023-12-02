@@ -132,18 +132,19 @@ namespace SEP_JMS.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("ChangePassword")]
+        [HttpPost("change_password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest model)
         {
             try
             {
                 logger.Info($"{logPrefix} Start to change password for user {model.UserName}.");
+                if (!DataVerificationUtility.VerifyPasswordStrong(model.NewPassword)) return BadRequest("New password is invalid format");
                 var rs = await userService.ChangePassword(model);
                 if(rs>0)
                 {
                     return StatusCode(200);
                 }
-                return BadRequest("Cant found user");
+                return BadRequest("Mật khẩu cũ không đúng");
             }
             catch (Exception ex)
             {
@@ -153,7 +154,7 @@ namespace SEP_JMS.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("UpdateProfile")]
+        [HttpPost("update_profile")]
         public async Task<IActionResult> UpdateProfile(UpdateProfileRequest model)
         {
             try
@@ -170,7 +171,7 @@ namespace SEP_JMS.API.Controllers
         }
 
         // [Authorize]
-        [HttpPost("ForgotPassword")]
+        [HttpPost("forgot_password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
         {
             try

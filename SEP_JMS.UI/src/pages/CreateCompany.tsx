@@ -68,8 +68,8 @@ const CreateCompany = () => {
         snakeBar.setSnakeBar("Tạo company thành công", "success", true);
         handleReset();
       })
-      .catch(() => {
-        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+      .catch(err => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setButtonLoading(false);

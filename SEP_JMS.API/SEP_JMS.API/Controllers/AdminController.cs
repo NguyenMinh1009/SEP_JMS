@@ -118,7 +118,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when creating a new company with name {model.CompanyName}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
         [HttpPut("update/company/{id}")]
@@ -146,7 +146,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when updating company {id}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
         [HttpPost("add/employee")]

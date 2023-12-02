@@ -101,8 +101,8 @@ const CreateCustomer = () => {
         snakeBar.setSnakeBar("Tạo khách hàng thành công", "success", true);
         resetState();
       })
-      .catch(() => {
-        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+      .catch(err => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setButtonLoading(false);

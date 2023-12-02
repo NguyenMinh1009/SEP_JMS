@@ -82,11 +82,14 @@ namespace SEP_JMS.Repository.Repositories
         }
         public async Task AddCompany(Company company)
         {
+            company.CompanyName = company.CompanyName.Trim();
+            if (await IsDupplicateName(null, company.CompanyName)) throw new Exception("Trùng tên công ty");
             await Context.Companies.AddAsync(company);
             await Context.SaveChangesAsync();
         }
         public async Task UpdateCompany(Guid id, CompanyUpdateRequestModel model)
         {
+            if (await IsDupplicateName(id, model.CompanyName)) throw new Exception("Trùng tên công ty");
             var company = await Context.Companies.FirstAsync(com => com.CompanyId == id);
             company.CompanyName = model.CompanyName;
             company.CompanyAddress = model.CompanyAddress;
@@ -94,6 +97,11 @@ namespace SEP_JMS.Repository.Repositories
             company.PriceGroupId = model.PriceGroupId;
             company.AccountId = model.AccountId;
             await Context.SaveChangesAsync();
+        }
+
+        private async Task<bool> IsDupplicateName(Guid? id, string name)
+        {
+            return await Context.Companies.AnyAsync(e => e.CompanyName.ToLower().Equals(name.Trim().ToLower()) && (id == null || e.CompanyId != id));
         }
         public async Task<PagingModel<Tuple<Company, User, PriceGroup>>> GetCompanies(CompanyAdminFilterRequestModel model)
         {

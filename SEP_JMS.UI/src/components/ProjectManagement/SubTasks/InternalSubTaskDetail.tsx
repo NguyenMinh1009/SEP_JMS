@@ -24,6 +24,7 @@ import CommentSection from "../../../components/CommentSection";
 import { IComments } from "../../../interface/comment";
 import SubTasksSection from "./SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
+import { TaskString } from "../../../enums/taskEnums";
 
 interface ISubTaskDetail {}
 
@@ -228,7 +229,7 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
                 className={openDetailsEditPanel ? "rotate-90" : "-rotate-90"}
               />
               <p>
-                <i className="text-[13px] font-[500]">Chi tiết</i>
+                <i className="text-[13px] font-[500]">{TaskString.CHI_TIET}</i>
               </p>
             </div>
             <div
@@ -247,7 +248,7 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
                 <p className="text-primary mr-4 w-fit pr-4 text-base leading-5">
-                  Comments công việc
+                  {TaskString.BINH_LUAN_CONG_VIEC}
                 </p>
                 {/* <p className="text-primary mr-4 w-fit pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
@@ -266,7 +267,7 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
                 {isCommentLoading && (
                   <>
                     <CircularProgress size={20} />
-                    <p className="text-base italic">Đang tải thêm...</p>
+                    <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
                   </>
                 )}
               </div>

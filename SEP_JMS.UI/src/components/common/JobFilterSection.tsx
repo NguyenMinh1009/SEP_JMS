@@ -90,7 +90,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const getCompanyList = () => {
     if (currentPerson.roleType) {
       APIClientInstance.post(
-        currentPerson.roleType === Role.ADMIN ? "company/search" : "company/search",
+        currentPerson.roleType === Role.ADMIN ? "company/search" : "company/related",
         {
           pageIndex: 1,
           pageSize: 2147483647,
@@ -132,8 +132,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       APIClientInstance.post("customer/related", {
         pageIndex: 1,
         pageSize: 2147483647,
-        companyId: selectedCompany?.companyId ?? undefined,
-        role: Role.CUSTOMER
+        companyId: selectedCompany?.companyId ?? undefined
       })
         .then(res => {
           setCustomers(res.data.items);

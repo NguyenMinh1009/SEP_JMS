@@ -31,6 +31,7 @@ import { cn } from "../utils/className";
 import { correlationJobOptions } from "../constants";
 import { checkStatusCompletedProjectEdit } from "../utils/checkInputJob";
 import { Error } from "../enums/validateInput";
+import { TaskString } from "../enums/taskEnums";
 
 interface IBasicDetailsSectionProps {
   taskDetail: any;
@@ -119,7 +120,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         <BasicTaskInfo
           Icon={<AiOutlineEdit size={15} color="#555" />}
           title="Designer:"
-          detail={taskDetail?.designer?.fullname ?? "..."}
+          detail={taskDetail?.designer?.fullname ?? TaskString.CON_TRONG}
         />
 
         <BasicTaskInfo

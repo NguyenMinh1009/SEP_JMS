@@ -26,6 +26,7 @@ import CustomDialog from "./common/CustomDialog";
 import { RiAddCircleLine } from "react-icons/ri";
 import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
 import { JobStatusType } from "../enums/jobStatusType";
+import { TaskString } from "../enums/taskEnums";
 
 interface ITaskDetail {
   isCorrelationJobType: number;
@@ -229,7 +230,11 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
         secondaryBtnCallback={handleCloseDialog}
       />
       <div className="flex items-center justify-between">
-        <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
+        {isCorrelationJobType === CorrelationJobType.Project ? (
+          <p className="text-primary mb-6 text-base">Chi tiết dự án</p>
+        ) : (
+          <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
+        )}
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
             onClick={() =>
@@ -295,7 +300,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
                 <p className="text-primary mr-4 w-fit pr-4 text-base leading-5">
-                  Comments công việc
+                  {TaskString.BINH_LUAN_CONG_VIEC}
                 </p>
                 {/* <p className="text-primary mr-4 w-fit pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
@@ -314,7 +319,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
                 {isCommentLoading && (
                   <>
                     <CircularProgress size={20} />
-                    <p className="text-base italic">Đang tải thêm...</p>
+                    <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
                   </>
                 )}
               </div>

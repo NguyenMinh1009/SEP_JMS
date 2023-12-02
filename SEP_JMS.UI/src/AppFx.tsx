@@ -157,7 +157,7 @@ const PathRules: RouteRule[] = [
   {
     path: PathString.VIEW_PRICES,
     roles: [Role.ACCOUNT, Role.CUSTOMER],
-    element: <PriceListAccount />,
+    element: <PriceListAccount />
   },
   {
     path: `${PathString.REPORT}/*`,
@@ -499,7 +499,9 @@ function AppFx() {
             <Route
               path="/"
               element={
-                !localStorageUser || isTokenExpired() || JSON.parse(localStorageUser ?? "").roleType === Role.GUEST ? (
+                !localStorageUser ||
+                isTokenExpired() ||
+                JSON.parse(localStorageUser ?? "").roleType === Role.GUEST ? (
                   <LandingPage />
                 ) : (
                   <Navigate to={`/${PathString.THONG_BAO}`} />

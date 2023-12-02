@@ -167,12 +167,11 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
 
   const getCustomerListForStaff = () => {
     setLoading(true);
-    AlwayxInstance.post("customer/related", {
+    AlwayxInstance.post("customer/find", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: null,
-      companyId: selectedCompany?.companyId ?? defaultCompany.companyId,
-      role: Role.CUSTOMER
+      companyId: selectedCompany?.companyId ?? defaultCompany.companyId
     })
       .then(res => {
         setCustomers(res.data.items);
@@ -359,6 +358,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
     if (title.trim() === "") return true;
     if (!selectedJobType) return true;
     if (!deadline) return true;
+    if (!selectedAccount) return true;
     if (currentPerson.roleType !== Role.CUSTOMER) {
       if (!selectedCustomer || !selectedDesigner || !selectedAccount) return true;
     }

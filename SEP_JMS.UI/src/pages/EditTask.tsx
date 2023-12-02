@@ -29,6 +29,7 @@ import useTitle from "../hooks/store/useCurrentTitle";
 import mime from "mime";
 import moment from "moment";
 import { PostType } from "../enums/postType";
+import { TaskString } from "../enums/taskEnums";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import { MdOutlineExpandCircleDown } from "react-icons/md";
 import { DateTimePicker, viVN } from "@mui/x-date-pickers";
@@ -1088,36 +1089,35 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
               />
             </div>
 
-            {currentPerson.roleType !== Role.CUSTOMER && (
-              <div className="flex flex-col items-start gap-3">
-                <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Designer
-                  <RequireText />
-                </label>
-                {currentPerson.roleType === Role.DESIGNER ? (
-                  <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-                    <span className="col-span-3 p-2 pl-0 opacity-60">
-                      {taskDetail?.designer?.fullname}
-                    </span>
-                  </div>
-                ) : (
-                  <Autocomplete
-                    noOptionsText="Không có lựa chọn"
-                    id="designers"
-                    value={selectedDesigner}
-                    onChange={(_, newValue) => {
-                      setSelectedDesigner(newValue);
-                    }}
-                    getOptionLabel={option => option.fullname}
-                    size="small"
-                    options={designers}
-                    fullWidth
-                    // disabled
-                    renderInput={params => <TextField {...params} placeholder="-- Chọn NTK --" />}
-                  />
-                )}
-              </div>
-            )}
+            <div className="flex flex-col items-start gap-3">
+              <label htmlFor="" className="text-primary col-span-2 mr-4">
+                Designer
+                <RequireText />
+              </label>
+              {currentPerson.roleType === Role.DESIGNER ||
+              currentPerson.roleType === Role.CUSTOMER ? (
+                <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
+                  <span className="col-span-3 p-2 pl-0 opacity-60">
+                    {taskDetail?.designer?.fullname ?? TaskString.CON_TRONG}
+                  </span>
+                </div>
+              ) : (
+                <Autocomplete
+                  noOptionsText="Không có lựa chọn"
+                  id="designers"
+                  value={selectedDesigner}
+                  onChange={(_, newValue) => {
+                    setSelectedDesigner(newValue);
+                  }}
+                  getOptionLabel={option => option.fullname}
+                  size="small"
+                  options={designers}
+                  fullWidth
+                  // disabled
+                  renderInput={params => <TextField {...params} placeholder="-- Chọn NTK --" />}
+                />
+              )}
+            </div>
 
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">

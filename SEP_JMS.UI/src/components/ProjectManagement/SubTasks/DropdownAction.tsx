@@ -91,15 +91,16 @@ const DropdownAction: React.FC<IDropdownAction> = ({
   };
 
   const renderUpdateButton = () => {
-    if (finishedOnly && currentPerson.roleType === Role.ADMIN) {
-      return (
-        <button
-          className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-          onClick={handleUpdateClick}
-        >
-          Update
-        </button>
-      );
+    if (finishedOnly) {
+      if (currentPerson.roleType === Role.ADMIN)
+        return (
+          <button
+            className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+            onClick={handleUpdateClick}
+          >
+            Update
+          </button>
+        );
     } else {
       return (
         <button

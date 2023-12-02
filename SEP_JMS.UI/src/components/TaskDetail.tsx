@@ -25,6 +25,7 @@ import { IComments } from "../interface/comment";
 import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
 import { JobStatusType } from "../enums/jobStatusType";
+import { TaskString } from "../enums/taskEnums";
 
 interface ITaskDetail {
   finishOnly?: boolean;
@@ -220,7 +221,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
         >
           <RiAddCircleLine size={16} color="#0655a7" />
           <p>
-            <i className="text-[13px] font-[500]"> Thêm công việc</i>
+            <i className="text-[13px] font-[500]">{TaskString.THEM_CONG_VIEC}</i>
           </p>
         </button>
       );
@@ -240,9 +241,9 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
       />
       <div className="flex items-center justify-between">
         {isCorrelationJobType === CorrelationJobType.Project ? (
-          <p className="text-primary mb-6 text-base">Chi tiết dự án</p>
+          <p className="text-primary mb-6 text-base">{TaskString.CHI_TIET_DU_AN}</p>
         ) : (
-          <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
+          <p className="text-primary mb-6 text-base">{TaskString.CHI_TIET_CONG_VIEC}</p>
         )}
 
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
@@ -332,7 +333,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
                 <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
-                  Comments công việc
+                  {TaskString.BINH_LUAN_CONG_VIEC}
                 </p>
                 {/* <p className="text-primary mr-4 w-fit  pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
@@ -350,7 +351,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                 {isCommentLoading && (
                   <>
                     <CircularProgress size={20} />
-                    <p className="text-base italic">Đang tải thêm...</p>
+                    <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
                   </>
                 )}
               </div>

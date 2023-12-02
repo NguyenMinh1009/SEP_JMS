@@ -24,6 +24,8 @@ import CommentSection from "../../../components/CommentSection";
 import { IComments } from "../../../interface/comment";
 import SubTasksSection from "./SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
+import { TaskString } from "../../../enums/taskEnums";
+import APIClientInstance from "../../../api/AxiosInstance";
 
 interface ISubTaskDetail {
   finishOnly?: boolean;
@@ -44,6 +46,7 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
   }>({ items: [], count: 0 });
   const [hasOlderComment, setHasOlderComment] = useState<boolean>(true);
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
+  const [titleProject, setTitleProject] = useState<string>("");
   const getCommentTimes = useRef<number>(0);
 
   const [to, setTo] = useState<null | number>(null);
@@ -159,6 +162,11 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
       });
   };
 
+  const getTitleProject = async () => {
+    var res = await APIClientInstance.get(`job/${taskId}`);
+    setTitleProject(res.data.title);
+  };
+
   {
     useEffect(() => {
       getTaskDetails(
@@ -174,6 +182,7 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
       )
         .then()
         .catch(err => err);
+      getTitleProject();
     }, [subTaskId]);
   }
 
@@ -205,7 +214,7 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
         secondaryBtnCallback={handleCloseDialog}
       />
       <div className="flex items-center justify-between">
-        <p className="text-primary mb-6 text-base">Chi tiết dự án</p>
+        <p className="text-primary mb-6 text-base">Chi tiết công việc</p>
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
             onClick={() =>
@@ -253,11 +262,12 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
                 taskDetail={jobDetail}
                 docFiles={docFiles}
                 imgFiles={imgFiles}
+                jobParentTitle={subTaskId !== undefined ? titleProject : TaskString.EMPTY}
               />
               {/* Comment section */}
               <div className="mb-6 mt-10 flex items-center">
                 <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
-                  Comments công việc
+                  {TaskString.BINH_LUAN_CONG_VIEC}
                 </p>
                 {/* <p className="text-primary mr-4 w-fit  pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
@@ -275,7 +285,7 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
                 {isCommentLoading && (
                   <>
                     <CircularProgress size={20} />
-                    <p className="text-base italic">Đang tải thêm...</p>
+                    <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
                   </>
                 )}
               </div>

@@ -14,6 +14,7 @@ import JobFilterSection from "../components/common/JobFilterSection";
 import useFilterInfo from "../hooks/store/useFilterInfo";
 import AlwayxInstance from "../api/AxiosInstance";
 import { CorrelationJobType } from "../enums/correlationJobType";
+import { TaskString } from "../enums/taskEnums";
 
 interface IFinishedTasks {
   isInternal?: boolean;
@@ -30,6 +31,7 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
 
   const handleExport = () => {
     setIsExporting(true);
+    filterInfoController.content.correlationType = CorrelationJobType.Job;
     AlwayxInstance.post(
       "job/export",
       { ...pageInfo, ...filterInfoController.content },
@@ -62,20 +64,6 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
         <div className="flex items-end justify-between gap-3">
           <JobFilterSection finishedOnly isInternal={isInternal} />
           <div className="flex flex-col gap-11">
-            {/* {currentPerson.roleType !== Role.DESIGNER ||
-              (currentPerson.roleType !== Role.CUSTOMER && (
-                <div
-                  onClick={() =>
-                    navigate(
-                      `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${PathString.THEM_MOI}`
-                    )
-                  }
-                  className="flex h-10 w-20 cursor-pointer items-center justify-center gap-2 rounded-md bg-accent p-3 text-white hover:opacity-75 3xl:w-auto"
-                >
-                  <IoAddCircleOutline size={20} className="text-white" />
-                  <span className="hidden 3xl:block">Tạo công việc mới</span>
-                </div>
-              ))} */}
             {currentPerson.roleType === Role.ADMIN && (
               <div
                 onClick={isExporting ? undefined : handleExport}
@@ -86,13 +74,13 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
                 ) : (
                   <CiExport size={16} className="text-white" />
                 )}
-                <span className="hidden 3xl:block">Export</span>
+                <span className="hidden 3xl:block">{TaskString.Xuat_Tep_CONG_VIEC}</span>
               </div>
             )}
           </div>
         </div>
       </div>
-      <p className="text-primary mb-6 text-base">Công việc đã hoàn thành</p>
+      <p className="text-primary mb-6 text-base">{TaskString.CONG_VIEC_DA_HOAN_THANH}</p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
           <TaskPreview

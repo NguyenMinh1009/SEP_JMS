@@ -19,5 +19,10 @@ export enum TaskString {
   FILE_FINAL = "File final",
 
   HIEN_THI_CHI_TIET = "Hiển thị chi tiết",
-  THU_GON = "THU_GON"
+  THU_GON = "THU_GON",
+
+  CONG_VIEC_DA_HOAN_THANH = "Công việc đã hoàn thành",
+  DU_AN_DA_HOAN_THANH = "Dự án đã hoàn thành",
+  Xuat_Tep_CONG_VIEC = "Xuất tệp công việc",
+  Xuat_Tep_DU_AN = "Xuất tệp dự án"
 }

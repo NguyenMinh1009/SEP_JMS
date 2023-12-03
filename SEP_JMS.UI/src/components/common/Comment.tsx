@@ -21,6 +21,7 @@ import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { FileResponse } from "../../interface/fileResponse";
 import { CircularProgress } from "@mui/material";
 import { APIUrlHost } from "../../constants";
+import Images from "../../img";
 
 const Comment = ({
   content,
@@ -153,7 +154,7 @@ const Comment = ({
         <div className="flex w-full">
           <div className="h-8 w-8 shrink-0 rounded-full bg-slate-500">
             <img
-              src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=0"}
+              src={user?.avatarUrl ? APIUrlHost + "/" + user.avatarUrl + "?t=0" : Images.avtPlaceHolder}
               className="h-full w-full rounded-full"
               alt=""
             />

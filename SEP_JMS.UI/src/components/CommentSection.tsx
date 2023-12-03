@@ -4,6 +4,9 @@ import { IComments } from "../interface/comment";
 import Comment from "./common/Comment";
 import ReplyComment from "./common/ReplyComment";
 import TextFieldJobComment from "./common/TextFieldComment";
+import useCurrentPerson from "../hooks/store/useCurrentPerson";
+import { Role } from "../enums/role";
+import { CommentString } from "../enums/commentEnum";
 
 interface ICommentsProps {
   comments?: IComments[];
@@ -17,6 +20,7 @@ interface ICommentsProps {
   // correlationJobType: CorrelationJobType;
   visibleType: VisibleType;
   handleHideComment?: (id: string) => void;
+  finishedOnly?: boolean;
 }
 
 const CommentSection = ({
@@ -25,46 +29,58 @@ const CommentSection = ({
   // correlationJobType,
   getComments,
   visibleType,
-  handleHideComment
+  handleHideComment,
+  finishedOnly
 }: ICommentsProps) => {
+  const currentPerson = useCurrentPerson();
+
+  const renderAddComment = () => {
+    let flagHidden;
+    finishedOnly ? (flagHidden = true) : (flagHidden = false);
+    if (!flagHidden) {
+      return (
+        <TextFieldJobComment
+          getComments={getComments}
+          visibleType={visibleType}
+          label="Thêm bình luận..."
+        />
+      );
+    }
+  };
   return (
     <div className="flex flex-col gap-4">
-      {comments &&
-        comments.length > 0 &&
-        comments
-          // .sort((a, b) => a.createdTime - b.createdTime)
-          .map(comment => {
-            if (!comment.replyComment)
-              return (
-                <div key={comment.commentId}>
-                  <Comment
+      {comments && comments.length > 0
+        ? comments
+            // .sort((a, b) => a.createdTime - b.createdTime)
+            .map(comment => {
+              if (!comment.replyComment)
+                return (
+                  <div key={comment.commentId}>
+                    <Comment
+                      visibleType={visibleType}
+                      getComments={getComments}
+                      setComments={setComments}
+                      handleHideComment={handleHideComment}
+                      {...comment}
+                    />
+                  </div>
+                );
+              else {
+                return (
+                  <ReplyComment
+                    parentUser={comment.replyComment.user}
+                    parentContent={comment.replyComment.content}
                     visibleType={visibleType}
-                    getComments={getComments}
-                    setComments={setComments}
+                    getAllReply={getComments}
+                    key={comment.commentId}
                     handleHideComment={handleHideComment}
                     {...comment}
                   />
-                </div>
-              );
-            else {
-              return (
-                <ReplyComment
-                  parentUser={comment.replyComment.user}
-                  parentContent={comment.replyComment.content}
-                  visibleType={visibleType}
-                  getAllReply={getComments}
-                  key={comment.commentId}
-                  handleHideComment={handleHideComment}
-                  {...comment}
-                />
-              );
-            }
-          })}
-      <TextFieldJobComment
-        getComments={getComments}
-        visibleType={visibleType}
-        label="Thêm bình luận..."
-      />
+                );
+              }
+            })
+        : ""}
+      {renderAddComment()}
     </div>
   );
 };

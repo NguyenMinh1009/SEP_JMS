@@ -26,6 +26,7 @@ import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
 import { JobStatusType } from "../enums/jobStatusType";
 import { TaskString } from "../enums/taskEnums";
+import { CommentString } from "../enums/commentEnum";
 
 interface ITaskDetail {
   finishOnly?: boolean;
@@ -335,9 +336,6 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                 <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
                   {TaskString.BINH_LUAN_CONG_VIEC}
                 </p>
-                {/* <p className="text-primary mr-4 w-fit  pr-4 text-base font-[400] leading-5">
-                  Lịch sử hoạt động
-                </p> */}
               </div>
               <div ref={commentSectionTopRef}></div>
               <CommentSection
@@ -346,6 +344,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                 setComments={setComments}
                 comments={comments?.items}
                 handleHideComment={handleHideComment}
+                finishedOnly={finishOnly ? true : false}
               />
               <div className="mt-5 flex h-16 items-center justify-center gap-2">
                 {isCommentLoading && (

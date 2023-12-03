@@ -27,6 +27,7 @@ import { RiAddCircleLine } from "react-icons/ri";
 import SubTasksSection from "./ProjectManagement/SubTasks/SubTasksSection";
 import { JobStatusType } from "../enums/jobStatusType";
 import { TaskString } from "../enums/taskEnums";
+import { JobType } from "../enums/jobType";
 
 interface ITaskDetail {
   isCorrelationJobType: number;
@@ -190,6 +191,33 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
   //   renderButtonCreateNewSubTask();
   // }, [isLoadingGetJobDetail]);
 
+  const renderCommentSection = () => {
+    if (jobDetail !== undefined) {
+      if (jobDetail.internalJobStatus === JobStatusType.Completed) {
+        return (
+          <CommentSection
+            getComments={getLatestComments}
+            visibleType={VisibleType.Internal}
+            setComments={setComments}
+            comments={comments?.items}
+            handleHideComment={handleHideComment}
+            finishedOnly
+          />
+        );
+      } else {
+        return (
+          <CommentSection
+            getComments={getLatestComments}
+            visibleType={VisibleType.Internal}
+            setComments={setComments}
+            comments={comments?.items}
+            handleHideComment={handleHideComment}
+          />
+        );
+      }
+    }
+  };
+
   useEffect(() => {
     getTaskDetails(
       setLoading,
@@ -202,7 +230,9 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
       `internal/job/${taskId}`,
       `file/job/${taskId}`
     )
-      .then(res => setLoadingGetJobDetail(false))
+      .then(res => {
+        setLoadingGetJobDetail(false);
+      })
       .catch(err => err);
   }, [taskId]);
 
@@ -216,6 +246,18 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
     navigate(
       `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${PathString.THEM_MOI_CONG_VIEC_DU_AN}`
     );
+  };
+
+  const handleNavigateClick = () => {
+    if (isCorrelationJobType === CorrelationJobType.Job) {
+      jobDetail.internalJobStatus === JobStatusType.Completed
+        ? navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`)
+        : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+    } else {
+      jobDetail.internalJobStatus === JobStatusType.Completed
+        ? navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`)
+        : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
+    }
   };
   return (
     <>
@@ -237,11 +279,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
         )}
         {currentPerson.roleType !== Role.CUSTOMER && !isLoading && (
           <div
-            onClick={() =>
-              isCorrelationJobType === CorrelationJobType.Job
-                ? navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`)
-                : navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`)
-            }
+            onClick={() => handleNavigateClick()}
             className="mr-2 flex cursor-pointer items-center gap-1 text-[#0655a7] hover:opacity-75 xl:mr-0"
           >
             <MdOutlineExpandCircleDown size={16} color="#0655a7" className="-rotate-90" />
@@ -307,14 +345,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
                 </p> */}
               </div>
               <div ref={commentSectionTopRef}></div>
-              <CommentSection
-                getComments={getLatestComments}
-                // correlationJobType={CorrelationJobType.Job}
-                visibleType={VisibleType.Internal}
-                setComments={setComments}
-                comments={comments?.items}
-                handleHideComment={handleHideComment}
-              />
+              {renderCommentSection()}
               <div className="mt-5 flex h-16 items-center justify-center gap-2">
                 {isCommentLoading && (
                   <>

@@ -68,7 +68,7 @@ namespace SEP_JMS.Repository.Repositories
                         where data.comment.CreatedTime < model.To
                         select data;
             }
-            var comments = await query.OrderBy(data => data.comment.CreatedTime)
+            var comments = await query.OrderByDescending(data => data.comment.CreatedTime)
                 .Skip((model.PageIndex - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .Select(data => Tuple.Create(data.comment, data.user, data.replyComment, data.replyCommentUser))

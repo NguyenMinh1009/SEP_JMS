@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { commonForgot, commonLogin, customerLogin, employeeLogin } from "../api/Auth";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
+import { commonRegex } from "../constants";
 
 
 const ForgotPassword: React.FC = () => {
@@ -27,7 +28,14 @@ const ForgotPassword: React.FC = () => {
 
   const handleSignIn = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
-    if (!username.trim() || !email.trim()) return;
+    if (!username.trim() || !email.trim()) {
+      snakeBar.setSnakeBar("Điền đầy đủ các trường!", "warning", true);
+      return;
+    }
+    if (email?.trim() && !commonRegex.email.test(email)) {
+      snakeBar.setSnakeBar("Email sai định dạng!", "warning", true);
+      return;
+    }
     setLoading(true);
     commonForgot(username, email)
       .then(data => {
@@ -38,8 +46,8 @@ const ForgotPassword: React.FC = () => {
         // window.dispatchEvent(new Event("storage"));
         snakeBar.setSnakeBar("Reset password thành công", "success", true);
       })
-      .catch(_e => {
-        snakeBar.setSnakeBar("Reset password thất bại", "error", true);
+      .catch(err => {
+        snakeBar.setSnakeBar("Có lỗi xảy ra! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setLoading(false);
@@ -58,7 +66,7 @@ const ForgotPassword: React.FC = () => {
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 type="text"
-                placeholder="Username"
+                placeholder="Tên đăng nhập"
                 className="mx-auto mb-4 w-4/5 border-b-2 border-slate-300 px-2 py-2 text-sm outline-none focus:border-[#0054a6] focus:outline-none"
               />
               <input

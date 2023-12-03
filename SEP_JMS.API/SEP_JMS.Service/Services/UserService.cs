@@ -84,8 +84,10 @@ namespace SEP_JMS.Service.Services
             var emailAddress = configuration.GetValue<string>("EmailAddress");
             var emailPassword = configuration.GetValue<string>("EmailPassword");
             var newPassword = GenerateRandomPassword();
-            var users = await userRepository.GetAll(x=>x.Username == model.UserName);
+            var users = await userRepository.GetAll(x=>x.Username.Equals(model.UserName) && model.Email.ToLower().Equals(x.Email));
+            if (users == null || users.Count == 0) throw new Exception("Không tìm thấy tài khoản");
             var user = users.First();
+            
             await userRepository.ChangePassword(user.UserId, newPassword);
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
             {

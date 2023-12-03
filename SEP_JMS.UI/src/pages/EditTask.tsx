@@ -98,8 +98,8 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedPriority, setSelectedPriority] = useState<Priority>(Priority.MEDIUM);
   const [selectedStatus, setSelectedStatus] = useState<JobStatusType>(JobStatusType.NotDo);
-  const [selectedInternalStatus, setSelectedInternalStatus] = useState<InternalJobStatusType>(
-    InternalJobStatusType.NotDo
+  const [selectedInternalStatus, setSelectedInternalStatus] = useState<JobStatusType>(
+    JobStatusType.NotDo
   );
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
@@ -481,7 +481,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             if (isCorrelationJobType === CorrelationJobType.Job) {
               // edit noi bo viec-hang-ngay
               if (subTaskId === undefined) {
-                if (selectedInternalStatus === InternalJobStatusType.Completed) {
+                if (selectedInternalStatus === JobStatusType.Completed) {
                   navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
                 } else {
                   navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
@@ -494,7 +494,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             }
             // edit noi bo project
             else {
-              if (selectedInternalStatus === InternalJobStatusType.Completed) {
+              if (selectedInternalStatus === JobStatusType.Completed) {
                 navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
               } else {
                 navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
@@ -663,8 +663,8 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             disabled={
               // currentPerson.roleType === Role.DESIGNER ||
               (currentPerson.roleType !== Role.ADMIN &&
-                selectedInternalStatus === InternalJobStatusType.Completed) ||
-              (selectedInternalStatus === InternalJobStatusType.Pending &&
+                selectedInternalStatus === JobStatusType.Completed) ||
+              (selectedInternalStatus === JobStatusType.Pending &&
                 currentPerson.roleType === Role.DESIGNER)
             }
             fullWidth
@@ -673,19 +673,18 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             value={selectedInternalStatus}
             onChange={e => setSelectedInternalStatus(Number(e.target.value))}
           >
-            {internalStatusOptions.map(({ key, text }) => (
+            {statusOptions.map(({ key, text }) => (
               <MenuItem
                 key={key}
                 disabled={
-                  (key === InternalJobStatusType.Completed &&
+                  (key === JobStatusType.Completed &&
                     (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
                       currentPerson.roleType === Role.DESIGNER)) ||
-                  (key === InternalJobStatusType.Pending &&
-                    currentPerson.roleType === Role.DESIGNER)
+                  (key === JobStatusType.Pending && currentPerson.roleType === Role.DESIGNER)
                 }
                 value={key}
                 title={
-                  key === InternalJobStatusType.Completed &&
+                  key === JobStatusType.Completed &&
                   previewFiles?.length + previewFilesFromAPI?.length < 1
                     ? "Cần có ảnh preview!"
                     : ""

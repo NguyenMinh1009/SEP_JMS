@@ -131,7 +131,7 @@ const HomeHero: FC = () => {
                       },
                     }}
                   >
-                    Management
+                    JOB Management
                     <svg version="1.1" viewBox="0 0 3183 3072">
                       <g id="Layer_x0020_1">
                         <path

@@ -17,7 +17,7 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task UpdateArchivedTime(Guid notificationId, bool isNull)
         {
-            var archivedTime = isNull ? 0 : DateTime.Now.Ticks;
+            var archivedTime = isNull ? 0 : DateTime.UtcNow.Ticks;
             await Context.Notifications.Where(job => job.NotificationId == notificationId)
                 .ExecuteUpdateAsync(notis => notis
                 .SetProperty(noti => noti.ArchivedAt, noti => archivedTime));
@@ -25,7 +25,7 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task UpdateReadTime(Guid notificationId, bool readAll = false)
         {
-            var readTime = DateTime.Now.Ticks;
+            var readTime = DateTime.UtcNow.Ticks;
             var query = from notis in Context.Notifications
                         select notis;
             if(!readAll)

@@ -54,7 +54,7 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to process login request for user {model.Username}");
                 var user = await userService.Login(model);
-                if (user == null) return BadRequest();
+                if (user == null) return BadRequest("Sai thông tin đăng nhập");
                 var response = mapper.Map<UserLoginResponse>(user);
 
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -183,7 +183,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception while processing send new password to user {model.UserName}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
 

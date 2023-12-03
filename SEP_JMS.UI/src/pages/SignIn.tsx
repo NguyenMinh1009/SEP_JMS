@@ -27,7 +27,10 @@ const Login: React.FC = () => {
 
   const handleSignIn = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
-    if (!username.trim() || !password.trim()) return;
+    if (!username.trim() || !password.trim()) {
+      snakeBar.setSnakeBar("Điền đầy đủ các trường!", "warning", true);
+      return;
+    }
     setLoading(true);
     commonLogin(username, password)
       .then(data => {
@@ -37,8 +40,8 @@ const Login: React.FC = () => {
         localStorage.setItem("user", JSON.stringify(data));
         window.dispatchEvent(new Event("storage"));
       })
-      .catch(_e => {
-        snakeBar.setSnakeBar("Đăng nhập thất bại", "error", true);
+      .catch(err => {
+        snakeBar.setSnakeBar("Đăng nhập thất bại! [" + err.response.data + "]", "error", true);
       })
       .finally(() => {
         setLoading(false);
@@ -57,7 +60,7 @@ const Login: React.FC = () => {
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 type="text"
-                placeholder="Username"
+                placeholder="Tài khoản"
                 className="mx-auto mb-4 w-4/5 border-b-2 border-slate-300 px-2 py-2 text-sm outline-none focus:border-[#0054a6] focus:outline-none"
               />
               <input
@@ -65,7 +68,7 @@ const Login: React.FC = () => {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 type="password"
-                placeholder="Password"
+                placeholder="Mật khẩu"
                 className="mx-auto mb-4 w-4/5 border-b-2 border-slate-300 px-2 py-2 text-sm outline-none focus:border-[#0054a6] focus:outline-none"
               />
               {/* <FormControl

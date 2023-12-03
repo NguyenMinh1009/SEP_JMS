@@ -21,7 +21,7 @@ namespace SEP_JMS.Mapper.NotificationProfiles
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Receiver, opt => opt.MapFrom(src => src.Receiver))
                 .ForMember(dest => dest.TriggerBy, opt => opt.MapFrom(src => ApiContext.Current.UserId))
-                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => DateTime.Now.Ticks));
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => DateTime.UtcNow.Ticks));
         }
     }
 }

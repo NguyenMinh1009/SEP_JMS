@@ -50,6 +50,10 @@ import _401Page from "./pages/401Page";
 import _404Page from "./pages/404Page";
 import PriceListAccount from "./pages/PriceListAccount";
 
+import moment from 'moment';
+import 'moment/dist/locale/vi';
+
+
 const theme = createTheme(
   {
     typography: {
@@ -372,6 +376,7 @@ function AppFx() {
 
   const currentPerson = useCurrentPerson();
   const snakeBar = useSnakeBar();
+  useEffect(()=> {  console.log("set language"); moment.locale("vi"); }, [])
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {

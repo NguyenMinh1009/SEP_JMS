@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { IComments } from "../../interface/comment";
 import { ticksToDate } from "../../utils/Datetime";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import { PostType } from "../../enums/postType";
 import ReplyCommentSection from "../ReplyCommentSection";
 import { CorrelationJobType } from "../../enums/correlationJobType";
@@ -22,6 +22,7 @@ import { FileResponse } from "../../interface/fileResponse";
 import { CircularProgress } from "@mui/material";
 import { APIUrlHost } from "../../constants";
 import Images from "../../img";
+import EditCommentSection from "../EditCommentSection";
 
 const Comment = ({
   content,
@@ -55,6 +56,8 @@ const Comment = ({
   const [isImagesLoading, setImagesLoading] = useState<boolean>(false);
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = React.useState(false);
+  const [bindContent, setBindContent] = useState<string>(content ?? "");
+  const [bindAttachments, setBindAt] = useState<any>(attachments);
 
   const wrapperRef = useRef<any>(null);
 
@@ -72,7 +75,7 @@ const Comment = ({
   const currentPerson = useCurrentPerson();
 
   const getFileForJobType = (img: string, link: string) => {
-    return AlwayxInstance.post(
+    return APIClientInstance.post(
       subTaskId === undefined ? `${link + taskId}` : `${link + subTaskId}`,
       {
         commentId: commentId,
@@ -84,14 +87,14 @@ const Comment = ({
   };
 
   const getAttachmentDetails = async () => {
-    const attachmentFiles = attachments?.files;
+    const attachmentFiles = bindAttachments?.files;
     if (attachmentFiles && attachmentFiles.length > 0) {
       const docList = attachmentFiles.filter(
-        file => !mime.getType(file.fileName)?.includes("image")
+        (file: any) => !mime.getType(file.fileName)?.includes("image")
       );
       setDocFiles(docList);
       const imgList: FileResponse[] = [];
-      attachmentFiles.forEach(file => {
+      attachmentFiles.forEach((file: any) => {
         if (mime.getType(file.fileName)?.includes("image")) imgList.push(file);
       });
       setImagesLoading(true);
@@ -108,7 +111,7 @@ const Comment = ({
   };
 
   const handleConfirmHideComment = () => {
-    AlwayxInstance.post(`comment/${commentId}/hide`)
+    APIClientInstance.post(`comment/${commentId}/hide`)
       .then(() => {
         handleHideComment?.(commentId as string);
         snakeBar.setSnakeBar("Ẩn comment thành công!", "success", true);
@@ -127,7 +130,14 @@ const Comment = ({
 
   useEffect(() => {
     getAttachmentDetails();
-  }, [taskId]);
+  }, [taskId, bindAttachments]);
+
+  const refreshComment = (value: string, attachments: any) => {
+    setBindContent(value);
+    setBindAt(attachments);
+    setDocFiles([]);
+    setImgFiles([]);
+  }
 
   return (
     <div ref={wrapperRef}>
@@ -139,7 +149,7 @@ const Comment = ({
         primaryBtnText="Tiếp tục comment"
         secondaryBtnText="Đồng ý hủy"
         primaryBtnCallback={handleClose}
-        secondaryBtnCallback={() => setOpenReplySection(false)}
+        secondaryBtnCallback={() => {setOpenReplySection(false); setOpenEditSection(false)}}
       />
       <CustomDialog
         openDialog={openConfirmDeleteDialog}
@@ -175,7 +185,7 @@ const Comment = ({
               <div
                 className="text-comment-container leading-9"
                 dangerouslySetInnerHTML={{
-                  __html: content ?? ""
+                  __html: bindContent ?? ""
                 }}
               ></div>
               <FileSection
@@ -238,12 +248,29 @@ const Comment = ({
       <ReplyCommentSection
         setOpenReplySection={setOpenReplySection}
         getComments={getComments}
-        parentContent={content}
+        parentContent={bindContent}
         expand={isOpenReplySection}
         visibleType={visibleType}
         correlationJobType={correlationJobType ?? CorrelationJobType.Job}
         replyCommentId={commentId ?? ""}
         parentUser={user}
+      />
+
+      <EditCommentSection
+        setOpenReplySection={setOpenEditSection}
+        getComments={getComments}
+        refreshComment={refreshComment}
+        parentContent={bindContent ?? ""}
+        expand={isOpenEditSection}
+        visibleType={visibleType}
+        correlationJobType={correlationJobType ?? CorrelationJobType.Job}
+        commentId={commentId ?? ""}
+        parentUser={user}
+        remoteFiles={bindAttachments?.files.map((file: any) => ({
+          name: file.fileName,
+          type: file.mimeType,
+          originalName: file.originalName
+        }))}
       />
     </div>
   );

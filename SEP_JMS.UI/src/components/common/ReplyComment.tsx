@@ -3,7 +3,7 @@ import { IComments } from "../../interface/comment";
 import { ticksToDate } from "../../utils/Datetime";
 import moment from "moment";
 import mime from "mime";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import { PostType } from "../../enums/postType";
 import { useParams } from "react-router-dom";
 import FileSection from "../FileSection";
@@ -12,7 +12,7 @@ import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import { VisibleType } from "../../enums/visibleType";
 import ImageSection from "./ImageSection";
 import { BiComment } from "react-icons/bi";
-import { MdHideSource } from "react-icons/md";
+import { MdEdit, MdHideSource } from "react-icons/md";
 import { Role } from "../../enums/role";
 import ReplyCommentSection from "../ReplyCommentSection";
 import { useClickOutside } from "../../utils/useClickOutside";
@@ -21,6 +21,7 @@ import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { FileResponse } from "../../interface/fileResponse";
 import { APIUrlHost } from "../../constants";
 import Images from "../../img";
+import EditCommentSection from "../EditCommentSection";
 
 const ReplyComment = ({
   content,
@@ -49,8 +50,11 @@ const ReplyComment = ({
   const [overflowActive, setOverflowActive] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [isOpenReplySection, setOpenReplySection] = useState<boolean>(false);
+  const [isOpenEditSection, setOpenEditSection] = useState<boolean>(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = useState(false);
+  const [bindContent, setBindContent] = useState<string>(content ?? "");
+  const [bindAttachments, setBindAt] = useState<any>(attachments);
 
   const wrapperRef = useRef<any>(null);
   const snakeBar = useSnakeBar();
@@ -58,7 +62,7 @@ const ReplyComment = ({
   useClickOutside(
     wrapperRef,
     () => {
-      if (isOpenReplySection && !openConfirmDialog) setOpenConfirmDialog(true);
+      if ((isOpenReplySection || isOpenEditSection) && !openConfirmDialog) setOpenConfirmDialog(true);
     },
     ".reply-btn"
   );
@@ -73,18 +77,18 @@ const ReplyComment = ({
   };
 
   const getAttachmentDetails = async () => {
-    const attachmentFiles = attachments?.files;
+    const attachmentFiles = bindAttachments?.files;
     if (attachmentFiles && attachmentFiles.length > 0) {
       const docList = attachmentFiles.filter(
-        file => !mime.getType(file.fileName)?.includes("image")
+        (file: any) => !mime.getType(file.fileName)?.includes("image")
       );
       setDocFiles(docList);
       const imgList: FileResponse[] = [];
-      attachmentFiles.forEach(file => {
+      attachmentFiles.forEach((file: any) => {
         if (mime.getType(file.fileName)?.includes("image")) imgList.push(file);
       });
       for (const img of imgList) {
-        const response = await AlwayxInstance.post(
+        const response = await APIClientInstance.post(
           subTaskId === undefined
             ? `${getLinkForJobType() + taskId}`
             : `${getLinkForJobType() + subTaskId}`,
@@ -102,7 +106,7 @@ const ReplyComment = ({
   };
 
   const handleConfirmHideComment = () => {
-    AlwayxInstance.post(`comment/${commentId}/hide`)
+    APIClientInstance.post(`comment/${commentId}/hide`)
       .then(() => {
         handleHideComment?.(commentId as string);
         snakeBar.setSnakeBar("Ẩn comment thành công!", "success", true);
@@ -137,7 +141,14 @@ const ReplyComment = ({
 
   useEffect(() => {
     getAttachmentDetails();
-  }, [taskId]);
+  }, [taskId, bindAttachments]);
+
+  const refreshComment = (value: string, attachments: any) => {
+    setBindContent(value);
+    setBindAt(attachments);
+    setDocFiles([]);
+    setImgFiles([]);
+  }
 
   return (
     <div ref={wrapperRef}>
@@ -149,7 +160,7 @@ const ReplyComment = ({
         primaryBtnText="Tiếp tục comment"
         secondaryBtnText="Đồng ý hủy"
         primaryBtnCallback={handleClose}
-        secondaryBtnCallback={() => setOpenReplySection(false)}
+        secondaryBtnCallback={() => {setOpenReplySection(false); setOpenEditSection(false)}}
       />
       <CustomDialog
         openDialog={openConfirmDeleteDialog}
@@ -214,7 +225,7 @@ const ReplyComment = ({
                 dangerouslySetInnerHTML={{
                   __html:
                     `<p><span class="font-semibold italic text-accent mr-2">@${parentUser?.fullname}</span>` +
-                    (content?.slice(3) ?? "")
+                    (bindContent?.slice(3) ?? "")
                 }}
               ></div>
               <div className="mt-3">
@@ -251,6 +262,15 @@ const ReplyComment = ({
                 <BiComment size={12} color="#333" className="mt-[1px]" />
                 <p className="text-xs font-[500]">Phản hồi</p>
               </div>
+              {(currentPerson.userId === user?.userId) && (
+                <div
+                  onClick={() => setOpenEditSection(!isOpenEditSection)}
+                  className="flex cursor-pointer items-center gap-1 transition-all hover:opacity-70"
+                >
+                  <MdEdit size={12} color="#333" />
+                  <p className="text-xs font-[500]">Chỉnh sửa</p>
+                </div>
+              )}
               {(currentPerson.userId === user?.userId || currentPerson.roleType === Role.ADMIN) && (
                 <div
                   onClick={() => setOpenConfirmDeleteDialog(true)}
@@ -267,12 +287,28 @@ const ReplyComment = ({
       <ReplyCommentSection
         setOpenReplySection={setOpenReplySection}
         getComments={getAllReply}
-        parentContent={content}
+        parentContent={bindContent}
         expand={isOpenReplySection}
         visibleType={visibleType}
         correlationJobType={correlationJobType ?? CorrelationJobType.Job}
         replyCommentId={commentId ?? ""}
         parentUser={user}
+      />
+      <EditCommentSection
+        setOpenReplySection={setOpenEditSection}
+        getComments={getAllReply}
+        refreshComment={refreshComment}
+        parentContent={bindContent ?? ""}
+        expand={isOpenEditSection}
+        visibleType={visibleType}
+        correlationJobType={correlationJobType ?? CorrelationJobType.Job}
+        commentId={commentId ?? ""}
+        parentUser={user}
+        remoteFiles={bindAttachments?.files.map((file: any) => ({
+          name: file.fileName,
+          type: file.mimeType,
+          originalName: file.originalName
+        }))}
       />
     </div>
   );

@@ -11,6 +11,8 @@ using SEP_JMS.Model;
 using Newtonsoft.Json;
 using SEP_JMS.Common.Utils;
 using SEP_JMS.Model.Models.ExtensionModels;
+using AutoMapper;
+using System.Security.Cryptography.Pkcs;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -21,12 +23,15 @@ namespace SEP_JMS.API.Controllers
         private readonly string logPrefix = "[CommentController]";
         private readonly ICommentService commentService;
         private readonly IJMSLogger logger;
+        private readonly IMapper mapper;
 
         public CommentController(ICommentService commentService,
-            IJMSLogger logger)
+            IJMSLogger logger,
+            IMapper mapper)
         {
             this.commentService = commentService;
             this.logger = logger;
+            this.mapper = mapper;
         }
         [Authorize]
         [RequestSizeLimit(PolicyConstants.commentFileSize)]
@@ -109,7 +114,7 @@ namespace SEP_JMS.API.Controllers
                 comment.Attachments = JsonConvert.SerializeObject(folderModel);
                 var count = await commentService.UpdateComment(comment);
                 if (count < 1) throw new Exception("Update comment failed: 0 rows effected");
-                return Ok();
+                return Ok(mapper.Map<CommentDetailsDisplayModel>(await commentService.GetComment(commentId)));
             }
             catch (Exception ex)
             {

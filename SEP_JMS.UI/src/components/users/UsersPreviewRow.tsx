@@ -246,9 +246,9 @@ const UsersPreviewRow: React.FC<IRowProps> = ({ row, index, pageSize, page, role
                   className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
                 >
                   {row.accountStatus === AccountStatusType.Active ? (
-                    <AiOutlineLock size={18} color="#666" />
-                  ) : (
                     <AiOutlineUnlock size={18} color="#666" />
+                  ) : (
+                    <AiOutlineLock size={18} color="#666" />
                   )}
                   <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
                 </span>

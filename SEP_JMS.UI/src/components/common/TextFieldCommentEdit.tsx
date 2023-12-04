@@ -13,7 +13,7 @@ import FileSection from "../FileSection";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import CircularProgress from "@mui/material/CircularProgress";
 import { postFileComment } from "../../api/File";
-import AlwayxInstance from "../../api/AxiosInstance";
+import APIClientInstance from "../../api/AxiosInstance";
 import { useParams } from "react-router-dom";
 import { CorrelationJobType } from "../../enums/correlationJobType";
 import { VisibleType } from "../../enums/visibleType";
@@ -22,6 +22,7 @@ import { useClickOutside } from "../../utils/useClickOutside";
 import CustomDialog from "./CustomDialog";
 import { APIUrlHost } from "../../constants";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
+import { MdSave } from "react-icons/md";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -57,26 +58,41 @@ const allowFileTypes: string = `image/*,
 
 interface IRichTextEditorProps {
   label: string;
-  replyCommentId?: string;
+  commentId: string;
   reply?: boolean;
   visibleType: VisibleType;
+  oldRemoteFiles?: {
+    name: string;
+    type?: string;
+    originalName?: string;
+  }[];
+  oldContent: string;
   getComments: () => void;
+  refreshComment: (value: string, attachments: any) => void;
   setOpenReplySection?: (open: boolean) => void;
   collapseProp?: boolean;
 }
 
-const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
+const TextFieldCommentEdit: React.FC<IRichTextEditorProps> = ({
   label,
-  replyCommentId,
+  commentId,
   reply,
   visibleType,
   getComments,
+  refreshComment,
+  oldContent,
   setOpenReplySection,
+  oldRemoteFiles,
   collapseProp
 }) => {
   const [isOpenTaskPanel, setOpenTaskPanel] = useState(reply ? true : false);
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(oldContent);
   const [files, setFiles] = useState<File[]>([]);
+  const [rmFiles, setRmFiles] = useState<{
+    name: string;
+    type?: string;
+    originalName?: string;
+  }[]>(oldRemoteFiles ?? []);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
   // const [tempSrc, setTempSrc] = useState<Blob | MediaSource | undefined>();
@@ -96,7 +112,6 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
   );
 
   const snakeBar = useSnakeBar();
-  const { taskId, subTaskId } = useParams();
 
   Quill.register(
     {
@@ -127,6 +142,13 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
     setFiles(clone);
   };
 
+  const handleDeleteRemoteFile = (name: string) => {
+    const clone = [...rmFiles];
+    const deleteFileIndex = clone.findIndex(file => file.name === name);
+    if (deleteFileIndex > -1) clone.splice(deleteFileIndex, 1);
+    setRmFiles(clone);
+  };
+
   const getImagesFils = React.useMemo(() => {
     return Array.from(files).filter(file => file.type.includes("image"));
   }, [files]);
@@ -147,7 +169,7 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
       }
     });
   };
-  const handleComment = () => {
+  const handleEditComment = () => {
     const totalSizeInBytes = files.reduce((total, file) => total + file.size, 0);
     if (totalSizeInBytes / (1024 * 1024) > 50) {
       snakeBar.setSnakeBar("Tổng file vượt quá 50MB!", "warning", true);
@@ -156,48 +178,39 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
     setLoading(true);
     const formData = new FormData();
     const commentPayloadData = {
-      replyCommentId: replyCommentId,
-      content: getSanitizeText(value),
-      visibleType: visibleType
+      Content: getSanitizeText(value),
+      OldFiles: JSON.stringify(rmFiles.map(e => ({
+        fileName: e.name,
+        mimeType: e.type,
+        originalName: e.originalName
+      })))
     };
-    files.forEach(item => formData.append("files", item));
+    files.forEach(item => formData.append("Files", item));
     Object.entries(commentPayloadData).forEach(([key, value]) => {
       if (value !== undefined) {
         formData.append(key, String(value));
       }
     });
 
-    {
-      subTaskId === undefined
-        ? AlwayxInstance.post(`comment/${taskId}`, formData)
-          .then(() => {
-            getComments();
-            setValue("");
-            setFiles([]);
-            setLoading(false);
-            setOpenReplySection?.(false);
-            if (reply === undefined) setOpenTaskPanel(false);
-          })
-          .catch(_err => {
-            setLoading(false);
-            snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-          })
-          .finally(() => setLoading(false))
-        : AlwayxInstance.post(`comment/${subTaskId}`, formData)
-          .then(() => {
-            getComments();
-            setValue("");
-            setFiles([]);
-            setLoading(false);
-            setOpenReplySection?.(false);
-            if (reply === undefined) setOpenTaskPanel(false);
-          })
-          .catch(_err => {
-            setLoading(false);
-            snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-          })
-          .finally(() => setLoading(false));
-    }
+
+    APIClientInstance.put(`comment/${commentId}`, formData)
+      .then((rs) => {
+        snakeBar.setSnakeBar("Chỉnh sửa bình luận thành công!", "success", true);
+        refreshComment(rs.data.content, rs.data.attachments);
+        // getComments();
+        setValue("");
+        setFiles([]);
+        setLoading(false);
+        setOpenReplySection?.(false);
+        if (reply === undefined) setOpenTaskPanel(false);
+      })
+      .catch(_err => {
+        setLoading(false);
+        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+      })
+      .finally(() => setLoading(false))
+
+
   };
 
   const handleClose = () => {
@@ -216,7 +229,7 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
   }, [isOpenTaskPanel, editorRef]);
 
   const getLabelFromType = (): string => {
-    if (reply) return "Thêm bình luận";
+    if (reply) return "Chỉnh sửa bình luận";
     else {
       if (isOpenTaskPanel) return "Thu gọn";
       return label;
@@ -261,7 +274,7 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
             <div className="flex items-center gap-3">
               <CustomButton
                 primary
-                onClick={handleComment}
+                onClick={handleEditComment}
                 disabled={
                   !(
                     getSanitizeText(value).trim() !== "" &&
@@ -269,7 +282,7 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
                   ) || isLoading
                 }
               >
-                <IoMdSend color="white" size={16} />
+                <MdSave color="white" size={16} />
               </CustomButton>
               {isLoading && <CircularProgress size={20} />}
             </div>
@@ -310,7 +323,9 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
                   </CustomButton>
                 )}
               </div>
+              {rmFiles && (<FileSection visibleType={visibleType} remoteFileList={rmFiles} handleDelete={handleDeleteRemoteFile} />)}
               <FileSection visibleType={visibleType} fileList={getDocumentsFils} handleDelete={handleDeleteFile} />
+
               {getImagesFils && getImagesFils.length > 0 ? (
                 <ImageSection imgFiles={getImagesFils} handleDelete={handleDeleteFile} />
               ) : (
@@ -324,4 +339,4 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
   );
 };
 
-export default TextFieldJobComment;
+export default TextFieldCommentEdit;

@@ -6,11 +6,12 @@ namespace SEP_JMS.Tests
 {
     public static class ContextGenerator
     {
-        public static readonly JSMContext Instance = Generate();
+        public static JSMContext Instance = Generate();
+
         public static JSMContext Generate()
         {
             var optionBuilder = new DbContextOptionsBuilder<JSMContext>()
-                .UseInMemoryDatabase("SEP_JMS_Test");
+                .UseInMemoryDatabase(Guid.NewGuid().ToString());
             return new JSMContext(optionBuilder.Options);
         }
 

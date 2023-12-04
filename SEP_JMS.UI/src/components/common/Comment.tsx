@@ -13,7 +13,7 @@ import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import { VisibleType } from "../../enums/visibleType";
 import ImageSection from "./ImageSection";
 import { BiComment } from "react-icons/bi";
-import { MdHideSource } from "react-icons/md";
+import { MdEdit, MdHideSource } from "react-icons/md";
 import { Role } from "../../enums/role";
 import { useClickOutside } from "../../utils/useClickOutside";
 import CustomDialog from "./CustomDialog";
@@ -51,6 +51,7 @@ const Comment = ({
   const [imgFiles, setImgFiles] = useState<File[]>([]);
   const [docFiles, setDocFiles] = useState<FileResponse[]>([]);
   const [isOpenReplySection, setOpenReplySection] = useState<boolean>(false);
+  const [isOpenEditSection, setOpenEditSection] = useState<boolean>(false);
   const [isImagesLoading, setImagesLoading] = useState<boolean>(false);
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = React.useState(false);
@@ -62,7 +63,7 @@ const Comment = ({
   useClickOutside(
     wrapperRef,
     () => {
-      if (isOpenReplySection && !openConfirmDialog) setOpenConfirmDialog(true);
+      if ((isOpenReplySection || isOpenEditSection) && !openConfirmDialog) setOpenConfirmDialog(true);
     },
     ".reply-btn"
   );
@@ -212,6 +213,15 @@ const Comment = ({
                 <BiComment size={12} color="#333" className="mt-[1px]" />
                 <p className="text-xs font-[500]">Phản hồi</p>
               </div>
+              {(currentPerson.userId === user?.userId) && (
+                <div
+                  onClick={() => setOpenEditSection(!isOpenEditSection)}
+                  className="flex cursor-pointer items-center gap-1 transition-all hover:opacity-70"
+                >
+                  <MdEdit size={12} color="#333" />
+                  <p className="text-xs font-[500]">Chỉnh sửa</p>
+                </div>
+              )}
               {(currentPerson.userId === user?.userId || currentPerson.roleType === Role.ADMIN) && (
                 <div
                   onClick={() => setOpenConfirmDeleteDialog(true)}

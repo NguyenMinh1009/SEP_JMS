@@ -77,28 +77,8 @@ namespace SEP_JMS.API.Controllers
                 if (jobId == null) return StatusCode((int)HttpStatusCode.InternalServerError);
 
                 // create notification
-                var receivers = new List<Guid>();
+                await notificationService.Trigger(jobId ?? Guid.Empty, null, null, NotiAction.CreateJob);
 
-                receivers.Add(ApiContext.Current.UserId);
-                receivers.Add(model.AccountId);
-                receivers.Add(model.DesignerId ?? Guid.Empty);
-                receivers.Add(model.CustomerId);
-                receivers = receivers.Distinct().ToList();
-
-                foreach (var receiver in receivers)
-                {
-                    if (receiver == Guid.Empty || (ApiContext.Current.Role == RoleType.Account && ApiContext.Current.UserId != model.AccountId)) continue;
-                    var notiCreationRequest = new NotiCreationRequest()
-                    {
-                        EntityIdentifier = (Guid)jobId,
-                        EntityName = model.CorrelationType == CorrelationJobType.Job ? "CreateJob" : "CreateProject",
-                        Title = model.Title,
-                        NotiType = NotiType.FromJob,
-                        Receiver = receiver,
-                    };
-                    await notificationService.CreateNotification(notiCreationRequest, NotiAction.CreateJob);
-                }
-                
                 return new CreateJobResponse { JobId = jobId.Value };
             }
             catch (Exception ex)
@@ -161,8 +141,8 @@ namespace SEP_JMS.API.Controllers
                 logger.Info($"{logPrefix} Start to update the job {jobId}.");
 
                 // for make notify
-                var jobGet = await jobService.GetBasicJob(jobId);
-                var oldNotiTrigger = new { AccountId = jobGet?.AccountId, DesignerId = jobGet?.DesignerId, CustomerId = jobGet?.CustomerId};
+                var oldJob = await jobService.GetBasicJob(jobId);
+                
                 //
 
                 if (ApiContext.Current.Role == RoleType.Customer)
@@ -180,52 +160,8 @@ namespace SEP_JMS.API.Controllers
                 // trigger noti
                 if (success)
                 {
-                    bool isForAccount = false;
-                    if (model.AccountId != null && oldNotiTrigger.AccountId != null  && model.AccountId != oldNotiTrigger.AccountId)
-                    {
-                        await notificationService.DeleteByReceiver(jobId, (Guid)oldNotiTrigger.AccountId);
-                        var notiCreationRequest = new NotiCreationRequest()
-                        {
-                            EntityIdentifier = (Guid)jobId,
-                            EntityName = model.CorrelationType == CorrelationJobType.Job ? "UpdateJob" : "UpdateProject",
-                            Title = model.Title,
-                            NotiType = NotiType.FromJob,
-                            Receiver = (Guid)model.AccountId,
-                        };
-                        await notificationService.CreateNotification(notiCreationRequest, NotiAction.UpdateJob);
-                        isForAccount = true;
-                    }
-
-                    if (model.DesignerId != null && oldNotiTrigger.DesignerId != null && model.DesignerId != oldNotiTrigger.DesignerId)
-                    {
-                        await notificationService.DeleteByReceiver(jobId, (Guid)oldNotiTrigger.DesignerId);
-                        var notiCreationRequest = new NotiCreationRequest()
-                        {
-                            EntityIdentifier = (Guid)jobId,
-                            EntityName = model.CorrelationType == CorrelationJobType.Job ? "UpdateJob" : "UpdateProject",
-                            Title = model.Title,
-                            NotiType = NotiType.FromJob,
-                            Receiver = (Guid)model.DesignerId,
-                        };
-                        await notificationService.CreateNotification(notiCreationRequest, NotiAction.UpdateJob);
-                    }
-                    // update title of notification
-                    // notify to creator
-                    if (!(ApiContext.Current.UserId.Equals(model?.AccountId ?? Guid.Empty) && isForAccount))
-                    {
-                        var notiCreator = new NotiCreationRequest()
-                        {
-                            EntityIdentifier = (Guid)jobId,
-                            EntityName = model.CorrelationType == CorrelationJobType.Job ? "UpdateJob" : "UpdateProject",
-                            Title = model.Title,
-                            NotiType = NotiType.FromJob,
-                            Receiver = ApiContext.Current.UserId,
-                        };
-                        await notificationService.CreateNotification(notiCreator, NotiAction.UpdateJob);
-                    }
-                    
+                    await notificationService.Trigger(jobId, oldJob, null, NotiAction.UpdateJob);
                     await notificationService.UpdateTitle(jobId, model.Title);
-                    
                 }
                 return success ? Ok() : BadRequest();
             }

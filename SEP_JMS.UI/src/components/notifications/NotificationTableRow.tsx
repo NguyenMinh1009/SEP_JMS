@@ -19,6 +19,9 @@ import { accountStatusOptions, genderOptions, roleOptions } from "../../constant
 import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
 import { JobStatusType } from "../../enums/jobStatusType";
 import { CorrelationJobType } from "../../enums/correlationJobType";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Typography } from "@mui/material";
+import CustomButton from "../common/CustomButton";
+import { cn } from "../../utils/className";
 type IRowProps = {
   row: any;
   index: number;
@@ -29,6 +32,7 @@ type IRowProps = {
 
 const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page, setNotifications }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
+  const [openDetails, setOpenDetailsDialog] = React.useState(false);
 
   const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -40,120 +44,192 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
     setOpenConfirmDialog(false);
   };
 
+  const navigateToJob = () => {
+    // get job status then navigate from UI
+    APIClientInstance.get(
+      `/job/${row.entityIdentifier}`
+    ).then(res => {
+      const jobStatus: JobStatusType = res.data.jobStatus;
+      const jobCorr: CorrelationJobType = res.data.correlationType;
+      // for job
+      if (jobCorr === CorrelationJobType.Job) {
+        if (jobStatus == JobStatusType.Completed) navigate(
+          `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+        );
+
+        if (jobStatus == JobStatusType.Pending) navigate(
+          `/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+        );
+
+        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
+          `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+        );
+
+        navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`);
+      }
+      // for project
+      if (jobCorr === CorrelationJobType.Project) {
+        if (jobStatus == JobStatusType.Completed) navigate(
+          `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
+        );
+
+        if (jobStatus == JobStatusType.Pending) navigate(
+          `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
+        );
+
+        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
+          `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
+        );
+
+        navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
+      }
+
+    });
+
+  }
+
   const handleClickNoti = () => {
-        // get job status then navigate from UI
-        APIClientInstance.get(
-          `/job/${row.entityIdentifier}`
-        ).then(res => {
-          const jobStatus: JobStatusType = res.data.jobStatus;
-          const jobCorr: CorrelationJobType = res.data.correlationType;
-          // for job
-          if (jobCorr === CorrelationJobType.Job) {
-            if (jobStatus == JobStatusType.Completed) navigate(
-              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
-            );
-
-            if (jobStatus == JobStatusType.Pending) navigate(
-              `/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
-            );
-
-            if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
-              `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
-            );
-
-            navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`);
-          }
-          // for project
-          if (jobCorr === CorrelationJobType.Project) {
-            if (jobStatus == JobStatusType.Completed) navigate(
-              `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-            );
-
-            if (jobStatus == JobStatusType.Pending) navigate(
-              `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-            );
-
-            if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
-              `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-            );
-
-            navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
-          }
-          
-        });
-        // mark as read
-        APIClientInstance.post(
-          `/notification/read/${row.notificationId}`
-        )
-        .then(() => {
-          setNotifications((prev: any) => {
-            let clone = recursiveStructuredClone(prev);
-            const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
-              if (index > -1) {
-                clone[index].readAt =
-                  row.readAt === 0 || row.readAt === null
-                    ? 1
-                    : 0;
-              }
-            return clone;
-          });
-          
-        })
-        .catch(err => {
-          console.log(err);
-          snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
-        });
-        
+    setOpenDetailsDialog(true);
   };
+
+  const handleCloseNoti = () => {
+    setOpenDetailsDialog(false);
+    // mark as read
+    APIClientInstance.post(
+      `/notification/read/${row.notificationId}`
+    )
+      .then(() => {
+        setNotifications((prev: any) => {
+          let clone = recursiveStructuredClone(prev);
+          const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
+          if (index > -1) {
+            clone[index].readAt =
+              row.readAt === 0 || row.readAt === null
+                ? 1
+                : 0;
+          }
+          return clone;
+        });
+
+      })
+      .catch(err => {
+        console.log(err);
+        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+      });
+  }
 
   const handleArchiveNoti = () => {
     APIClientInstance.post(
       (row.archivedAt == null || row.archivedAt == 0) ?
-      `/notification/archive/${row.notificationId}` : `/notification/unarchive/${row.notificationId}`
+        `/notification/archive/${row.notificationId}` : `/notification/unarchive/${row.notificationId}`
     )
-    .then(() => {
-      snakeBar.setSnakeBar((row.archivedAt == null || row.archivedAt == 0) ? "Lưu thông báo thành công" : "Huỷ lưu thông báo thành công", "success", true);
-      setNotifications((prev: any) => {
-        let clone = recursiveStructuredClone(prev);
-        const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
+      .then(() => {
+        snakeBar.setSnakeBar((row.archivedAt == null || row.archivedAt == 0) ? "Lưu thông báo thành công" : "Huỷ lưu thông báo thành công", "success", true);
+        setNotifications((prev: any) => {
+          let clone = recursiveStructuredClone(prev);
+          const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
           if (index > -1) {
             clone[index].archivedAt =
               row.archivedAt === 0 || row.archivedAt === null
                 ? 1
                 : 0;
           }
-        return clone;
+          return clone;
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
       });
-    })
-    .catch(err => {
-      console.log(err);
-      snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
-    });
   };
 
   const handleDeleteNoti = () => {
     APIClientInstance.delete(
       `/notification/${row.notificationId}`
     )
-    .then(() => {
-      snakeBar.setSnakeBar("Xoá thành công", "success", true);
-      setNotifications((prev: any) => {
-        let clone = recursiveStructuredClone(prev);
-        clone = clone.filter((e: any) => e.notificationId !== row.notificationId);
-        return clone;
+      .then(() => {
+        snakeBar.setSnakeBar("Xoá thành công", "success", true);
+        setNotifications((prev: any) => {
+          let clone = recursiveStructuredClone(prev);
+          clone = clone.filter((e: any) => e.notificationId !== row.notificationId);
+          return clone;
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
       });
-    })
-    .catch(err => {
-      console.log(err);
-      snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
-    });
-    
+
   };
+
+  const descriptionElementRef = React.useRef<HTMLElement>(null);
+  React.useEffect(() => {
+    if (openDetails) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openDetails]);
 
   if (!row) return <></>;
 
+  let notiDetails = "";
+  notiDetails = `<b>Công việc</b>: ${row.title}<br>`
+  notiDetails += `<b>Hành động</b>: ${row.entityName}<br>`
+  row.message.substr(0, 3) != "Bạn" && (notiDetails += `<b>Người gửi:</b> ${row.message.substr(0, row.message.indexOf(")") + 1)}<br>`);
+  notiDetails += `<b>Thời gian:</b> ${ticksToDate(row.createdTime).toISOString()}<br>`
+  notiDetails += `<br>`
+  notiDetails += `<b>Nội dung:</b><br>`
+  notiDetails += row.data;
+
   return (
     <>
+      <Dialog
+        open={openDetails}
+        onClose={handleCloseNoti}
+        scroll="paper"
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+        maxWidth="xs"
+      >
+        <DialogTitle id="scroll-dialog-title">
+          <Typography fontWeight={"bold"}>Thông báo</Typography>
+        </DialogTitle>
+        <DialogContent dividers={true}>
+          <DialogContentText
+            id="scroll-dialog-description"
+            ref={descriptionElementRef}
+            tabIndex={-1}
+            className="text-[14px]"
+            dangerouslySetInnerHTML={{ __html: notiDetails }}
+          >
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions className="px-5 pb-4">
+          {/* <Button size="small" className="text-[13px] normal-case" onClick={handleClose} autoFocus>
+          {cancelBtnText}
+        </Button> */}
+          <CustomButton
+            autoFocus
+            primary
+            onClick={navigateToJob}
+            disablePadding
+            className={cn("px-4 py-1")}
+          >
+            <p className="text-secondary text-[13px] normal-case leading-6 text-white">
+              Đến công việc
+            </p>
+          </CustomButton>
+          <Button
+            size="small"
+            className={cn("text-[13px] normal-case text-red-400")}
+            onClick={handleCloseNoti}
+          >
+            Đóng
+          </Button>
+        </DialogActions>
+      </Dialog>
       <CustomDialog
         openDialog={openConfirmDialog}
         handleClose={handleClose}
@@ -165,33 +241,33 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
         secondaryBtnCallback={handleDeleteNoti}
       />
       <TableRow hover role="checkbox" tabIndex={-1} key={JSON.stringify(row)}>
-        
-        
-        
+
+
+
         <TableCell
           padding="none"
           className="cursor-pointer border-r-[1px] p-2 align-top text-[13px] font-[400]"
           align="left"
         >
           <div className="mx-auto flex gap-1"
-          onClick={()=>{handleClickNoti();}}
+            onClick={() => { handleClickNoti(); }}
           >
             {row.readAt == null || row.readAt == 0 ? (
               <GoDotFill color="green" size={18} />
             ) : (
               <GoDotFill color="gray" size={18} />
             )}
-            
+
             <div style={{ color: 'blue' }}>
-            {"[" + moment(ticksToDate(row.createdTime)).fromNow() + "]"}
+              {"[" + moment(ticksToDate(row.createdTime)).fromNow() + "]"}
             </div>
             {row.readAt == null || row.readAt == 0 ? (<b>{row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? " giao cho bạn" : "") ?? "..."}</b>) : (row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? " giao cho bạn" : "") ?? "...")}
-          
+
           </div>
         </TableCell>
 
-        
-        
+
+
         {/* Actions */}
         <TableCell
           padding="none"
@@ -212,7 +288,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
                       <RiArchiveDrawerFill size={18} color="red" />
                     )
                   }
-                  
+
                   <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
                 </span>
 
@@ -228,7 +304,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             </div>
           </div>
         </TableCell>
-        
+
       </TableRow>
     </>
   );

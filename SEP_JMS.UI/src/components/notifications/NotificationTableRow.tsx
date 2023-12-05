@@ -33,6 +33,7 @@ type IRowProps = {
 const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page, setNotifications }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
   const [openDetails, setOpenDetailsDialog] = React.useState(false);
+  const [tempUnRead, setTempUnRead] = React.useState(true);
 
   const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -90,6 +91,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
 
   const handleClickNoti = () => {
     setOpenDetailsDialog(true);
+    setTempUnRead(false);
   };
 
   const handleCloseNoti = () => {
@@ -99,15 +101,14 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
       `/notification/read/${row.notificationId}`
     )
       .then(() => {
-        setNotifications((prev: any) => {
-          let clone = recursiveStructuredClone(prev);
-          const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
-          if (index > -1) {
-            clone[index].readAt = 1;
-          }
-          return clone;
-        });
-
+        // setNotifications((prev: any) => {
+        //   let clone = recursiveStructuredClone(prev);
+        //   const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
+        //   if (index > -1) {
+        //     clone[index].readAt = 1;
+        //   }
+        //   return clone;
+        // });
       })
       .catch(err => {
         console.log(err);
@@ -180,7 +181,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   notiDetails += `<b><span class="bg-stone-200 inline-block w-full rounded-sm text-center">Nội dung</span></b><br>`
   notiDetails += row.data;
 
-  const isUnRead = row.readAt == null || row.readAt == 0;
+  const isUnRead = tempUnRead && !row.readAt;
 
   return (
     <>
@@ -252,7 +253,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
           <div className="mx-auto flex gap-1"
             onClick={() => { handleClickNoti(); }}
           >
-            {row.readAt == null || row.readAt == 0 ? (
+            {isUnRead ? (
               <GoDotFill color="green" size={18} />
             ) : (
               <GoDotFill color="gray" size={18} />

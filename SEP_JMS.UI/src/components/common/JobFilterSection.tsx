@@ -26,12 +26,14 @@ interface JobFilterSectionProps {
   isInternal?: boolean;
   finishedOnly?: boolean;
   report?: boolean;
+  quickSelect?: number;
 }
 
 const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   isInternal,
   finishedOnly,
-  report
+  report,
+  quickSelect
 }) => {
   const [from, setFrom] = useState<moment.Moment | null>(null);
   const [to, setTo] = useState<moment.Moment | null>(null);
@@ -62,6 +64,14 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
 
   // reset state when prop change
   useEffect(() => handleApply(), [report]);
+  useEffect(() => {
+    if (!report || !quickSelect) return;
+    let now = new Date();
+    let past = structuredClone(now);
+    past.setMonth(past.getMonth()-quickSelect);
+    setFrom(moment(past));
+    setTo(moment(now));
+  }, [quickSelect]);
 
   useEffect(() => {
     const fetchData = async () => {

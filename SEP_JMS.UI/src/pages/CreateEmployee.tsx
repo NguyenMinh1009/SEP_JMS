@@ -15,6 +15,7 @@ import { commonRegex, createRoleOptions, employeeOptions, genderOptions } from "
 import { dateToTicks } from "../utils/Datetime";
 import useCurrentSelectedRole from "../hooks/store/useCurrentSelectedRole";
 import { CreateRole } from "../enums/createRole";
+import ASwitchButton from "../components/common/ASwitchButton";
 
 const CreateEmployee = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -36,9 +37,17 @@ const CreateEmployee = () => {
   const [focusRePassword, setFocusRePassword] = useState<boolean>(false);
   const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
+  const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const navigate = useNavigate();
   const snakeBar = useSnakeBar();
   const { selectedRole } = useCurrentSelectedRole();
+
+  const handleNotifyEmailCheckBox = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setNotifyEmail(checked);
+  };
 
   useEffect(() => {
     if (selectedRole !== CreateRole.COMPANY && selectedRole !== CreateRole.CUSTOMER)
@@ -92,7 +101,8 @@ const CreateEmployee = () => {
       address: address,
       gender: gender,
       roleType: role,
-      hiddenPrice: true
+      hiddenPrice: true,
+      isNotify: notifyEmail
     })
       .then(() => {
         snakeBar.setSnakeBar(`Tạo ${employeeText} thành công`, "success", true);
@@ -163,7 +173,15 @@ const CreateEmployee = () => {
         >
           Tạo mới khách hàng
         </p>
-
+        <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
+        <div className="flex items-center">
+          <ASwitchButton
+            checked={notifyEmail}
+            onChange={handleNotifyEmailCheckBox}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+          <span>Thông báo qua Email</span>
+        </div>
 
       </div>
       <Divider />

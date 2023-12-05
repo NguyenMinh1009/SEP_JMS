@@ -27,6 +27,7 @@ namespace SEP_JMS.Model.Api.Request
         public long? OnboardTime { get; set; }
 
         public long? OffboardTime { get; set; }
+        public bool IsNotify { get; set; }
 
         [EnumDataType(typeof(RoleType))]
         public RoleType RoleType { get; set; }

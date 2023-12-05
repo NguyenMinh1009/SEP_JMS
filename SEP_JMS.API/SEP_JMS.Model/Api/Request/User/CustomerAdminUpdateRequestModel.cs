@@ -27,6 +27,8 @@ namespace SEP_JMS.Model.Api.Request
 
         public bool HiddenPrice { get; set; }
 
+        public bool IsNotify { get; set; }
+
         [EnumDataType(typeof(AccountStatus))]
         public AccountStatus AccountStatus { get; set; }
 

@@ -28,5 +28,7 @@ namespace SEP_JMS.Model.Api.Request
         public Guid CompanyId { get; set; }
 
         public bool HiddenPrice { get; set; }
+
+        public bool IsNotify { get; set; }
     }
 }

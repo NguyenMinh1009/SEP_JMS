@@ -16,6 +16,7 @@ using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Repository.Repositories;
 using SEP_JMS.Model.Models.ExtensionModels;
 using System;
+using SEP_JMS.Common.Utils;
 
 namespace SEP_JMS.Service.Services
 {
@@ -87,23 +88,10 @@ namespace SEP_JMS.Service.Services
             var users = await userRepository.GetAll(x=>x.Username.Equals(model.UserName) && model.Email.ToLower().Equals(x.Email));
             if (users == null || users.Count == 0) throw new Exception("Không tìm thấy tài khoản");
             var user = users.First();
-            
-            await userRepository.ChangePassword(user.UserId, newPassword);
-            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
-            {
-                Port = 587,
-                Credentials = new NetworkCredential(emailAddress, emailPassword),
-                EnableSsl = true
-            };
-            MailMessage mailMessage = new MailMessage()
-            {
-                From = new MailAddress(emailAddress??string.Empty),
-                Subject = "Reset password",
-                Body = $"Mật khẩu mới: {newPassword}",
-            };
-            mailMessage.To.Add(model.Email);
-            smtpClient.UseDefaultCredentials = false;
-            smtpClient.Send(mailMessage);
+            int count = await userRepository.ChangePassword(user.UserId, newPassword);
+            if (count == 0) throw new Exception("Lỗi Database, vui lòng thử lại");
+            EmailHelper.SendEmailResetPasswordAsync(configuration, model.Email, newPassword);
+            return;
         }
         private string GenerateRandomPassword()
         {

@@ -8,6 +8,7 @@ import CustomButton from "../components/common/CustomButton";
 import useSnakeBar from "../hooks/store/useSnakeBar";
 import { useNavigate } from "react-router-dom";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
+import ASwitchButton from "../components/common/ASwitchButton";
 
 const CreateCompany = () => {
   const [companyName, setCompanyName] = useState<string>("");
@@ -21,6 +22,7 @@ const CreateCompany = () => {
   const [accounts, setAccounts] = useState<UsersPreviewData[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<UsersPreviewData | null>(null);
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
+  const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const snakeBar = useSnakeBar();
   const navigate = useNavigate();
 
@@ -98,6 +100,16 @@ const CreateCompany = () => {
         >
           Tạo mới khách hàng
         </p>
+        <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
+        <div className="flex items-center">
+          <ASwitchButton
+            disabled={true}
+            // checked={notifyEmail}
+            // onChange={handleNotifyEmailCheckBox}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+          <span>Thông báo qua Email</span>
+        </div>
         
       </div>
       <Divider />

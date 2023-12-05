@@ -50,6 +50,7 @@ const EditCustomer = () => {
   const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
   const [passwordChecked, setChangePasswordChecked] = useState<boolean>(false);
+  const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const snakeBar = useSnakeBar();
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -82,6 +83,13 @@ const EditCustomer = () => {
     checked: boolean
   ) => {
     setChangePasswordChecked(checked);
+  };
+
+  const handleNotifyEmailCheckBox = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setNotifyEmail(checked);
   };
 
   const getCompanies = async () => {
@@ -128,6 +136,7 @@ const EditCustomer = () => {
       gender: gender,
       companyId: selectedCompany?.companyId,
       hiddenPrice: !showPrice,
+      isNotify: notifyEmail,
       accountStatus: status
     })
       .then(() => {
@@ -199,6 +208,15 @@ const EditCustomer = () => {
             inputProps={{ "aria-label": "controlled" }}
           />
           <span>Thay đổi mật khẩu</span>
+        </div>
+        <div className="flex items-center">
+          <ASwitchButton
+            checked={notifyEmail}
+            disabled={!passwordChecked}
+            onChange={handleNotifyEmailCheckBox}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+          <span>Thông báo qua Email</span>
         </div>
       </div>
       <Divider />

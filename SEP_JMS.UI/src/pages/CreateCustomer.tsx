@@ -22,6 +22,7 @@ import { GenderType } from "../enums/genderType";
 import { commonRegex, genderOptions } from "../constants";
 import { BasicCompanyType, CompanyResponseType } from "../interface/company";
 import { dateToTicks } from "../utils/Datetime";
+import ASwitchButton from "../components/common/ASwitchButton";
 
 const CreateCustomer = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -41,8 +42,16 @@ const CreateCustomer = () => {
   const [focusRePassword, setFocusRePassword] = useState<boolean>(false);
   const [openPassTooltip, setOpenPassTooltip] = useState<boolean>(false);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
+  const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const snakeBar = useSnakeBar();
   const navigate = useNavigate();
+
+  const handleNotifyEmailCheckBox = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setNotifyEmail(checked);
+  };
 
   useEffect(() => {
     void getCompanies();
@@ -95,7 +104,8 @@ const CreateCustomer = () => {
       dob: dob ? dateToTicks(dob.toDate()) : undefined,
       gender: gender,
       companyId: selectedCompany?.company.companyId,
-      hiddenPrice: !showPrice
+      hiddenPrice: !showPrice,
+      isNotify: notifyEmail
     })
       .then(() => {
         snakeBar.setSnakeBar("Tạo khách hàng thành công", "success", true);
@@ -155,7 +165,7 @@ const CreateCustomer = () => {
   return (
     <div>
       <div className="mb-6 flex items-center gap-6">
-      
+
         <p
           onClick={() => navigate(`/${PathString.USERS}/${PathString.CREATE_EMPLOYEE}`)}
           className="text-primary cursor-pointer text-xs opacity-30 transition-all hover:opacity-60"
@@ -171,8 +181,15 @@ const CreateCustomer = () => {
         </p>
         <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <p className="text-primary text-base">Tạo mới khách hàng</p>
-
-        
+        <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
+        <div className="flex items-center">
+          <ASwitchButton
+            checked={notifyEmail}
+            onChange={handleNotifyEmailCheckBox}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+          <span>Thông báo qua Email</span>
+        </div>
       </div>
       <Divider />
       <div className="flex max-w-[550px] grid-cols-2 flex-col gap-x-12 gap-y-4 py-6 md:grid md:max-w-[1000px] xl:gap-x-24">

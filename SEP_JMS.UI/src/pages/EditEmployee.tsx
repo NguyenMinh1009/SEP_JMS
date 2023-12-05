@@ -47,6 +47,7 @@ const EditEmployee = () => {
   const [status, setStatus] = useState<AccountStatusType>(AccountStatusType.Active);
   const [openRePassTooltip, setOpenRePassTooltip] = useState<boolean>(false);
   const [passwordChecked, setChangePasswordChecked] = useState<boolean>(false);
+  const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const snakeBar = useSnakeBar();
@@ -102,6 +103,13 @@ const EditEmployee = () => {
     setChangePasswordChecked(checked);
   };
 
+  const handleNotifyEmailCheckBox = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setNotifyEmail(checked);
+  };
+
   const employeeText = useMemo(
     () => createRoleOptions.find(item => item.key === role)?.text,
     [role]
@@ -125,7 +133,8 @@ const EditEmployee = () => {
       gender: gender,
       roleType: role,
       accountStatus: status,
-      hiddenPrice: true
+      hiddenPrice: true,
+      isNotify: notifyEmail
     })
       .then(() => {
         snakeBar.setSnakeBar(`Chỉnh sửa ${employeeText} thành công`, "success", true);
@@ -194,6 +203,15 @@ const EditEmployee = () => {
             inputProps={{ "aria-label": "controlled" }}
           />
           <span>Thay đổi mật khẩu</span>
+        </div>
+        <div className="flex items-center">
+          <ASwitchButton
+            checked={notifyEmail}
+            disabled={!passwordChecked}
+            onChange={handleNotifyEmailCheckBox}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+          <span>Thông báo qua Email</span>
         </div>
       </div>
       <Divider />

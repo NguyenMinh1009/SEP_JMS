@@ -24,7 +24,7 @@ namespace SEP_JMS.API.Controllers
         private readonly ICompanyService companyService;
         private readonly IUserService userService;
         private readonly IPriceService priceService;
-
+        private readonly IConfiguration configuration;
         private readonly IMapper mapper;
         private readonly IJMSLogger logger;
 
@@ -32,7 +32,7 @@ namespace SEP_JMS.API.Controllers
             ICompanyService companyService,
             IUserService userService,
             IPriceService priceService,
-
+            IConfiguration configuration,
             IMapper mapper,
             IJMSLogger logger)
         {
@@ -42,7 +42,10 @@ namespace SEP_JMS.API.Controllers
 
             this.mapper = mapper;
             this.logger = logger;
+            this.configuration = configuration;
+
         }
+
         [HttpPost("company/all")]
         public async Task<ActionResult<PagingModel<CompanyDetailsDisplayModel>>> GetAllCompanies([FromBody] CompanyAdminFilterRequestModel model)
         {
@@ -175,6 +178,7 @@ namespace SEP_JMS.API.Controllers
                 if (!DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
                 var userId = await userService.CreateEmployee(model);
                 if (userId == null) return StatusCode(500);
+                if (!String.IsNullOrEmpty(model.Email?.Trim()) && model.IsNotify) EmailHelper.SendEmailNewAccount(configuration, model.Email, model.Fullname, model.Username, model.Password);
                 return new UserCreateDisplayModel
                 {
                     UserId = userId.Value
@@ -195,6 +199,8 @@ namespace SEP_JMS.API.Controllers
                 if (model.Username != null && !DataVerificationUtility.VerifyUsernameStrong(model.Username)) BadRequest("Username invalid format");
                 if (model.Password != null && !DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
                 await userService.UpdateEmployee(id, model);
+                var usr = await userService.GetUserByIdWithoutRole(id);
+                if (usr != null && !String.IsNullOrEmpty(usr?.Email?.Trim()) && !String.IsNullOrEmpty(model.Password) && model.IsNotify) EmailHelper.SendEmailUpdateAccount(configuration, usr?.Email, model.Fullname, usr.Username, usr.Password);
                 return Ok();
             }
             catch (Exception ex)
@@ -213,6 +219,7 @@ namespace SEP_JMS.API.Controllers
                 if (!DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
                 var userId = await userService.CreateCustomer(model);
                 if (userId == null) return StatusCode(500);
+                if (!String.IsNullOrEmpty(model.Email?.Trim()) && model.IsNotify) EmailHelper.SendEmailNewAccount(configuration, model.Email, model.Fullname, model.Username, model.Password);
                 return new UserCreateDisplayModel
                 {
                     UserId = userId.Value
@@ -236,6 +243,10 @@ namespace SEP_JMS.API.Controllers
                 if (company == null) return BadRequest("Invalid company");
 
                 await userService.UpdateCustomer(id, model);
+
+                var usr = await userService.GetUserByIdWithoutRole(id);
+                if (usr != null && !String.IsNullOrEmpty(usr?.Email?.Trim()) && !String.IsNullOrEmpty(model.Password) && model.IsNotify) EmailHelper.SendEmailUpdateAccount(configuration, usr?.Email, model.Fullname, usr.Username, usr.Password);
+
                 return Ok();
             }
             catch (Exception ex)

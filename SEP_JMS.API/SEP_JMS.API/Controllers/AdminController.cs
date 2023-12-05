@@ -94,6 +94,22 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
+        
+        [HttpDelete("company/{companyId}")]
+        public async Task<ActionResult<CompanyDetailsDisplayModel>> DeleteCompany([FromRoute] Guid companyId)
+        {
+            try
+            {
+                
+                await companyService.DeleteCompany(companyId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when finding users. Error: {ex}");
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost("add/company")]
         public async Task<ActionResult<CompanyDisplayModel>> CreateCompany(CompanyCreateRequestModel model)
         {

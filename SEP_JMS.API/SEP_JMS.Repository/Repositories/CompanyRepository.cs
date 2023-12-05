@@ -99,6 +99,15 @@ namespace SEP_JMS.Repository.Repositories
             await Context.SaveChangesAsync();
         }
 
+        public async Task DeleteCompany(Guid id)
+        {
+            var isExistsCustomer = await Context.Users.AnyAsync(e => e.CompanyId == id);
+            if (isExistsCustomer) throw new Exception("Có Users trong công ty");
+            int count = await Context.Companies.Where(e=>e.CompanyId==id).ExecuteDeleteAsync();
+            if (count == 0) throw new Exception("Không tìm thấy công ty");
+            return;
+        }
+
         private async Task<bool> IsDupplicateName(Guid? id, string name)
         {
             return await Context.Companies.AnyAsync(e => e.CompanyName.ToLower().Equals(name.Trim().ToLower()) && (id == null || e.CompanyId != id));

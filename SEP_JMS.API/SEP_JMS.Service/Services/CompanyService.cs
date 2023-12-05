@@ -74,5 +74,10 @@ namespace SEP_JMS.Service.Services
         {
             return await companyRepository.Count(c => true);
         }
+
+        public async Task DeleteCompany(Guid id)
+        {
+            await companyRepository.DeleteCompany(id);
+        }
     }
 }

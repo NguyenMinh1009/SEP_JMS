@@ -18,6 +18,7 @@ const CompanyPreview: React.FC<ICompanyPreview> = ({ searchValue }) => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [page, setPage] = React.useState(1);
   const [pageCount, setPageCount] = React.useState<number>(0);
+  const [refresh, setRefresh] = React.useState<number>(0);
 
   const isFirstRender = useIsFirstRender();
 
@@ -33,6 +34,8 @@ const CompanyPreview: React.FC<ICompanyPreview> = ({ searchValue }) => {
       setPageCount(Math.ceil(res.data.count / pageSize));
     });
   };
+
+  useEffect(()=>{getCompanies()}, [refresh]);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -67,6 +70,7 @@ const CompanyPreview: React.FC<ICompanyPreview> = ({ searchValue }) => {
                         row={row}
                         page={page}
                         pageSize={pageSize}
+                        setRefresh={setRefresh}
                       />
                     );
                   })}

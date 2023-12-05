@@ -2,7 +2,7 @@ import React from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import moment from "moment";
-import { ticksToDate } from "../../utils/Datetime";
+import { formatDateTime, ticksToDate } from "../../utils/Datetime";
 import { useNavigate } from "react-router-dom";
 import { PathString } from "../../enums/MapRouteToBreadCrumb";
 import { IoCreateOutline } from "react-icons/io5";
@@ -103,10 +103,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
           let clone = recursiveStructuredClone(prev);
           const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
           if (index > -1) {
-            clone[index].readAt =
-              row.readAt === 0 || row.readAt === null
-                ? 1
-                : 0;
+            clone[index].readAt = 1;
           }
           return clone;
         });
@@ -175,13 +172,15 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   if (!row) return <></>;
 
   let notiDetails = "";
-  notiDetails = `<b>Công việc</b>: ${row.title}<br>`
+  notiDetails += `<b>Công việc:</b> ${row.title}<br>`
   notiDetails += `<b>Hành động</b>: ${row.entityName}<br>`
   row.message.substr(0, 3) != "Bạn" && (notiDetails += `<b>Người gửi:</b> ${row.message.substr(0, row.message.indexOf(")") + 1)}<br>`);
-  notiDetails += `<b>Thời gian:</b> ${ticksToDate(row.createdTime).toISOString()}<br>`
+  notiDetails += `<b>Thời gian:</b> ${formatDateTime(ticksToDate(row.createdTime))}<br>`
   notiDetails += `<br>`
-  notiDetails += `<b>Nội dung:</b><br>`
+  notiDetails += `<b><span class="bg-stone-200 inline-block w-full rounded-sm text-center">Nội dung</span></b><br>`
   notiDetails += row.data;
+
+  const isUnRead = row.readAt == null || row.readAt == 0;
 
   return (
     <>
@@ -191,7 +190,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
         scroll="paper"
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
-        maxWidth="xs"
+        maxWidth="sm"
       >
         <DialogTitle id="scroll-dialog-title">
           <Typography fontWeight={"bold"}>Thông báo</Typography>
@@ -202,6 +201,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             ref={descriptionElementRef}
             tabIndex={-1}
             className="text-[14px]"
+            color={"rgb(63 63 70)"}
             dangerouslySetInnerHTML={{ __html: notiDetails }}
           >
           </DialogContentText>
@@ -258,10 +258,10 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
               <GoDotFill color="gray" size={18} />
             )}
 
-            <div style={{ color: 'blue' }}>
-              {"[" + moment(ticksToDate(row.createdTime)).fromNow() + "]"}
-            </div>
-            {row.readAt == null || row.readAt == 0 ? (<b>{row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? " giao cho bạn" : "") ?? "..."}</b>) : (row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? " giao cho bạn" : "") ?? "...")}
+            
+              <span className={cn(isUnRead ? "bg-emerald-500	" : "bg-gray-300", "inline-block w-28 rounded-sm text-center")}>{moment(ticksToDate(row.createdTime)).fromNow()}</span>
+            
+            {isUnRead ? (<b>{row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "..."}</b>) : (row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "...")}
 
           </div>
         </TableCell>

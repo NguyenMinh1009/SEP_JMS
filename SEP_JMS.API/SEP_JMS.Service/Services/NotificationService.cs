@@ -180,14 +180,14 @@ namespace SEP_JMS.Service.Services
                     notify.EntityIdentifier = job.JobId;
                     notify.EntityName = "Tạo mới / " + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
                     notify.Title = job.Title;
-                    notify.Message = ApiContext.Current.UserId == user.UserId ? "Bạn" : $"{creator?.Fullname} <{creator?.Username}>";
+                    notify.Message = ApiContext.Current.UserId == user.UserId ? "Bạn" : $"{creator?.Fullname} ({creator?.Username})";
                     notify.Message += " đã tạo một công việc mới";
 
 
                     notify.Data = $"Khách hàng: {comp?.CompanyName}" + newLineChar;
-                    notify.Data += $"Người Order: {cust?.Fullname} [{cust?.Username}]" + newLineChar;
-                    notify.Data += $"Quản lí: {account?.Fullname} [{account?.Username}]" + newLineChar;
-                    notify.Data += $"Designer: {designer?.Fullname} [{designer?.Username}]" + newLineChar;
+                    notify.Data += $"Người Order: {cust?.Fullname} ({cust?.Username})" + newLineChar;
+                    notify.Data += $"Quản lí: {account?.Fullname} ({account?.Username})" + newLineChar;
+                    notify.Data += $"Designer: {designer?.Fullname} ({designer?.Username})" + newLineChar;
                     notify.Data += $"Loại thiết kế: {jType?.TypeName}" + newLineChar;
                     notify.Data += $"Deadline: {new DateTime(job.Deadline)}" + newLineChar;
                     notify.Data += $"Độ ưu tiên: {Enum.GetName(typeof(Priority), job.Priority)}" + newLineChar;
@@ -224,7 +224,7 @@ namespace SEP_JMS.Service.Services
                     notify.EntityIdentifier = job.JobId;
                     notify.EntityName = "Cập nhật / " + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
                     notify.Title = job.Title;
-                    notify.Message = ApiContext.Current.UserId == user.UserId ? "Bạn" : $"{creator?.Fullname} <{creator?.Username}>";
+                    notify.Message = ApiContext.Current.UserId == user.UserId ? "Bạn" : $"{creator?.Fullname} ({creator?.Username})";
                     notify.Message += " đã cập nhật công việc";
                     notify.Data = "";
 
@@ -241,13 +241,13 @@ namespace SEP_JMS.Service.Services
 
                     if (oldJob.AccountId != job.AccountId) {
                         await notificationRepository.DeleteByReceiver(oldJob.AccountId);
-                        notify.Data += $"Người quản lí: {oldAccount?.Fullname} [{oldAccount?.Username}] --> {account?.Fullname} [{account?.Username}]" + newLineChar;
+                        notify.Data += $"Người quản lí: {oldAccount?.Fullname} ({oldAccount?.Username}) --> {account?.Fullname} ({account?.Username})" + newLineChar;
                     }
 
                     if (oldJob.DesignerId != job.DesignerId)
                     {
                         await notificationRepository.DeleteByReceiver(oldJob.DesignerId??Guid.Empty);
-                        notify.Data += $"Designer: {oldDesigner?.Fullname} [{oldDesigner?.Username}] --> {designer?.Fullname} [{designer?.Username}]" + newLineChar;
+                        notify.Data += $"Designer: {oldDesigner?.Fullname} ({oldDesigner?.Username}) --> {designer?.Fullname} ({designer?.Username})" + newLineChar;
                     }
 
                     if (oldJob.JobType != job.JobType)
@@ -292,6 +292,9 @@ namespace SEP_JMS.Service.Services
                 
                 foreach (var user in recvUsers)
                 {
+                    // not create for me
+                    if (ApiContext.Current.UserId == user.UserId) continue;
+
                     var notify = new Notification();
                     notify.NotificationId = Guid.NewGuid();
                     notify.EntityIdentifier = job.JobId;

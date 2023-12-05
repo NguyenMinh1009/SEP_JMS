@@ -51,6 +51,27 @@ namespace SEP_JMS.Service.Services
             this.logger = logger;
         }
 
+        public async Task<PagingModel<JobResponse>> GetAllProjects(ProjectFilterRequest model)
+        {
+            var jobsInfo = await jobRepository.GetProjects(model);
+            var result = new List<JobResponse>();
+            foreach (var jobInfo in jobsInfo.Items)
+            {
+                var jobDisplay = mapper.Map<JobResponse>(jobInfo.Item1);
+                jobDisplay.CreatedBy = mapper.Map<UserResponse>(jobInfo.Item2);
+                jobDisplay.Customer = mapper.Map<CustomerResponse>(jobInfo.Item3);
+                jobDisplay.Account = mapper.Map<EmployeeResponse>(jobInfo.Item4);
+                jobDisplay.Company = mapper.Map<CompanyResponse>(jobInfo.Item5);
+                jobDisplay.JobType = mapper.Map<JobTypeResponse>(jobInfo.Item6);
+                result.Add(jobDisplay);
+            }
+            return new PagingModel<JobResponse>
+            {
+                Items = result,
+                Count = jobsInfo.Count
+            };
+        }
+
         public async Task<PagingModel<JobResponse>> GetAllJobs(JobFilterRequest model)
         {
             var jobsInfo = await jobRepository.GetAllJobs(model);
@@ -75,22 +96,28 @@ namespace SEP_JMS.Service.Services
 
         public async Task<Guid?> CreateJob(CreateJobRequest model)
         {
-            if (model.CorrelationType == CorrelationJobType.Project && model.ParentId != null) throw new ArgumentException("project can't have parent id");
+            if (model.CorrelationType == CorrelationJobType.Project && model.ParentId != null) throw new Exception("Project can't have parent id");
+            if (model.CorrelationType == CorrelationJobType.Job && model.ParentId != null)
+            {
+                var project = await jobRepository.GetBasicJob(model.ParentId.Value) ?? throw new Exception($"Not found project {model.ParentId.Value}");
+                model.AccountId = project.AccountId;
+            }
 
             var account = await userRepository.Get(model.AccountId);
-            if (account == null || account.RoleType != RoleType.Account) throw new Exception($"account {model.AccountId} not found");
+            if (account == null || account.RoleType != RoleType.Account) throw new Exception($"Account {model.AccountId} not found");
 
             var customer = await userRepository.Get(model.CustomerId);
-            if (customer == null || customer.RoleType != RoleType.Customer) throw new Exception($"customer {model.CustomerId} not found");
+            if (customer == null || customer.RoleType != RoleType.Customer) throw new Exception($"Customer {model.CustomerId} not found");
 
             if (model.DesignerId != null)
             {
                 var designer = await userRepository.Get(model.DesignerId.Value);
-                if (designer == null || designer.RoleType != RoleType.Designer) throw new Exception($"designer {model.DesignerId} not found");
+                if (designer == null || designer.RoleType != RoleType.Designer) throw new Exception($"Designer {model.DesignerId} not found");
             }
 
-            _ = await jobTypeRepository.Get(model.JobType) ?? throw new Exception($"job type {model.JobType} not found");
+            _ = await jobTypeRepository.Get(model.JobType) ?? throw new Exception($"Job type {model.JobType} not found");
             var job = mapper.Map<Job>(model);
+            job.CreatedBy = ApiContext.Current.UserId;
             var folderModel = new FolderItem();
             foreach (var file in model.RequirementFiles)
             {

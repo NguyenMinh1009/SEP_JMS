@@ -20,27 +20,144 @@ namespace SEP_JMS.Repository.Repositories
         {
         }
 
-        public async Task<PagingModel<Job>> GetProjects(ProjectFilterRequest model)
+        public async Task<PagingModel<Tuple<Job, User, User, User, Company, JobType>>> GetProjects(ProjectFilterRequest model)
         {
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
             var query = from job in Context.Jobs
-                        where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
-                        select job;
+
+                        join createdUser in Context.Users
+                        on job.CreatedBy equals createdUser.UserId
+                        into createdUsers
+                        from createdUser in createdUsers.DefaultIfEmpty()
+
+                        join customer in Context.Users
+                        on job.CustomerId equals customer.UserId
+                        into customers
+                        from customer in customers.DefaultIfEmpty()
+
+                        join account in Context.Users
+                        on job.AccountId equals account.UserId
+                        into accounts
+                        from account in accounts.DefaultIfEmpty()
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+                        into companies
+                        from company in companies.DefaultIfEmpty()
+
+                        join jobType in Context.TypeOfJobs
+                        on job.JobType equals jobType.TypeId
+                        into jobTypes
+                        from jobType in jobTypes.DefaultIfEmpty()
+
+                        where job.CorrelationType == CorrelationJobType.Project
+                        select new { job, createdUser, customer, account, company, jobType };
 
             if (!string.IsNullOrEmpty(model.SearchText))
             {
-                query = query.Where(job => job.Title.ToLower().Contains(model.SearchText.ToLower()));
+                query = from data in query
+                        where data.job.Title.ToLower().Contains(model.SearchText.ToLower())
+                        select data;
             }
 
-            var jobs = await query.Where(job => job.CorrelationType == CorrelationJobType.Project)
-                .OrderByDescending(job => job.CreatedTime)
-                .Skip((model.PageIndex - 1) * model.PageSize)
-                .Take(model.PageSize)
-                .AsNoTracking()
-                .ToListAsync();
+            if (model.JobStatus != null)
+            {
+                query = from data in query
+                        where data.job.JobStatus == model.JobStatus
+                        select data;
+            }
+            else
+            {
+                query = from data in query
+                        where data.job.JobStatus != JobStatus.Completed
+                        select data;
+            }
+
+            if (model.InternalJobStatus != null)
+            {
+                query = from data in query
+                        where data.job.InternalJobStatus == model.InternalJobStatus
+                        select data;
+            }
+            else
+            {
+                query = from data in query
+                        where data.job.InternalJobStatus != InternalJobStatus.Completed
+                        select data;
+            }
+
+            if (model.AccountId != null)
+            {
+                query = from data in query
+                        where data.job.AccountId == model.AccountId
+                        select data;
+            }
+            if (model.CompanyId != null)
+            {
+                query = from data in query
+                        where data.company.CompanyId == model.CompanyId
+                        select data;
+            }
+            if (model.From != null)
+            {
+                query = from data in query
+                        where data.job.CreatedTime >= model.From
+                        select data;
+            }
+            if (model.To != null)
+            {
+                query = from data in query
+                        where data.job.CreatedTime <= model.To
+                        select data;
+            }
+            if (model.Priority != null)
+            {
+                query = from data in query
+                        where data.job.Priority == model.Priority
+                        select data;
+            }
+            if (model.CustomerId.HasValue)
+            {
+                query = from data in query
+                        where data.job.CustomerId == model.CustomerId.Value
+                        select data;
+            }
+            if (model.CreatedBy.HasValue)
+            {
+                query = from data in query
+                        where data.job.CreatedBy == model.CreatedBy.Value
+                        select data;
+            }
+            if (model.JobType.HasValue)
+            {
+                query = from data in query
+                        where data.job.JobType == model.JobType.Value
+                        select data;
+            }
+
+            if (role == RoleType.Designer)
+            {
+                query = from data in query
+                        where Context.Jobs.Where(job => job.DesignerId == userId
+                        && job.CorrelationType == CorrelationJobType.Job && job.ParentId != null)
+                        .Select(job => job.ParentId).Contains(data.job.JobId)
+                        select data;
+            }
+            else
+            {
+                query = from data in query
+                        where data.job.AccountId == userId || data.job.CustomerId == userId || role == RoleType.Admin
+                        select data;
+            }
+            var jobs = await query.OrderByDescending(data => data.job.CreatedTime)
+                            .Skip((model.PageIndex - 1) * model.PageSize)
+                            .Take(model.PageSize)
+                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.company, data.jobType))
+                            .AsNoTracking()
+                            .ToListAsync();
             var count = await query.CountAsync();
-            return new PagingModel<Job>
+            return new PagingModel<Tuple<Job, User, User, User, Company, JobType>>
             {
                 Items = jobs,
                 Count = count
@@ -50,7 +167,7 @@ namespace SEP_JMS.Repository.Repositories
         public async Task<ProjectDetailStatistics> GetProjectDetailStatistics(Guid id)
         {
             var query = from job in Context.Jobs
-                        where job.ParentId == id 
+                        where job.ParentId == id
                         select job;
             var total = await query.CountAsync();
             var success = await query.Where(x => x.JobStatus == JobStatus.Completed).CountAsync();
@@ -117,41 +234,23 @@ namespace SEP_JMS.Repository.Repositories
                         where data.job.Title.ToLower().Contains(model.SearchText.ToLower())
                         select data;
             }
-            
+
             // job status != null khi filter hoặc là truyền job status  = completed
             if (model.JobStatus != null)
             {
-
-                if(model.JobStatus != JobStatus.Completed)
-                {
-                    query = from data in query
-                            where data.job.JobStatus == model.JobStatus
-                            select data;
-                }               
-                // đang lấy all finished job
-                else if (model.ParentId == null && model.JobStatus == JobStatus.Completed)
-                {
-                    query = from data in query
-                                    where data.job.JobStatus == JobStatus.Completed
-                                    select data;
-                }
-                // đang lấy sub task của finished job
-                else
-                {
-                    query = from data in query
-                            where data.job.JobStatus == JobStatus.Completed
-                            select data;
-                }
-                }
+                query = from data in query
+                        where data.job.JobStatus == JobStatus.Completed
+                        select data;
+            }
             // viec dang làm thì đang không truyền JobStatus
             else
             {
                 // Viec dang lam thi lay tat ca status job tru CompletedJob
-                if (model.ParentId == null) 
+                if (model.ParentId == null)
                 {
                     query = from data in query
-                           where data.job.JobStatus != JobStatus.Completed
-                          select data;
+                            where data.job.JobStatus != JobStatus.Completed
+                            select data;
                 }
                 // nếu mà là lấy sub task thì nó lấy all status
                 else
@@ -290,7 +389,7 @@ namespace SEP_JMS.Repository.Repositories
             else
             {
                 query = from data in query
-                        where data.job.JobStatus != JobStatus.Completed
+                        where data.job.InternalJobStatus != InternalJobStatus.Completed
                         select data;
             }
             if (model.AccountId != null)
@@ -477,7 +576,7 @@ namespace SEP_JMS.Repository.Repositories
             await Context.SaveChangesAsync();
             Context.Entry(currentJob).State = EntityState.Detached;
             return currentJob;
-        }   
+        }
 
         public async Task UpdateFinalProductsToLocal(Guid jobId, FolderItem finalFolder)
         {
@@ -694,36 +793,20 @@ namespace SEP_JMS.Repository.Repositories
             }
             if (model.InternalJobStatus != null)
             {
-                //if (model.InternalJobStatus != InternalJobStatus.Completed)
-                //{
-                    query = from data in query
-                            where data.job.InternalJobStatus == model.InternalJobStatus
-                            select data;
-                //}
-                //else if (model.ParentId == null)
-                //{
-                //    query = from data in query
-                //            where data.job.InternalJobStatus == InternalJobStatus.Completed
-                //            select data;
-                //}
-                //else
-                //{
-                //    query = from data in query
-                //            where data.job.InternalJobStatus == InternalJobStatus.Completed
-                //            select data;
-                //}
+                query = from data in query
+                        where data.job.InternalJobStatus == model.InternalJobStatus
+                        select data;
             }
             else
             {
-
-                // lay all job tru completed job
+                //all job tru completed job
                 if (model.ParentId == null)
                 {
                     query = from data in query
                             where data.job.InternalJobStatus != InternalJobStatus.Completed
                             select data;
                 }
-                // lau all sub task
+                //all sub task
                 else
                 {
                     query = from data in query

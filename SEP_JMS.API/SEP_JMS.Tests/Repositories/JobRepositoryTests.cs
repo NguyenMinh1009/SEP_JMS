@@ -13,7 +13,6 @@ namespace SEP_JMS.Tests.Repositories
     public class JobRepositoryTests
     {
         private IJobRepository _jobRepository;
-        private int _totalJob = 0;
 
         private readonly List<Job> _testJobs = new();
 
@@ -40,7 +39,6 @@ namespace SEP_JMS.Tests.Repositories
             ContextGenerator.Instance.Jobs.RemoveRange(ContextGenerator.Instance.Jobs);
             await ContextGenerator.Instance.SaveChangesAsync();
             _testJobs.Clear();
-            _totalJob = 0;
 
             #region normal job
             var job1 = new Job
@@ -76,22 +74,158 @@ namespace SEP_JMS.Tests.Repositories
                 DesignerId = _designerId1,
                 Title = "Test job title 3"
             };
+            var project1 = new Job
+            {
+                JobId = Guid.NewGuid(),
+                AccountId = _accountId3,
+                CorrelationType = Model.Enums.System.CorrelationJobType.Project,
+                CreatedBy = _accountId3,
+                CustomerId = _customerId3,
+                Description = "Test project 1",
+                Title = "Test project title 1"
+            };
+            var project2 = new Job
+            {
+                JobId = Guid.NewGuid(),
+                AccountId = _accountId2,
+                CorrelationType = Model.Enums.System.CorrelationJobType.Project,
+                CreatedBy = _accountId2,
+                CustomerId = _customerId2,
+                Description = "Test project 2",
+                Title = "Test project title 2",
+                JobStatus = Model.Enums.System.JobStatus.Completed,
+                InternalJobStatus = Model.Enums.System.InternalJobStatus.Completed,
+            };
+            var project3 = new Job
+            {
+                JobId = Guid.NewGuid(),
+                AccountId = _accountId1,
+                CorrelationType = Model.Enums.System.CorrelationJobType.Project,
+                CreatedBy = _accountId1,
+                CustomerId = _customerId2,
+                Description = "Test project 3",
+                Title = "Test project title 3",
+                JobStatus = Model.Enums.System.JobStatus.Completed,
+                InternalJobStatus = Model.Enums.System.InternalJobStatus.Completed,
+            };
+            var job1OfProject1 = new Job
+            {
+                JobId = Guid.NewGuid(),
+                AccountId = _accountId3,
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job,
+                CreatedBy = _accountId3,
+                CustomerId = _customerId3,
+                Description = "Test sub job project 4 1",
+                DesignerId = _designerId2,
+                Title = "Test sub job project 4 title 1",
+                ParentId  = project1.JobId
+            };
+            var job2OfProject1 = new Job
+            {
+                JobId = Guid.NewGuid(),
+                AccountId = _accountId3,
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job,
+                CreatedBy = _accountId3,
+                CustomerId = _customerId3,
+                Description = "Test sub job project 4 2",
+                DesignerId = _designerId2,
+                Title = "Test sub job project 4 title 2",
+                JobStatus = Model.Enums.System.JobStatus.Completed,
+                InternalJobStatus = Model.Enums.System.InternalJobStatus.Completed,
+                ParentId  = project1.JobId
+            };
             _testJobs.Add(job1);
             _testJobs.Add(job2);
             _testJobs.Add(job3);
-            ContextGenerator.Instance.AddRange(job1, job2, job3);
+            _testJobs.Add(project1);
+            _testJobs.Add(project2);
+            _testJobs.Add(job1OfProject1);
+            _testJobs.Add(job2OfProject1);
+            ContextGenerator.Instance.AddRange(_testJobs);
             await ContextGenerator.Instance.SaveChangesAsync();
-            _totalJob += _testJobs.Count;
             #endregion
         }
 
+        #region Test Get All Projects
+        [Test]
+        public async Task GetProjects_WithAdmin1_ShouldReturnAll()
+        {
+            ApiContext.Current.UserId = _adminId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Admin;
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Project
+            });
+            var totalJob = _testJobs.Count(job => job.CorrelationType == Model.Enums.System.CorrelationJobType.Project
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.ParentId == null);
+            Assert.That(results.Count, Is.EqualTo(totalJob));
+        }
+
+        [Test]
+        public async Task GetProjects_WithAcount1_ShouldReturnOnlyProjectForAccount1()
+        {
+            ApiContext.Current.UserId = _accountId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Account;
+            var count = _testJobs.Count(job => job.AccountId == _accountId1
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Project
+                && job.ParentId == null);
+
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Project
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+
+        [Test]
+        public async Task GetProjects_WithDesinger1_ShouldReturnOnlyProjectsForDesinger1()
+        {
+            ApiContext.Current.UserId = _designerId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Designer;
+            var count = _testJobs.Count(job => job.DesignerId == _designerId1
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Project
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Project
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+
+        [Test]
+        public async Task GetProjects_WithCustomer1_ShouldReturnOnlyProjectsForCustomer1()
+        {
+            ApiContext.Current.UserId = _customerId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Customer;
+            var count = _testJobs.Count(job => job.CustomerId == _customerId1
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Project
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Project
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+        #endregion
+
+        #region Test Get All Jobs
         [Test]
         public async Task GetJobs_WithAdmin1_ShouldReturnAll()
         {
             ApiContext.Current.UserId = _adminId1;
             ApiContext.Current.Role = Model.Enums.System.RoleType.Admin;
-            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest());
-            Assert.That(results.Count, Is.EqualTo(_totalJob));
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job
+            });
+            var totalJob = _testJobs.Count(job => job.CorrelationType == Model.Enums.System.CorrelationJobType.Job 
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.ParentId == null);
+            Assert.That(results.Count, Is.EqualTo(totalJob));
         }
 
         [Test]
@@ -99,9 +233,118 @@ namespace SEP_JMS.Tests.Repositories
         {
             ApiContext.Current.UserId = _accountId1;
             ApiContext.Current.Role = Model.Enums.System.RoleType.Account;
-            var count = _testJobs.Where(job => job.AccountId == _accountId1).Count();
-            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest());
+            var count = _testJobs.Count(job => job.AccountId == _accountId1 
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job
+            });
             Assert.That(results.Count, Is.EqualTo(count));
         }
+
+        [Test]
+        public async Task GetJobs_WithDesinger1_ShouldReturnOnlyJobForDesinger1()
+        {
+            ApiContext.Current.UserId = _designerId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Designer;
+            var count = _testJobs.Count(job => job.DesignerId == _designerId1
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+
+        [Test]
+        public async Task GetJobs_WithCustomer1_ShouldReturnOnlyJobForCustomer1()
+        {
+            ApiContext.Current.UserId = _customerId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Customer;
+            var count = _testJobs.Count(job => job.CustomerId == _customerId1
+                && job.JobStatus != Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+        #endregion
+
+        #region Test Get Completed Jobs
+        [Test]
+        public async Task GetCompletedJobs_WithAdmin1_ShouldReturnAllCompletedJobs()
+        {
+            ApiContext.Current.UserId = _adminId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Admin;
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job,
+                JobStatus = Model.Enums.System.JobStatus.Completed
+            });
+            var totalJob = _testJobs.Count(job => job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.JobStatus == Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.ParentId == null);
+            Assert.That(results.Count, Is.EqualTo(totalJob));
+        }
+
+        [Test]
+        public async Task GetCompletedJobs_WithAcount1_ShouldReturnOnlyCompletedJobsForAccount1()
+        {
+            ApiContext.Current.UserId = _accountId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Account;
+            var count = _testJobs.Count(job => job.AccountId == _accountId1
+                && job.JobStatus == Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job,
+                JobStatus = Model.Enums.System.JobStatus.Completed
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+
+        [Test]
+        public async Task GetCompletedJobs_WithDesinger1_ShouldReturnOnlyCompletedJobsForDesinger1()
+        {
+            ApiContext.Current.UserId = _designerId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Designer;
+            var count = _testJobs.Count(job => job.DesignerId == _designerId1
+                && job.JobStatus == Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job,
+                JobStatus = Model.Enums.System.JobStatus.Completed
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+
+        [Test]
+        public async Task GetCompletedJobs_WithCustomer1_ShouldReturnOnlyCompletedJobsForCustomer1()
+        {
+            ApiContext.Current.UserId = _customerId1;
+            ApiContext.Current.Role = Model.Enums.System.RoleType.Customer;
+            var count = _testJobs.Count(job => job.CustomerId == _customerId1
+                && job.JobStatus == Model.Enums.System.JobStatus.Completed
+                && job.CorrelationType == Model.Enums.System.CorrelationJobType.Job
+                && job.ParentId == null);
+            var results = await _jobRepository.GetAllJobs(new Model.Api.Request.Job.JobFilterRequest
+            {
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job,
+                JobStatus = Model.Enums.System.JobStatus.Completed
+            });
+            Assert.That(results.Count, Is.EqualTo(count));
+        }
+        #endregion
     }
 }

@@ -11,6 +11,8 @@ namespace SEP_JMS.Service.IServices
 {
     public interface IJobService
     {
+        public Task<PagingModel<JobResponse>> GetAllProjects(ProjectFilterRequest model);
+
         public Task<PagingModel<JobResponse>> GetAllJobs(JobFilterRequest model);
 
         public Task<Guid?> CreateJob(CreateJobRequest model);

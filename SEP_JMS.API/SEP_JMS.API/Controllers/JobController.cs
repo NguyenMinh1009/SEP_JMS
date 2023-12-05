@@ -46,6 +46,22 @@ namespace SEP_JMS.API.Controllers
         }
 
         [Authorize]
+        [HttpPost("allprojects")]
+        public async Task<ActionResult<PagingModel<JobResponse>>> GetAllProject([FromBody] ProjectFilterRequest model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get all jobs.");
+                return await jobService.GetAllProjects(model);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when getting all jobs. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
         [HttpPost("all")]
         public async Task<ActionResult<PagingModel<JobResponse>>> GetAll([FromBody] JobFilterRequest model)
         {
@@ -72,13 +88,12 @@ namespace SEP_JMS.API.Controllers
                 logger.Info($"{logPrefix} Start to create a new job for customer {model.CustomerId} account {model.AccountId}");
                 if (ApiContext.Current.UserId != model.CustomerId && ApiContext.Current.Role == RoleType.Customer)
                     return StatusCode((int)HttpStatusCode.Forbidden);
-                if (ApiContext.Current.Role == RoleType.Customer) model.DesignerId = null;
+                if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project) model.DesignerId = null;
                 var jobId = await jobService.CreateJob(model);
                 if (jobId == null) return StatusCode((int)HttpStatusCode.InternalServerError);
 
                 // create notification
-                await notificationService.Trigger(jobId ?? Guid.Empty, null, null, NotiAction.CreateJob);
-
+                await notificationService.Trigger(jobId.Value, null, null, NotiAction.CreateJob);
                 return new CreateJobResponse { JobId = jobId.Value };
             }
             catch (Exception ex)
@@ -142,18 +157,16 @@ namespace SEP_JMS.API.Controllers
 
                 // for make notify
                 var oldJob = await jobService.GetBasicJob(jobId);
-                
-                //
 
-                if (ApiContext.Current.Role == RoleType.Customer)
+                if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project)
                 {
                     model.DesignerId = null;
                     model.AccountId = null;
                 }
-                if(model.JobStatus == JobStatus.Completed && model.CorrelationType == CorrelationJobType.Project)
+                if (model.JobStatus == JobStatus.Completed && model.CorrelationType == CorrelationJobType.Project)
                 {
                     var projectDetail = await jobService.GetProjectDetailStatistics(jobId);
-                    if(projectDetail.SuccessJob != projectDetail.TotalJob) return BadRequest();
+                    if (projectDetail.SuccessJob != projectDetail.TotalJob) return BadRequest();
                 }
                 var success = await jobService.UpdateJob(jobId, model);
 

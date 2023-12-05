@@ -10,7 +10,7 @@ namespace SEP_JMS.Repository.IRepositories
 {
     public interface IJobRepository : IBaseRepository<Job>
     {
-        public Task<PagingModel<Job>> GetProjects(ProjectFilterRequest model);
+        public Task<PagingModel<Tuple<Job, User, User, User, Company, JobType>>> GetProjects(ProjectFilterRequest model);
 
         public Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(JobFilterRequest model);
 

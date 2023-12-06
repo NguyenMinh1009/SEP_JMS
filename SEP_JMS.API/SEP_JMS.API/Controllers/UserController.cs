@@ -223,7 +223,7 @@ namespace SEP_JMS.API.Controllers
                 var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ApiConstants.AvatarUploadFolder, fPath);
                 if (!System.IO.File.Exists(filePath)) return StatusCode(404);
                 _ = new FileExtensionContentTypeProvider().TryGetContentType(filePath, out string? mediaType);
-                return new FileStreamResult(new FileStream(filePath, FileMode.Open), mediaType ?? "application/octet-stream");
+                return await Task.FromResult(new FileStreamResult(new FileStream(filePath, FileMode.Open), mediaType ?? "application/octet-stream"));
             }
             catch (Exception ex)
             {

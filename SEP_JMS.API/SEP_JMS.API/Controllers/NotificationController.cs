@@ -17,16 +17,12 @@ namespace SEP_JMS.API.Controllers
     {
         private readonly string logPrefix = "[NotificationController]";
 
-        private readonly IJobService jobService;
         private readonly INotificationService notificationService;
-        private readonly IMapper mapper;
         private readonly IJMSLogger logger;
 
-        public NotificationController(IJobService jobService, INotificationService notificationService, IMapper mapper, IJMSLogger logger)
+        public NotificationController(INotificationService notificationService, IJMSLogger logger)
         {
-            this.jobService = jobService;
             this.notificationService = notificationService;
-            this.mapper = mapper;
             this.logger = logger;
         }
 
@@ -51,12 +47,12 @@ namespace SEP_JMS.API.Controllers
         {
             try
             {
-                // logger.Info($"{logPrefix} Start to get notifications for user {ApiContext.Current.UserId}.");
+                logger.Info($"{logPrefix} Start to get notifications.");
                 return await notificationService.GetNotifications(requestModel);
             }
             catch (Exception ex)
             {
-                // logger.Error($"{logPrefix} Got exception when getting notifications for user {ApiContext.Current.UserId}. Error: {ex}");
+                logger.Error($"{logPrefix} Got exception when getting notifications. Error: {ex}");
                 return StatusCode(500);
             }
         }

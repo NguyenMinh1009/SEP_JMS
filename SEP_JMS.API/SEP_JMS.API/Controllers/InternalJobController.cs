@@ -20,15 +20,12 @@ namespace SEP_JMS.API.Controllers
         private readonly string logPrefix = "[InternalJobController]";
 
         private readonly IInternalJobService internalJobService;
-        private readonly IJobService jobService;
         private readonly IJMSLogger logger;
 
         public InternalJobController(IInternalJobService internalJobService,
-            IJobService jobService,
             IJMSLogger logger)
         {
             this.internalJobService = internalJobService;
-            this.jobService = jobService;
             this.logger = logger;
         }
         [Authorize(Policy = PolicyConstants.Internal)]

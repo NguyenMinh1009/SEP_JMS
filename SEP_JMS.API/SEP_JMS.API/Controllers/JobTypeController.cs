@@ -13,22 +13,12 @@ namespace SEP_JMS.API.Controllers
     {
         private readonly string logPrefix = "[JobTypeController]";
 
-        private readonly IJobService jobService;
-        private readonly ICompanyService companyService;
         private readonly IJobTypeService jobTypeService;
-        private readonly IMapper mapper;
         private readonly IJMSLogger logger;
 
-        public JobTypeController(IJobService jobService,
-            ICompanyService companyService,
-            IJobTypeService jobTypeService,
-            IMapper mapper,
-            IJMSLogger logger)
+        public JobTypeController(IJobTypeService jobTypeService, IJMSLogger logger)
         {
-            this.jobService = jobService;
             this.jobTypeService = jobTypeService;
-            this.companyService = companyService;
-            this.mapper = mapper;
             this.logger = logger;
         }
 

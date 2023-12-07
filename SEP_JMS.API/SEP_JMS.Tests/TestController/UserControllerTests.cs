@@ -87,7 +87,7 @@ namespace SEP_JMS.Tests.TestController
 
             // Assert
             Assert.That(resp.StatusCode, Is.EqualTo(expectedCode));
-            // Assert.That(resp.Value, Is.EqualTo("New password is invalid format"));
+            if (expectedCode == 400) Assert.That((resp as BadRequestObjectResult)?.Value, Is.EqualTo("New password is invalid format"));
         }
 
         

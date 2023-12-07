@@ -173,7 +173,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to create a new employee with username {model.Username}.");
-                if (!DataVerificationUtility.VerifyUsernameStrong(model.Username)) BadRequest("Username invalid format");
+                if (!DataVerificationUtility.VerifyUsernameStrong(model.Username)) return BadRequest("Username invalid format");
                 if (!DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
                 var userId = await userService.CreateEmployee(model);
                 if (userId == null) return StatusCode(500);

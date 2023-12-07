@@ -1,4 +1,5 @@
 ﻿using SEP_JMS.Model.Enums.System;
+using SEP_JMS.Model.Models;
 
 namespace SEP_JMS.Common
 {
@@ -30,6 +31,12 @@ namespace SEP_JMS.Common
         public static void Empty()
         {
             if (instance != null) instance.Value = new ApiContext();
+        }
+
+        public static void SetUser(User usr)
+        {
+            ApiContext.Empty();
+            ApiContext.Current = new ApiContext { UserId = usr.UserId, Username = usr.Username, Role = usr.RoleType, Email = usr.Email};
         }
     }
 }

@@ -104,6 +104,32 @@ namespace SEP_JMS.API.Controllers
         }
 
         [Authorize]
+        [HttpGet("project/{projectId}")]
+        public async Task<ActionResult<JobResponse>> GetProject([FromRoute] Guid projectId)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get the project {projectId}.");
+                var job = await jobService.GetProject(projectId);
+                if (job == null) return StatusCode((int)HttpStatusCode.NotFound);
+
+                var jobDisplay = mapper.Map<JobResponse>(job.Item1);
+                jobDisplay.CreatedBy = mapper.Map<UserResponse>(job.Item2);
+                jobDisplay.Customer = mapper.Map<CustomerResponse>(job.Item3);
+                jobDisplay.Account = mapper.Map<EmployeeResponse>(job.Item4);
+                jobDisplay.Designer = mapper.Map<EmployeeResponse>(job.Item5);
+                jobDisplay.Company = mapper.Map<CompanyResponse>(job.Item6);
+                jobDisplay.JobType = mapper.Map<JobTypeResponse>(job.Item7);
+                return jobDisplay;
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when getting the project {projectId}. Error: {ex}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [Authorize]
         [HttpGet("{jobId}")]
         public async Task<ActionResult<JobResponse>> GetJob([FromRoute] Guid jobId)
         {

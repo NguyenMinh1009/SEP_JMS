@@ -135,6 +135,11 @@ namespace SEP_JMS.Service.Services
             return await jobRepository.GetJob(jobId);
         }
 
+        public async Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetProject(Guid projectId)
+        {
+            return await jobRepository.GetProject(projectId);
+        }
+
         public async Task<Job?> GetBasicJob(Guid jobId)
         {
             return await jobRepository.GetBasicJob(jobId);

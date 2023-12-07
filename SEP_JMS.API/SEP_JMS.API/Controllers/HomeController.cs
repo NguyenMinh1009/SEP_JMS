@@ -17,22 +17,18 @@ namespace SEP_JMS.API.Controllers
         private readonly IUserService userService;
         private readonly IJobService jobService;
 
-        private readonly IMapper mapper;
         private readonly IJMSLogger logger;
 
-        public HomeController(ICommentService commentService,
-            ICompanyService companyService,
+        public HomeController(ICompanyService companyService,
             IUserService userService,
             IJobService priceService,
 
-            IMapper mapper,
             IJMSLogger logger)
         {
             this.companyService = companyService;
             this.userService = userService;
             this.jobService = priceService;
 
-            this.mapper = mapper;
             this.logger = logger;
         }
 

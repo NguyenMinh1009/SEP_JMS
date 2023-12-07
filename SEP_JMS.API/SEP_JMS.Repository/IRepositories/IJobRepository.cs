@@ -12,6 +12,8 @@ namespace SEP_JMS.Repository.IRepositories
     {
         public Task<PagingModel<Tuple<Job, User, User, User, Company, JobType>>> GetProjects(ProjectFilterRequest model);
 
+        public Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetProject(Guid projectId);
+
         public Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(JobFilterRequest model);
 
         public Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(InternalJobFilterRequest model);

@@ -39,6 +39,8 @@ namespace SEP_JMS.Model.Api.Response.Job
 
         public JobStatus JobStatus { get; set; }
 
+        public InternalJobStatus InternalJobStatus { get; set; }
+
         public FolderItem? Requirements { get; set; }
 
         public FolderItem? FinalProducts { get; set; }

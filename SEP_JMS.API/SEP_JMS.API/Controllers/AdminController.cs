@@ -28,8 +28,7 @@ namespace SEP_JMS.API.Controllers
         private readonly IMapper mapper;
         private readonly IJMSLogger logger;
 
-        public AdminController(ICommentService commentService,
-            ICompanyService companyService,
+        public AdminController(ICompanyService companyService,
             IUserService userService,
             IPriceService priceService,
             IConfiguration configuration,
@@ -174,7 +173,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to create a new employee with username {model.Username}.");
-                if (!DataVerificationUtility.VerifyUsernameStrong(model.Username)) BadRequest("Username invalid format");
+                if (!DataVerificationUtility.VerifyUsernameStrong(model.Username)) return BadRequest("Username invalid format");
                 if (!DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
                 var userId = await userService.CreateEmployee(model);
                 if (userId == null) return StatusCode(500);
@@ -200,7 +199,7 @@ namespace SEP_JMS.API.Controllers
                 if (model.Password != null && !DataVerificationUtility.VerifyPasswordStrong(model.Password)) return BadRequest("Password invalid format");
                 await userService.UpdateEmployee(id, model);
                 var usr = await userService.GetUserByIdWithoutRole(id);
-                if (usr != null && !String.IsNullOrEmpty(usr?.Email?.Trim()) && !String.IsNullOrEmpty(model.Password) && model.IsNotify) EmailHelper.SendEmailUpdateAccount(configuration, usr?.Email, model.Fullname, usr.Username, usr.Password);
+                if (usr != null && !String.IsNullOrEmpty(usr?.Email?.Trim()) && !String.IsNullOrEmpty(model.Password) && model.IsNotify) EmailHelper.SendEmailUpdateAccount(configuration, usr.Email, model.Fullname, usr.Username, usr.Password);
                 return Ok();
             }
             catch (Exception ex)
@@ -245,7 +244,7 @@ namespace SEP_JMS.API.Controllers
                 await userService.UpdateCustomer(id, model);
 
                 var usr = await userService.GetUserByIdWithoutRole(id);
-                if (usr != null && !String.IsNullOrEmpty(usr?.Email?.Trim()) && !String.IsNullOrEmpty(model.Password) && model.IsNotify) EmailHelper.SendEmailUpdateAccount(configuration, usr?.Email, model.Fullname, usr.Username, usr.Password);
+                if (usr != null && !String.IsNullOrEmpty(usr?.Email?.Trim()) && !string.IsNullOrEmpty(model.Password) && model.IsNotify) EmailHelper.SendEmailUpdateAccount(configuration, usr.Email, model.Fullname, usr.Username, usr.Password);
 
                 return Ok();
             }

@@ -22,5 +22,12 @@ namespace SEP_JMS.Common.Utils
             bool isMatch = Regex.IsMatch(username, pattern);
             return isMatch;
         }
+
+        public static bool VerifyPhoneNumber(string phoneNumber)
+        {
+            string pattern = "^(0|\\+84)\\d{9,10}$";
+            bool isMatch = Regex.IsMatch(phoneNumber, pattern);
+            return isMatch;
+        }
     }
 }

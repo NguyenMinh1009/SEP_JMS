@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using SEP_JMS.Common;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
+using SEP_JMS.Model.Enums.System;
 
 namespace SEP_JMS.Tests.TestController
 {
@@ -70,6 +71,27 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(resp.Result, Is.InstanceOf<NotFoundResult>());
         }
 
+        [TestCase("", "+84358329848", 0, 400, "Full name is invalid")]
+        [TestCase("ABC", "12345678", 0, 400, "Phone number is invalid")]
+        [TestCase("ABC", "+84358329848", 0, 400, "Date of birth is invalid")]
+        [TestCase("ABC", "+84358329848", 638375526555475768, 200, null)]
+        public async Task UpdateProfile_ValidRequest_ReturnValidResponse(string fullName, string? phone, long? dob, int expectedCode, string? errMessage)
+        {
+            var req = new UpdateProfileRequest();
+            req.Fullname = fullName;
+            req.DOB = dob;
+            req.Phone = phone;
+            var usr = new User();
+
+            moqUserService.Setup(u => u.UpdateProfile(req)).ReturnsAsync(usr);
+
+            var resp = await userController.UpdateProfile(req);
+
+            // Assert
+            Assert.That(resp.StatusCode, Is.EqualTo(expectedCode));
+            if (expectedCode == 400) Assert.That((resp as BadRequestObjectResult)?.Value, Is.EqualTo(errMessage));
+        }
+
         [TestCase("12345678", 400)]
         [TestCase("12345678@Abc", 200)]
         [TestCase(null, 500)]
@@ -90,6 +112,38 @@ namespace SEP_JMS.Tests.TestController
             if (expectedCode == 400) Assert.That((resp as BadRequestObjectResult)?.Value, Is.EqualTo("New password is invalid format"));
         }
 
-        
+        [Test]
+        public async Task FindDesigners_ExceptCustomerRole_ReturnValidResponse()
+        {
+            // Arrange
+            var req = new UserFilterRequest();
+            req.Role = RoleType.Admin;
+            var rest = new PagingModel<User>();
+            moqUserService.Setup(u => u.GetUsers(req)).ReturnsAsync(rest);
+
+            // Act
+            var resp = await userController.FindDesigners(req);
+
+            // Assert
+            Assert.That(resp.ReturnValue(), Is.InstanceOf<PagingModel<UserResponse>>());
+        }
+
+        [Test]
+        public async Task FindDesigners_WithCustomerRole_ReturnForbiden()
+        {
+            // Arrange
+            var req = new UserFilterRequest();
+            req.Role = RoleType.Customer;
+            var rest = new PagingModel<User>();
+            moqUserService.Setup(u => u.GetUsers(req)).ReturnsAsync(rest);
+            ApiContext.SetUser(new User { RoleType=RoleType.Customer});
+
+            // Act
+            var resp = await userController.FindDesigners(req);
+
+            // Assert
+            Assert.That(resp.Result, Is.InstanceOf<ForbidResult>());
+        }
+
     }
 }

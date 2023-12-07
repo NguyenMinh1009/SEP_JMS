@@ -161,7 +161,9 @@ const BreadCrumb = () => {
   const getBreadCrumbText = (path: string, _index: number): string => {
     const crumbItem = breadCrumb.find(({ key }) => key === path);
     const preFix: string = " > ";
-    return preFix + (shouldRenderTitle(path) ? breadCrumbTitle.content : crumbItem?.value);
+    let text = (shouldRenderTitle(path) ? breadCrumbTitle.content : crumbItem?.value);
+    if (!text) text = "..."
+    return preFix + text;
   };
 
   useEffect(() => {

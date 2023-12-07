@@ -19,6 +19,7 @@ using SEP_JMS.Common.Utils;
 using Microsoft.AspNetCore.StaticFiles;
 using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Service.Services;
+using System.Numerics;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -160,6 +161,12 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to update profile for user {ApiContext.Current.UserId}.");
+
+                // validate input
+                if (String.IsNullOrEmpty(model.Fullname.Trim())) return BadRequest("Full name is invalid");
+                if (model.Phone != null && !DataVerificationUtility.VerifyPhoneNumber(model.Phone)) return BadRequest("Phone number is invalid");
+                if (model.DOB != null && (model.DOB > DateTime.UtcNow.Ticks || model.DOB < 621355968000000000)) return BadRequest("Date of birth is invalid");
+
                 var rs = await userService.UpdateProfile(model);
                 return rs == null ? BadRequest() : Ok();
             }

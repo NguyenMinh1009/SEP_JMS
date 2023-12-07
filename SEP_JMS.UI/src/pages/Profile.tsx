@@ -385,12 +385,12 @@ const Profile = () => {
                 <p className="w-[134px] font-semibold">Địa chỉ</p>
                 <p className="font-semibold text-accent">{currentInfo?.address}</p>
               </div>
-              <div className="flex items-center">
+              {currentInfo?.company?.companyName && (<div className="flex items-center">
                 <p className="w-[134px] font-semibold">Công ty</p>
                 <p className="font-semibold text-accent">
                   {currentInfo?.company?.companyName || "..."}
                 </p>
-              </div>
+              </div>)}
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Email</p>
                 <p className="font-semibold text-accent">{currentInfo?.email}</p>

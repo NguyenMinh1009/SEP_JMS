@@ -50,7 +50,45 @@ namespace SEP_JMS.Tests.TestController
         }
 
         [Test]
-        public async Task GetCompany_ShouldReturnValidResponse()
+        public async Task CreateCompany_ShouldReturnValidResponse()
+        {
+            CompanyCreateRequestModel request = new();
+
+            var user = new User();
+            moqUserService.Setup(a => a.GetUserById(request.AccountId, RoleType.Account)).ReturnsAsync(user);
+
+            var priceGroup = new PriceGroup();
+            moqPriceService.Setup(a => a.GetGroup(request.PriceGroupId)).ReturnsAsync(priceGroup);
+
+            var company = new CompanyDisplayModel();
+            moqCompanyService.Setup(a => a.CreateCompany(request)).ReturnsAsync(company);
+
+            var response = await adminController.CreateCompany(request);
+            Assert.That(response.ReturnValue(), Is.Not.Null);
+            Assert.That(response.ReturnValue(), Is.InstanceOf<CompanyDisplayModel>());
+        }
+
+        #region ThaiNV
+        [Test]
+        public async Task DeleteCompany_ValidId_ReturnOk()
+        {
+            Guid companyId = Guid.NewGuid();
+            moqCompanyService.Setup(a => a.DeleteCompany(companyId)).Returns(Task.CompletedTask);
+            var response = await adminController.DeleteCompany(companyId);
+            Assert.That(response.StatusCode(), Is.EqualTo(200));
+        }
+
+        [Test]
+        public async Task DeleteCompany_InvalidId_ReturnOk()
+        {
+            Guid companyId = Guid.NewGuid();
+            moqCompanyService.Setup(a => a.DeleteCompany(companyId)).ThrowsAsync(new Exception("invalid"));
+            var response = await adminController.DeleteCompany(companyId);
+            Assert.That(response.Result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task GetCompany_ValidId_ReturnValidResponse()
         {
             Guid companyId = Guid.NewGuid();
             var company = new Company
@@ -71,38 +109,25 @@ namespace SEP_JMS.Tests.TestController
         }
 
         [Test]
-        public async Task DeleteCompany_ShouldReturnOk()
+        public async Task GetCompany_InvalidId_ReturnValidResponse()
         {
             Guid companyId = Guid.NewGuid();
-            moqCompanyService.Setup(a => a.DeleteCompany(companyId)).Returns(Task.CompletedTask);
-            var response = await adminController.DeleteCompany(companyId);
-            Assert.That(response.StatusCode(), Is.EqualTo(200));
-        }
-
-        [Test]
-        public async Task CreateCompany_ShouldReturnValidResponse()
-        {
-            CompanyCreateRequestModel request = new();
-
+            var company = new Company
+            {
+                AccountId = Guid.NewGuid(),
+                PriceGroupId = Guid.NewGuid()
+            };
             var user = new User();
-            moqUserService.Setup(a => a.GetUserById(request.AccountId, RoleType.Account)).ReturnsAsync(user);
-
             var priceGroup = new PriceGroup();
-            moqPriceService.Setup(a => a.GetGroup(request.PriceGroupId)).ReturnsAsync(priceGroup);
 
-            var company = new CompanyDisplayModel();
-            moqCompanyService.Setup(a => a.CreateCompany(request)).ReturnsAsync(company);
+            moqCompanyService.Setup(a => a.GetCompanyById(companyId)).Returns(Task.FromResult<Company>(null));
+            moqUserService.Setup(a => a.GetUserById(company.AccountId, RoleType.Account)).ReturnsAsync(user);
+            moqPriceService.Setup(a => a.GetGroup(company.PriceGroupId)).ReturnsAsync(priceGroup);
 
-            var response = await adminController.CreateCompany(request);
-            Assert.That(response.ReturnValue(), Is.Not.Null);
-            Assert.That(response.ReturnValue(), Is.InstanceOf<CompanyDisplayModel>());
+            var response = await adminController.GetCompany(companyId);
+            Assert.That(response.Result, Is.InstanceOf<NotFoundResult>());
         }
 
-
-
-
-
-        #region ThaiNV
         [Test]
         public async Task UpdateCompany_WithValidAccount_ReturnOk()
         {

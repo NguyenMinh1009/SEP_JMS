@@ -63,7 +63,7 @@ namespace SEP_JMS.API.Controllers
 
         [Authorize]
         [HttpPost("all")]
-        public async Task<ActionResult<PagingModel<JobResponse>>> GetAll([FromBody] JobFilterRequest model)
+        public async Task<ActionResult<PagingModel<JobResponse>>> GetAllJob([FromBody] JobFilterRequest model)
         {
             try
             {

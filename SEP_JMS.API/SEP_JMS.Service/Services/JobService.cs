@@ -28,6 +28,8 @@ namespace SEP_JMS.Service.Services
         private readonly IPriceRepository priceRepository;
         private readonly IPriceGroupRepository priceGroupRepository;
         private readonly IJobTypeRepository jobTypeRepository;
+        private readonly ICommentRepository commentRepository;
+        private readonly INotificationRepository notificationRepository;
 
         private readonly IJMSLogger logger;
         private readonly IMapper mapper;
@@ -37,6 +39,8 @@ namespace SEP_JMS.Service.Services
             IPriceRepository priceRepository,
             IPriceGroupRepository priceGroupRepository,
             IJobTypeRepository typeOfJobRepository,
+            ICommentRepository commentRepository,
+            INotificationRepository notificationRepository,
 
             IMapper mapper,
             IJMSLogger logger)
@@ -46,6 +50,8 @@ namespace SEP_JMS.Service.Services
             this.priceGroupRepository = priceGroupRepository;
             this.priceRepository = priceRepository;
             this.jobTypeRepository = typeOfJobRepository;
+            this.commentRepository = commentRepository;
+            this.notificationRepository = notificationRepository;
 
             this.mapper = mapper;
             this.logger = logger;
@@ -187,8 +193,35 @@ namespace SEP_JMS.Service.Services
 
         public async Task Delete(Guid jobId)
         {
-            var job = await jobRepository.Get(jobId) ?? throw new NullReferenceException($"can't find job {jobId}");
-            await jobRepository.Delete(job);
+            using var transaction = await jobRepository.Context.Database.BeginTransactionAsync();
+            try
+            {
+                var job = await jobRepository.Get(jobId) ?? throw new NullReferenceException($"can't find job {jobId}");
+                var subJobs = await jobRepository.GetAll(a => a.ParentId == jobId);
+                foreach (var subJob in subJobs)
+                {
+                    var comments = await commentRepository.GetAll(c => c.CorrelationJobId == subJob.JobId);
+                    foreach (var comment in comments)
+                    {
+                        await commentRepository.Delete(comment);
+                    }
+                    await jobRepository.Delete(subJob);
+                    await notificationRepository.DeleteByEntityId(subJob.JobId);
+                }
+
+                var mainJobComments = await commentRepository.GetAll(c => c.CorrelationJobId == jobId);
+                foreach (var mainJobComment in mainJobComments)
+                {
+                    await commentRepository.Delete(mainJobComment);
+                }
+                await jobRepository.Delete(job);
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<string> ExportJobs(ExportJobRequest model)

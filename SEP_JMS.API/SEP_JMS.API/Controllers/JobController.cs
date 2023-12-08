@@ -384,6 +384,7 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
+
         [Authorize]
         [HttpGet("{id}/projectdetailstatistics")]
         public async Task<ActionResult<ProjectDetailStatistics>> GetProjectDetailStatistics([FromRoute] Guid id)

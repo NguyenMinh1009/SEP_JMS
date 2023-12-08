@@ -9,7 +9,7 @@ namespace SEP_JMS.Repository.Repositories
     {
         private readonly JSMContext _context;
 
-        protected JSMContext Context { get => _context; }
+        public JSMContext Context { get => _context; }
 
         public BaseRepository(JSMContext context)
         {

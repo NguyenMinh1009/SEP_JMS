@@ -12,6 +12,7 @@ using SEP_JMS.Service.IServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -222,6 +223,104 @@ namespace SEP_JMS.Tests.TestController
             mJobService.Setup(a => a.UpdateJob(jobId, request)).ReturnsAsync(false);
             var response = await jobController.UpdateJob(jobId, request);
             Assert.That(response.StatusCode(), Is.EqualTo(400));
+        }
+
+        [Test]
+        public async Task UpdateJobDesigner_Authorized_ReturnOk()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Designer
+            };
+            ApiContext.SetUser(usr);
+            Guid jobId = Guid.NewGuid();
+            UpdateJobDesignerRequest model = new()
+            {
+                JobStatus = Model.Enums.System.JobStatus.Doing
+            };
+            mJobService.Setup(a => a.UpdateDesignerJob(jobId, model)).ReturnsAsync(true);
+            var response = await jobController.UpdateJobDesigner(jobId, model);
+            Assert.That(response.StatusCode(), Is.EqualTo(200));
+        }
+
+        [Test]
+        public async Task UpdateJobDesigner_Authorized_ReturnBadRequest()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Designer
+            };
+            ApiContext.SetUser(usr);
+            Guid jobId = Guid.NewGuid();
+            UpdateJobDesignerRequest model = new()
+            {
+                JobStatus = Model.Enums.System.JobStatus.Completed
+            };
+            var response = await jobController.UpdateJobDesigner(jobId, model);
+            Assert.That(response.StatusCode(), Is.EqualTo(400));
+        }
+
+        [Test]
+        public async Task Delete_Authorized_ReturnNoContent()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Admin
+            };
+            Guid jobId = Guid.NewGuid();
+            mJobService.Setup(a => a.Delete(jobId)).Returns(Task.CompletedTask);
+            mNotificationService.Setup(a => a.DeleteByEntityId(jobId)).Returns(Task.CompletedTask);
+            var response = await jobController.Delete(jobId);
+            Assert.That(response.StatusCode(), Is.EqualTo((int)HttpStatusCode.NoContent));
+        }
+
+        [Test]
+        public async Task Delete_Authorized_ReturnInternalServerError()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Admin
+            };
+            Guid jobId = Guid.NewGuid();
+            mJobService.Setup(a => a.Delete(jobId)).Throws(new NullReferenceException($"can't find job {jobId}"));
+            var response = await jobController.Delete(jobId);
+            Assert.That(response.StatusCode(), Is.EqualTo((int)HttpStatusCode.InternalServerError));
+        }
+
+        [Test]
+        public async Task GetJobStatistics_Authorized_ReturnValidResponse()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Admin
+            };
+            ApiContext.SetUser(usr);
+            StatisticsJobRequest request = new();
+            List<JobStatisticsResponse> result = new();
+            mJobService.Setup(a => a.GetJobStatistics(request)).ReturnsAsync(result);
+            var response = await jobController.GetJobStatistics(request);
+            Assert.That(response.ReturnValue(), Is.InstanceOf<List<JobStatisticsResponse>>());
+        }
+
+        [Test]
+        public async Task GetProjectDetailStatistics_Authorized_ReturnValidResponse()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Admin
+            };
+            ApiContext.SetUser(usr);
+            Guid projectId = Guid.NewGuid();
+            ProjectDetailStatistics result = new();
+            mJobService.Setup(a => a.GetProjectDetailStatistics(projectId)).ReturnsAsync(result);
+            var response = await jobController.GetProjectDetailStatistics(projectId);
+            Assert.That(response.ReturnValue(), Is.InstanceOf<ProjectDetailStatistics>());
         }
     }
 }

@@ -19,6 +19,8 @@ namespace SEP_JMS.Service.IServices
 
         public Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetJob(Guid jobId);
 
+        public Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetProject(Guid projectId);
+
         public Task<Job?> GetBasicJob(Guid jobId);
 
         public Task<bool> UpdateDesignerJob(Guid jobId, UpdateJobDesignerRequest model);

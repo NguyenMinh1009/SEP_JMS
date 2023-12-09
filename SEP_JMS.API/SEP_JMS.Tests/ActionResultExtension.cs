@@ -13,6 +13,7 @@ namespace SEP_JMS.Tests
         {
             if (result.Result is OkObjectResult okResult) return okResult.StatusCode;
             else if (result.Result is OkResult okRs) return okRs.StatusCode;
+            else if (result.Result is StatusCodeResult statusRs) return statusRs.StatusCode;
             else return null;
         }
 

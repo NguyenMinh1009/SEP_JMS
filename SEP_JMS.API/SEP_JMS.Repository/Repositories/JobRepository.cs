@@ -164,6 +164,64 @@ namespace SEP_JMS.Repository.Repositories
             };
         }
 
+        public async Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetProject(Guid projectId)
+        {
+            var userId = ApiContext.Current.UserId;
+            var role = ApiContext.Current.Role;
+            var query = from job in Context.Jobs
+
+                        join createdUser in Context.Users
+                        on job.CreatedBy equals createdUser.UserId
+                        into createdUsers
+                        from createdUser in createdUsers.DefaultIfEmpty()
+
+                        join customer in Context.Users
+                        on job.CustomerId equals customer.UserId
+                        into customers
+                        from customer in customers.DefaultIfEmpty()
+
+                        join account in Context.Users
+                        on job.AccountId equals account.UserId
+                        into accounts
+                        from account in accounts.DefaultIfEmpty()
+
+                        join designer in Context.Users
+                        on job.DesignerId equals designer.UserId
+                        into designers
+                        from designer in designers.DefaultIfEmpty()
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+                        into companies
+                        from company in companies.DefaultIfEmpty()
+
+                        join jobType in Context.TypeOfJobs
+                        on job.JobType equals jobType.TypeId
+                        into jobTypes
+                        from jobType in jobTypes.DefaultIfEmpty()
+
+                        where job.CorrelationType == CorrelationJobType.Project
+                        select new { job, createdUser, customer, account, designer, company, jobType };
+
+            if (role == RoleType.Designer)
+            {
+                query = from data in query
+                        where Context.Jobs.Where(job => job.DesignerId == userId
+                        && job.CorrelationType == CorrelationJobType.Job && job.ParentId != null)
+                        .Select(job => job.ParentId).Contains(data.job.JobId)
+                        select data;
+            }
+            else
+            {
+                query = from data in query
+                        where data.job.AccountId == userId || data.job.CustomerId == userId || role == RoleType.Admin
+                        select data;
+            }
+            return await query.Where(job => job.job.JobId == projectId)
+                .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.designer, data.company, data.jobType))
+                .AsNoTracking().FirstOrDefaultAsync();
+        }
+
         public async Task<ProjectDetailStatistics> GetProjectDetailStatistics(Guid id)
         {
             var query = from job in Context.Jobs
@@ -732,6 +790,7 @@ namespace SEP_JMS.Repository.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
         public async Task<PagingModel<Tuple<Job, User, User, User, User, Company, JobType>>> GetAllJobs(InternalJobFilterRequestModel model)
         {
             var userId = ApiContext.Current.UserId;

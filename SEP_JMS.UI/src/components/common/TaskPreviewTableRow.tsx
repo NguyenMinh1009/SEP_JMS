@@ -158,7 +158,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         >
           {index + 1 + pageSize * (page - 1)}
         </TableCell>
-        {correlationJobType === CorrelationJobType.Job && (
+        {/* {correlationJobType === CorrelationJobType.Job && (
           <TableCell
             padding="none"
             className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
@@ -166,7 +166,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           >
             {correlationJobOptions.find(item => item.key === row.correlationType)?.text}
           </TableCell>
-        )}
+        )} */}
         <TableCell
           padding="none"
           className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"

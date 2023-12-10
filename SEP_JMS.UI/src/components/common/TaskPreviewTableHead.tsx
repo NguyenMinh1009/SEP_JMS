@@ -16,11 +16,11 @@ const jobHeadCells: readonly TaskHeadCell[] = [
     disablePadding: false,
     label: "STT"
   },
-  {
-    id: "type",
-    disablePadding: false,
-    label: "Loại"
-  },
+  // {
+  //   id: "type",
+  //   disablePadding: false,
+  //   label: "Loại"
+  // },
   {
     id: "customer",
     disablePadding: false,
@@ -152,11 +152,11 @@ const finishedJobHeadCells: readonly TaskHeadCell[] = [
     disablePadding: false,
     label: "STT"
   },
-  {
-    id: "type",
-    disablePadding: false,
-    label: "Loại"
-  },
+  // {
+  //   id: "type",
+  //   disablePadding: false,
+  //   label: "Loại"
+  // },
   {
     id: "customer",
     disablePadding: false,

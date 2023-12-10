@@ -16,11 +16,11 @@ const jobHeadCells: readonly TaskHeadCell[] = [
     disablePadding: false,
     label: "STT"
   },
-  {
-    id: "type",
-    disablePadding: false,
-    label: "Loại"
-  },
+  // {
+  //   id: "type",
+  //   disablePadding: false,
+  //   label: "Loại"
+  // },
   {
     id: "customer",
     disablePadding: false,
@@ -114,11 +114,11 @@ const projectHeadCells: readonly TaskHeadCell[] = [
     disablePadding: false,
     label: "Loại thiết kế"
   },
-  {
-    id: "price",
-    disablePadding: false,
-    label: "Giá"
-  },
+  // {
+  //   id: "price",
+  //   disablePadding: false,
+  //   label: "Giá"
+  // },
   {
     id: "createdDate",
     disablePadding: false,
@@ -152,11 +152,11 @@ const finishedJobHeadCells: readonly TaskHeadCell[] = [
     disablePadding: false,
     label: "STT"
   },
-  {
-    id: "type",
-    disablePadding: false,
-    label: "Loại"
-  },
+  // {
+  //   id: "type",
+  //   disablePadding: false,
+  //   label: "Loại"
+  // },
   {
     id: "customer",
     disablePadding: false,
@@ -245,11 +245,11 @@ const finishedProjectHeadCells: readonly TaskHeadCell[] = [
     disablePadding: false,
     label: "Loại thiết kế"
   },
-  {
-    id: "price",
-    disablePadding: false,
-    label: "Giá"
-  },
+  // {
+  //   id: "price",
+  //   disablePadding: false,
+  //   label: "Giá"
+  // },
   {
     id: "createdDate",
     disablePadding: false,
@@ -297,10 +297,7 @@ const EnhancedTableHead: React.FC<EnhancedTableProps> = ({ correlationJobType, f
           }
         }}
       >
-        {(!currentPerson.hiddenPrice
-          ? headerCells
-          : headerCells.filter(item => item.id !== "price")
-        ).map(headCell => (
+        {headerCells.map(headCell => (
           <TableCell
             key={headCell.id}
             align="center"

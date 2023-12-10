@@ -163,7 +163,7 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
   };
 
   const getTitleProject = async () => {
-    var res = await APIClientInstance.get(`job/${taskId}`);
+    var res = await APIClientInstance.get(`job/project/${taskId}`);
     setTitleProject(res.data.title);
   };
 

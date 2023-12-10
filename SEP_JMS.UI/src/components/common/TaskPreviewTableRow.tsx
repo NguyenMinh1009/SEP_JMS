@@ -194,13 +194,16 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         >
           {row.account.fullname}
         </TableCell>
-        <TableCell
-          padding="none"
-          className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
-          align="center"
-        >
-          {row.designer?.fullname ?? "..."}
-        </TableCell>
+        {correlationJobType === CorrelationJobType.Job && (
+          <TableCell
+            padding="none"
+            className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
+            align="center"
+          >
+            {row.designer?.fullname ?? "..."}
+          </TableCell>
+        )}
+
         <TableCell
           padding="none"
           className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"

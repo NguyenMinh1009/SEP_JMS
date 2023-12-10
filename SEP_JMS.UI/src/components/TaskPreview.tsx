@@ -41,8 +41,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageSize: pageSize,
       searchText: "",
       ...filterInfoController.content,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus,
-      correlationType: CorrelationJobType.Job
+      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -57,8 +56,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageSize: pageSize,
       searchText: "",
       ...filterInfoController.content,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus,
-      correlationType: CorrelationJobType.Project
+      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);

@@ -119,20 +119,21 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           {row.quantity}
         </TableCell>
       );
-    } else {
-      if (!currentPerson.hiddenPrice) {
-        return (
-          <TableCell
-            padding="none"
-            className="min-w-[60px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
-            align="center"
-          >
-            {convertVND(row.price)}
-          </TableCell>
-        );
-      }
-      return <></>;
     }
+    // else {
+    //   if (!currentPerson.hiddenPrice) {
+    //     return (
+    //       <TableCell
+    //         padding="none"
+    //         className="min-w-[60px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+    //         align="center"
+    //       >
+    //         {convertVND(row.price)}
+    //       </TableCell>
+    //     );
+    //   }
+    //   return <></>;
+    // }
   };
   return (
     <>

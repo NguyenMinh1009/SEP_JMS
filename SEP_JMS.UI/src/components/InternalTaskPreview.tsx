@@ -39,8 +39,8 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
       pageIndex: page,
       pageSize: pageSize,
       searchText: "",
-      ...filterInfoController.content,
-      correlationType: CorrelationJobType.Job
+      ...filterInfoController.content
+      // correlationType: CorrelationJobType.Job
       // internalJobStatus: filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
@@ -55,8 +55,8 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
       pageIndex: page,
       pageSize: pageSize,
       searchText: "",
-      ...filterInfoController.content,
-      correlationType: CorrelationJobType.Project
+      ...filterInfoController.content
+      // correlationType: CorrelationJobType.Project
       // internalJobStatus: filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);

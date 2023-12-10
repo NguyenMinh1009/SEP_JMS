@@ -30,7 +30,7 @@ namespace SEP_JMS.Model.Api.Response
 
         public int Quantity { get; set; }
 
-        public JobTypeDisplayModel JobType { get; set; }
+        public JobTypeDisplayModel JobType { get; set; } = null!;
 
         public long CreatedTime { get; set; }
 

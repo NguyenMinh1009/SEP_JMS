@@ -51,12 +51,12 @@ namespace SEP_JMS.API.Controllers
         {
             try
             {
-                logger.Info($"{logPrefix} Start to get all jobs.");
+                logger.Info($"{logPrefix} Start to get all projects.");
                 return await jobService.GetAllProjects(model);
             }
             catch (Exception ex)
             {
-                logger.Error($"{logPrefix} Got exception when getting all jobs. Error: {ex}");
+                logger.Error($"{logPrefix} Got exception when getting all projects. Error: {ex}");
                 return StatusCode(500);
             }
         }

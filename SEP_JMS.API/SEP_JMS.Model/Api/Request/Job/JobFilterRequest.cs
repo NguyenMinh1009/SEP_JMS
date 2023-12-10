@@ -30,8 +30,5 @@ namespace SEP_JMS.Model.Api.Request.Job
         public Guid? CompanyId { get; set; }
 
         public Guid? DesignerId { get; set; }
-
-        [EnumDataType(typeof(CorrelationJobType))]
-        public CorrelationJobType? CorrelationType { get; set; }
     }
 }

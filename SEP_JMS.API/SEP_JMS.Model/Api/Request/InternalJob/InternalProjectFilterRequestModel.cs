@@ -1,9 +1,9 @@
 ﻿using SEP_JMS.Model.Enums.System;
 using System.ComponentModel.DataAnnotations;
 
-namespace SEP_JMS.Model.Api.Request.Job
+namespace SEP_JMS.Model.Api.Request.InternalJob
 {
-    public class ProjectFilterRequest : BaseFilterRequest
+    public class InternalProjectFilterRequestModel : BaseFilterRequest
     {
         public long? From { get; set; }
 
@@ -11,8 +11,8 @@ namespace SEP_JMS.Model.Api.Request.Job
 
         public string? SearchText { get; set; }
 
-        [EnumDataType(typeof(JobStatus))]
-        public JobStatus? JobStatus { get; set; }
+        [EnumDataType(typeof(InternalJobStatus))]
+        public InternalJobStatus? InternalJobStatus { get; set; }
 
         [EnumDataType(typeof(Priority))]
         public Priority? Priority { get; set; }

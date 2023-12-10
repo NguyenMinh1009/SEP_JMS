@@ -180,19 +180,33 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
 
   {
     useEffect(() => {
-      getTaskDetails(
-        setLoading,
-        setImagesLoading,
-        setJobDetail,
-        breadCrumbTitle,
-        setDocFiles,
-        setImgFiles,
-        setOpenDialog,
-        `job/${taskId}`,
-        `file/job/${taskId}`
-      )
-        .then()
-        .catch(err => err);
+      isCorrelationJobType === CorrelationJobType.Project
+        ? getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `job/project/${taskId}`,
+            `file/job/${taskId}`
+          )
+            .then()
+            .catch(err => err)
+        : getTaskDetails(
+            setLoading,
+            setImagesLoading,
+            setJobDetail,
+            breadCrumbTitle,
+            setDocFiles,
+            setImgFiles,
+            setOpenDialog,
+            `job/${taskId}`,
+            `file/job/${taskId}`
+          )
+            .then()
+            .catch(err => err);
     }, [taskId]);
   }
 

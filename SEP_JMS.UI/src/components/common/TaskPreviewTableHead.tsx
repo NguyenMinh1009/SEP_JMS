@@ -110,11 +110,6 @@ const projectHeadCells: readonly TaskHeadCell[] = [
     label: "Account"
   },
   {
-    id: "designer",
-    disablePadding: false,
-    label: "Designer"
-  },
-  {
     id: "jobType",
     disablePadding: false,
     label: "Loại thiết kế"
@@ -244,11 +239,6 @@ const finishedProjectHeadCells: readonly TaskHeadCell[] = [
     id: "account",
     disablePadding: false,
     label: "Account"
-  },
-  {
-    id: "designer",
-    disablePadding: false,
-    label: "Designer"
   },
   {
     id: "jobType",

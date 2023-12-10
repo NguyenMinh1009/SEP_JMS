@@ -40,8 +40,6 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
       pageSize: pageSize,
       searchText: "",
       ...filterInfoController.content
-      // correlationType: CorrelationJobType.Job
-      // internalJobStatus: filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -51,13 +49,11 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
 
   const getProjects = async () => {
     setLoading(true);
-    await AlwayxInstance.post("job/allprojects", {
+    await AlwayxInstance.post("internal/job/allprojects", {
       pageIndex: page,
       pageSize: pageSize,
       searchText: "",
       ...filterInfoController.content
-      // correlationType: CorrelationJobType.Project
-      // internalJobStatus: filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);

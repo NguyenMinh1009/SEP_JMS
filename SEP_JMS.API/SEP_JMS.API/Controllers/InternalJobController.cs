@@ -6,9 +6,12 @@ using SEP_JMS.Common.Logger;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Request.InternalJob;
+using SEP_JMS.Model.Api.Request.Job;
 using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Api.Response.Job;
 using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Service.IServices;
+using SEP_JMS.Service.Services;
 using System.Net;
 
 namespace SEP_JMS.API.Controllers
@@ -28,6 +31,23 @@ namespace SEP_JMS.API.Controllers
             this.internalJobService = internalJobService;
             this.logger = logger;
         }
+
+        [Authorize]
+        [HttpPost("allprojects")]
+        public async Task<ActionResult<PagingModel<InternalJobDetailsDisplayModel>>> GetAllProject([FromBody] InternalProjectFilterRequestModel model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get all internal projects.");
+                return await internalJobService.GetAllInternalProjects(model);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when getting all internal projects. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
         [Authorize(Policy = PolicyConstants.Internal)]
         [HttpPost("all")]
         public async Task<ActionResult<PagingModel<InternalJobDetailsDisplayModel>>> GetAll([FromBody] InternalJobFilterRequestModel model)

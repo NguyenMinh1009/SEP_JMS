@@ -4,6 +4,7 @@ using SEP_JMS.Common;
 using SEP_JMS.Common.Converters;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Request.InternalJob;
 using SEP_JMS.Model.Api.Request.Job;
 using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Model.Enums.System;
@@ -71,6 +72,124 @@ namespace SEP_JMS.Repository.Repositories
             {
                 query = from data in query
                         where data.job.JobStatus != JobStatus.Completed
+                        select data;
+            }
+
+            if (model.AccountId != null)
+            {
+                query = from data in query
+                        where data.job.AccountId == model.AccountId
+                        select data;
+            }
+            if (model.CompanyId != null)
+            {
+                query = from data in query
+                        where data.company.CompanyId == model.CompanyId
+                        select data;
+            }
+            if (model.From != null)
+            {
+                query = from data in query
+                        where data.job.CreatedTime >= model.From
+                        select data;
+            }
+            if (model.To != null)
+            {
+                query = from data in query
+                        where data.job.CreatedTime <= model.To
+                        select data;
+            }
+            if (model.Priority != null)
+            {
+                query = from data in query
+                        where data.job.Priority == model.Priority
+                        select data;
+            }
+            if (model.CustomerId.HasValue)
+            {
+                query = from data in query
+                        where data.job.CustomerId == model.CustomerId.Value
+                        select data;
+            }
+            if (model.CreatedBy.HasValue)
+            {
+                query = from data in query
+                        where data.job.CreatedBy == model.CreatedBy.Value
+                        select data;
+            }
+            if (model.JobType.HasValue)
+            {
+                query = from data in query
+                        where data.job.JobType == model.JobType.Value
+                        select data;
+            }
+
+            if (role == RoleType.Designer)
+            {
+                query = from data in query
+                        where Context.Jobs.Where(job => job.DesignerId == userId
+                        && job.CorrelationType == CorrelationJobType.Job && job.ParentId != null)
+                        .Select(job => job.ParentId).Contains(data.job.JobId)
+                        select data;
+            }
+            else
+            {
+                query = from data in query
+                        where data.job.AccountId == userId || data.job.CustomerId == userId || role == RoleType.Admin
+                        select data;
+            }
+            var jobs = await query.OrderByDescending(data => data.job.CreatedTime)
+                            .Skip((model.PageIndex - 1) * model.PageSize)
+                            .Take(model.PageSize)
+                            .Select(data => Tuple.Create(data.job, data.createdUser, data.customer, data.account, data.company, data.jobType))
+                            .AsNoTracking()
+                            .ToListAsync();
+            var count = await query.CountAsync();
+            return new PagingModel<Tuple<Job, User, User, User, Company, JobType>>
+            {
+                Items = jobs,
+                Count = count
+            };
+        }
+
+        public async Task<PagingModel<Tuple<Job, User, User, User, Company, JobType>>> GetProjects(InternalProjectFilterRequestModel model)
+        {
+            var userId = ApiContext.Current.UserId;
+            var role = ApiContext.Current.Role;
+            var query = from job in Context.Jobs
+
+                        join createdUser in Context.Users
+                        on job.CreatedBy equals createdUser.UserId
+                        into createdUsers
+                        from createdUser in createdUsers.DefaultIfEmpty()
+
+                        join customer in Context.Users
+                        on job.CustomerId equals customer.UserId
+                        into customers
+                        from customer in customers.DefaultIfEmpty()
+
+                        join account in Context.Users
+                        on job.AccountId equals account.UserId
+                        into accounts
+                        from account in accounts.DefaultIfEmpty()
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+                        into companies
+                        from company in companies.DefaultIfEmpty()
+
+                        join jobType in Context.TypeOfJobs
+                        on job.JobType equals jobType.TypeId
+                        into jobTypes
+                        from jobType in jobTypes.DefaultIfEmpty()
+
+                        where job.CorrelationType == CorrelationJobType.Project
+                        select new { job, createdUser, customer, account, company, jobType };
+
+            if (!string.IsNullOrEmpty(model.SearchText))
+            {
+                query = from data in query
+                        where data.job.Title.ToLower().Contains(model.SearchText.ToLower())
                         select data;
             }
 
@@ -274,6 +393,7 @@ namespace SEP_JMS.Repository.Repositories
 
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
                         select new { job, createdUser, customer, account, designer, company, jobType };
+            query = query.Where(d => d.job.CorrelationType == CorrelationJobType.Job);
             if (model.ParentId != null)
             {
                 query = query.Where(d => d.job.ParentId == model.ParentId.Value);
@@ -281,10 +401,6 @@ namespace SEP_JMS.Repository.Repositories
             else
             {
                 query = query.Where(d => d.job.ParentId == null);
-            }
-            if (model.CorrelationType != null)
-            {
-                query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
             }
             if (!string.IsNullOrEmpty(model.SearchText))
             {
@@ -829,6 +945,7 @@ namespace SEP_JMS.Repository.Repositories
 
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
                         select new { job, createdUser, customer, account, designer, company, jobType };
+            query = query.Where(d => d.job.CorrelationType == CorrelationJobType.Job);
 
             if (model.ParentId != null)
             {
@@ -837,11 +954,6 @@ namespace SEP_JMS.Repository.Repositories
             else
             {
                 query = query.Where(d => d.job.ParentId == null);
-            }
-
-            if (model.CorrelationType != null)
-            {
-                query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
             }
 
             if (!string.IsNullOrEmpty(model.SearchText))

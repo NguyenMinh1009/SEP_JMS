@@ -41,8 +41,22 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageSize: pageSize,
       searchText: "",
       ...filterInfoController.content,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus,
-      correlationType: isCorrelationJobType
+      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
+    }).then(res => {
+      setLoading(false);
+      setJobs(res.data.items);
+      setPageCount(Math.ceil(res.data.count / pageSize));
+    });
+  };
+
+  const getProjects = async () => {
+    setLoading(true);
+    await AlwayxInstance.post("job/allprojects", {
+      pageIndex: page,
+      pageSize: pageSize,
+      searchText: "",
+      ...filterInfoController.content,
+      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -64,7 +78,11 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
   };
 
   useEffect(() => {
-    getJobs();
+    if (isCorrelationJobType === CorrelationJobType.Job) {
+      getJobs();
+    } else {
+      getProjects();
+    }
     setPageInfo?.({ page: page, pageSize: pageSize });
   }, [page]);
 
@@ -72,7 +90,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
     if (!isFirstRender) {
       if (page !== 1) setPage(1);
       else {
-        getJobs();
+        isCorrelationJobType === CorrelationJobType.Project ? getProjects() : getJobs();
       }
     }
   }, [filterInfoController.content, isCorrelationJobType]);

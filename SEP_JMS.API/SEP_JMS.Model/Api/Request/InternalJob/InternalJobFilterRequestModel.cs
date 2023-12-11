@@ -30,7 +30,6 @@ namespace SEP_JMS.Model.Api.Request
 
         public Guid? CreatedBy { get; set; }
 
-        // [EnumDataType(typeof(JobType))]
         public Guid? JobType { get; set; }
 
         public Guid? AccountId { get; set; }
@@ -38,8 +37,5 @@ namespace SEP_JMS.Model.Api.Request
         public Guid? CompanyId { get; set; }
 
         public Guid? DesignerId { get; set; }
-
-        [EnumDataType(typeof(CorrelationJobType))]
-        public CorrelationJobType? CorrelationType { get; set; }
     }
 }

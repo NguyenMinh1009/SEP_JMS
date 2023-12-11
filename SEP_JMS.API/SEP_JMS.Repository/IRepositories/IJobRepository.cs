@@ -5,12 +5,15 @@ using SEP_JMS.Model.Models;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Api.Request.InternalJob;
 
 namespace SEP_JMS.Repository.IRepositories
 {
     public interface IJobRepository : IBaseRepository<Job>
     {
         public Task<PagingModel<Tuple<Job, User, User, User, Company, JobType>>> GetProjects(ProjectFilterRequest model);
+
+        public Task<PagingModel<Tuple<Job, User, User, User, Company, JobType>>> GetProjects(InternalProjectFilterRequestModel model);
 
         public Task<Tuple<Job, User, User, User, User, Company, JobType>?> GetProject(Guid projectId);
 

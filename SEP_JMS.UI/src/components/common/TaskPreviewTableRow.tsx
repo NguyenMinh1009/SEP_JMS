@@ -119,20 +119,21 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           {row.quantity}
         </TableCell>
       );
-    } else {
-      if (!currentPerson.hiddenPrice) {
-        return (
-          <TableCell
-            padding="none"
-            className="min-w-[60px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
-            align="center"
-          >
-            {convertVND(row.price)}
-          </TableCell>
-        );
-      }
-      return <></>;
     }
+    // else {
+    //   if (!currentPerson.hiddenPrice) {
+    //     return (
+    //       <TableCell
+    //         padding="none"
+    //         className="min-w-[60px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+    //         align="center"
+    //       >
+    //         {convertVND(row.price)}
+    //       </TableCell>
+    //     );
+    //   }
+    //   return <></>;
+    // }
   };
   return (
     <>
@@ -157,7 +158,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         >
           {index + 1 + pageSize * (page - 1)}
         </TableCell>
-        {correlationJobType === CorrelationJobType.Job && (
+        {/* {correlationJobType === CorrelationJobType.Job && (
           <TableCell
             padding="none"
             className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
@@ -165,7 +166,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           >
             {correlationJobOptions.find(item => item.key === row.correlationType)?.text}
           </TableCell>
-        )}
+        )} */}
         <TableCell
           padding="none"
           className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
@@ -194,13 +195,16 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         >
           {row.account.fullname}
         </TableCell>
-        <TableCell
-          padding="none"
-          className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
-          align="center"
-        >
-          {row.designer?.fullname ?? "..."}
-        </TableCell>
+        {correlationJobType === CorrelationJobType.Job && (
+          <TableCell
+            padding="none"
+            className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
+            align="center"
+          >
+            {row.designer?.fullname ?? "..."}
+          </TableCell>
+        )}
+
         <TableCell
           padding="none"
           className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"

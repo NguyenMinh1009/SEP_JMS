@@ -80,20 +80,24 @@ ISubTasksSection) => {
   return (
     <div>
       {!isLoading ? (
-        finishedOnly ? (
-          <div>
-            <SubTasksProps tasks={jobs} visibleType={visibleType} finishedOnly />
-            <div className="mx-auto mt-8 flex items-center justify-center">
-              <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
+        jobs.length > 0 ? (
+          finishedOnly ? (
+            <div>
+              <SubTasksProps tasks={jobs} visibleType={visibleType} finishedOnly />
+              <div className="mx-auto mt-8 flex items-center justify-center">
+                <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div>
+              <SubTasksProps tasks={jobs} visibleType={visibleType} />
+              <div className="mx-auto mt-8 flex items-center justify-center">
+                <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
+              </div>
+            </div>
+          )
         ) : (
-          <div>
-            <SubTasksProps tasks={jobs} visibleType={visibleType} />
-            <div className="mx-auto mt-8 flex items-center justify-center">
-              <TablePagination page={page} pageCount={pageCount} handleChange={handleChange} />
-            </div>
-          </div>
+          <p>Chưa có công việc</p>
         )
       ) : (
         <CircularProgress size={25} />

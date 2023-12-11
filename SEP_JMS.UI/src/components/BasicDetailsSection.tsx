@@ -53,7 +53,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
   const [selectedStatus, setSelectedStatus] = useState<InternalJobStatusType>(initStatus);
   const [taskDetail, setTaskDetail] = useState<any>();
 
-  const { taskId } = useParams();
+  const { taskId, subTaskId } = useParams();
   const snakeBar = useSnakeBar();
   const sideBar = useSideBarPanel();
   const currentPerson = useCurrentPerson();
@@ -70,17 +70,23 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         return;
       }
     }
-    await AlwayxInstance.put(`internal/job/${taskId}/status`, {
-      internalJobStatus: status
-    })
-      .then(() => {
-        setSelectedStatus(status);
-        // if (status === InternalJobStatusType.Completed) {
-        //   setOpenDialog(true);
-        // }
-        snakeBar.setSnakeBar("Cập nhật trạng thái thành công", "success", true);
-      })
-      .catch(err => console.error(err));
+    subTaskId === undefined
+      ? await AlwayxInstance.put(`internal/job/${taskId}/status`, {
+          internalJobStatus: status
+        })
+          .then(() => {
+            setSelectedStatus(status);
+            snakeBar.setSnakeBar("Cập nhật trạng thái thành công", "success", true);
+          })
+          .catch(err => console.error(err))
+      : await AlwayxInstance.put(`internal/job/${subTaskId}/status`, {
+          internalJobStatus: status
+        })
+          .then(() => {
+            setSelectedStatus(status);
+            snakeBar.setSnakeBar("Cập nhật trạng thái thành công", "success", true);
+          })
+          .catch(err => console.error(err));
   };
 
   const renderCorrelationJobType = () => {

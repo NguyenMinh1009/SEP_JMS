@@ -219,21 +219,35 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
   };
 
   useEffect(() => {
-    getTaskDetails(
-      setLoading,
-      setImagesLoading,
-      setJobDetail,
-      breadCrumbTitle,
-      setDocFiles,
-      setImgFiles,
-      setOpenDialog,
-      `internal/job/${taskId}`,
-      `file/job/${taskId}`
-    )
-      .then(res => {
-        setLoadingGetJobDetail(false);
-      })
-      .catch(err => err);
+    isCorrelationJobType === CorrelationJobType.Project
+      ? getTaskDetails(
+          setLoading,
+          setImagesLoading,
+          setJobDetail,
+          breadCrumbTitle,
+          setDocFiles,
+          setImgFiles,
+          setOpenDialog,
+          `job/project/${taskId}`,
+          `file/job/${taskId}`
+        )
+          .then()
+          .catch(err => err)
+      : getTaskDetails(
+          setLoading,
+          setImagesLoading,
+          setJobDetail,
+          breadCrumbTitle,
+          setDocFiles,
+          setImgFiles,
+          setOpenDialog,
+          `internal/job/${taskId}`,
+          `file/job/${taskId}`
+        )
+          .then(res => {
+            setLoadingGetJobDetail(false);
+          })
+          .catch(err => err);
   }, [taskId]);
 
   useEffect(() => {

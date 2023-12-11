@@ -98,8 +98,8 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedPriority, setSelectedPriority] = useState<Priority>(Priority.MEDIUM);
   const [selectedStatus, setSelectedStatus] = useState<JobStatusType>(JobStatusType.NotDo);
-  const [selectedInternalStatus, setSelectedInternalStatus] = useState<JobStatusType>(
-    JobStatusType.NotDo
+  const [selectedInternalStatus, setSelectedInternalStatus] = useState<InternalJobStatusType>(
+    InternalJobStatusType.NotDo
   );
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
@@ -294,84 +294,92 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
     );
   };
 
-  const editBasicInfoPromise = () => {
-    if (isInternal) {
-      return currentPerson.roleType !== Role.DESIGNER
-        ? subTaskId === undefined
-          ? isCorrelationJobType === CorrelationJobType.Job
-            ? // edit noi bo viec hang ngay
-              AlwayxInstance.put(`job/${taskId}`, {
-                title: title,
-                description: getSanitizeText(value),
-                designerId: selectedDesigner?.userId,
-                accountId: selectedAccount?.userId,
-                quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
-                jobType: selectedJobType.typeId,
-                deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-                priority: selectedPriority,
-                jobStatus: selectedInternalStatus,
-                correlationType: CorrelationJobType.Job
-              })
-            : // edit noi bo du an
-              AlwayxInstance.put(`job/${taskId}`, {
-                title: title,
-                description: getSanitizeText(value),
-                designerId: selectedDesigner?.userId,
-                accountId: selectedAccount?.userId,
-                quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
-                jobType: selectedJobType.typeId,
-                deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-                priority: selectedPriority,
-                jobStatus: selectedInternalStatus,
-                correlationType: CorrelationJobType.Project
-              })
-          : // edit noi bo sub task
-            AlwayxInstance.put(`job/${subTaskId}`, {
-              parentId: taskId,
-              title: title,
-              description: getSanitizeText(value),
-              designerId: selectedDesigner?.userId,
-              accountId: selectedAccount?.userId,
-              quantity: quantity,
-              jobType: selectedJobType.typeId,
-              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-              priority: selectedPriority,
-              jobStatus: selectedInternalStatus,
-              correlationType: CorrelationJobType.Job
-            })
-        : Promise.resolve(null);
+  const editBasicInfoPromise = async () => {
+    if (currentPerson.roleType !== Role.DESIGNER) {
+      // if (isInternal) {
+      //   return subTaskId === undefined
+      //     ? isCorrelationJobType === CorrelationJobType.Job
+      //       ? // edit noi bo viec hang ngay
+      //         await AlwayxInstance.put(`job/${taskId}`, {
+      //           title: title,
+      //           description: getSanitizeText(value),
+      //           designerId: selectedDesigner?.userId,
+      //           accountId: selectedAccount?.userId,
+      //           quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+      //           jobType: selectedJobType.typeId,
+      //           deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+      //           priority: selectedPriority,
+      //           jobStatus: selectedStatus,
+      //           correlationType: CorrelationJobType.Job
+      //         })
+      //       : // edit noi bo du an
+      //         AlwayxInstance.put(`job/${taskId}`, {
+      //           title: title,
+      //           description: getSanitizeText(value),
+      //           designerId: selectedDesigner?.userId,
+      //           accountId: selectedAccount?.userId,
+      //           quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+      //           jobType: selectedJobType.typeId,
+      //           deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+      //           priority: selectedPriority,
+      //           jobStatus: selectedInternalStatus,
+      //           correlationType: CorrelationJobType.Project
+      //         })
+      //     : // edit noi bo sub task
+      //       AlwayxInstance.put(`job/${subTaskId}`, {
+      //         parentId: taskId,
+      //         title: title,
+      //         description: getSanitizeText(value),
+      //         designerId: selectedDesigner?.userId,
+      //         accountId: selectedAccount?.userId,
+      //         quantity: quantity,
+      //         jobType: selectedJobType.typeId,
+      //         deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+      //         priority: selectedPriority,
+      //         jobStatus: selectedInternalStatus,
+      //         correlationType: CorrelationJobType.Job
+      //       });
+      // } else {
+      return subTaskId === undefined
+        ? AlwayxInstance.put(`job/${taskId}`, {
+            title: title,
+            description: getSanitizeText(value),
+            designerId: selectedDesigner?.userId,
+            accountId: selectedAccount?.userId,
+            quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+            jobType: selectedJobType.typeId,
+            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+            priority: selectedPriority,
+            jobStatus: isInternal
+              ? selectedInternalStatus === InternalJobStatusType.CustomerReview
+                ? JobStatusType.CustomerReview
+                : selectedInternalStatus
+              : selectedStatus,
+            correlationType:
+              isCorrelationJobType === CorrelationJobType.Job
+                ? CorrelationJobType.Job
+                : CorrelationJobType.Project
+          })
+        : AlwayxInstance.put(`job/${subTaskId}`, {
+            parentId: taskId,
+            title: title,
+            description: getSanitizeText(value),
+            designerId: selectedDesigner?.userId,
+            accountId: selectedAccount?.userId,
+            quantity: quantity,
+            jobType: selectedJobType.typeId,
+            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+            priority: selectedPriority,
+            jobStatus: isInternal
+              ? selectedInternalStatus === InternalJobStatusType.CustomerReview
+                ? JobStatusType.CustomerReview
+                : selectedInternalStatus
+              : selectedStatus,
+            correlationType: CorrelationJobType.Job
+          });
+      // }
     } else {
-      return currentPerson.roleType !== Role.DESIGNER
-        ? subTaskId === undefined
-          ? AlwayxInstance.put(`job/${taskId}`, {
-              title: title,
-              description: getSanitizeText(value),
-              designerId: selectedDesigner?.userId,
-              accountId: selectedAccount?.userId,
-              quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
-              jobType: selectedJobType.typeId,
-              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-              priority: selectedPriority,
-              jobStatus: selectedStatus,
-              correlationType:
-                isCorrelationJobType === CorrelationJobType.Job
-                  ? CorrelationJobType.Job
-                  : CorrelationJobType.Project
-            })
-          : AlwayxInstance.put(`job/${subTaskId}`, {
-              parentId: taskId,
-              title: title,
-              description: getSanitizeText(value),
-              designerId: selectedDesigner?.userId,
-              accountId: selectedAccount?.userId,
-              quantity: quantity,
-              jobType: selectedJobType.typeId,
-              deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-              priority: selectedPriority,
-              jobStatus: selectedStatus,
-              correlationType: CorrelationJobType.Job
-            })
-        : Promise.resolve(null);
+      return Promise.resolve(null);
     }
   };
 
@@ -432,9 +440,38 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
 
   const editStatusForDesignerPromise = () => {
     if (currentPerson.roleType === Role.DESIGNER)
-      return AlwayxInstance.put(`job/designer/${taskId}`, {
-        jobStatus: isInternal ? selectedInternalStatus : selectedStatus
-      });
+      if (subTaskId === undefined) {
+        return AlwayxInstance.put(`job/designer/${taskId}`, {
+          jobStatus: isInternal
+            ? selectedInternalStatus === InternalJobStatusType.CustomerReview
+              ? JobStatusType.CustomerReview
+              : selectedInternalStatus
+            : selectedStatus
+        });
+      } else {
+        return AlwayxInstance.put(`job/designer/${subTaskId}`, {
+          jobStatus: isInternal
+            ? selectedInternalStatus === InternalJobStatusType.CustomerReview
+              ? JobStatusType.CustomerReview
+              : selectedInternalStatus
+            : selectedStatus
+        });
+      }
+    return Promise.resolve(null);
+  };
+
+  const editInternalStatusPromise = () => {
+    if (isInternal && selectedInternalStatus === InternalJobStatusType.InternalReview) {
+      if (subTaskId !== undefined) {
+        return AlwayxInstance.put(`internal/job/${subTaskId}/status`, {
+          internalJobStatus: selectedInternalStatus
+        });
+      } else {
+        return AlwayxInstance.put(`internal/job/${taskId}/status`, {
+          internalJobStatus: selectedInternalStatus
+        });
+      }
+    }
     return Promise.resolve(null);
   };
 
@@ -466,72 +503,73 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
         return;
       }
     }
-
     setButtonLoading(true);
-    Promise.all([
-      editBasicInfoPromise(),
+    await editBasicInfoPromise(),
+      await editStatusForDesignerPromise(),
+      await editInternalStatusPromise();
+    await Promise.all([
       editRequirementsPromise(),
       editFinalFilePromise(),
-      editStatusForDesignerPromise(),
+      editInternalStatusPromise(),
       editPreviewFilePromise()
     ])
       .then(() => {
-        {
-          if (isInternal) {
-            if (isCorrelationJobType === CorrelationJobType.Job) {
-              // edit noi bo viec-hang-ngay
-              if (subTaskId === undefined) {
-                if (selectedInternalStatus === JobStatusType.Completed) {
-                  navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
-                } else {
-                  navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
-                }
-              }
-              // edit noi bo subtask
-              else {
-                navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`);
-              }
-            }
-            // edit noi bo project
-            else {
-              if (selectedInternalStatus === JobStatusType.Completed) {
-                navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
-              } else {
-                navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
-              }
-            }
-          } else {
-            if (isCorrelationJobType === CorrelationJobType.Job) {
-              // edit viec-hang-ngay
-              if (subTaskId === undefined) {
-                if (selectedStatus === JobStatusType.Completed) {
-                  navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
-                } else {
-                  navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
-                }
-              }
-              // Edit sub task
-              else {
-                navigate(
-                  `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`
-                );
-              }
-              // Edit project
-            } else {
-              if (selectedStatus === JobStatusType.Completed) {
-                navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
-              } else {
-                navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
-              }
-            }
-          }
-        }
+        handleAfterEditTaskSuccess();
       })
       .catch(err => {
         console.error(err);
         snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
       })
       .finally(() => setButtonLoading(false));
+  };
+
+  const handleAfterEditTaskSuccess = () => {
+    if (isInternal) {
+      if (isCorrelationJobType === CorrelationJobType.Job) {
+        // edit noi bo viec-hang-ngay
+        if (subTaskId === undefined) {
+          if (selectedInternalStatus === InternalJobStatusType.Completed) {
+            navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+          } else {
+            navigate(`/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+          }
+        }
+        // edit noi bo subtask
+        else {
+          navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`);
+        }
+      }
+      // edit noi bo project
+      else {
+        if (selectedInternalStatus === InternalJobStatusType.Completed) {
+          navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
+        } else {
+          navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}`);
+        }
+      }
+    } else {
+      if (isCorrelationJobType === CorrelationJobType.Job) {
+        // edit viec-hang-ngay
+        if (subTaskId === undefined) {
+          if (selectedStatus === JobStatusType.Completed) {
+            navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+          } else {
+            navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${taskId}`);
+          }
+        }
+        // Edit sub task
+        else {
+          navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`);
+        }
+        // Edit project
+      } else {
+        if (selectedStatus === JobStatusType.Completed) {
+          navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}`);
+        } else {
+          navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}`);
+        }
+      }
+    }
   };
 
   const handleCancelJob = () => {
@@ -543,11 +581,15 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
     let res: any;
     if (isInternal) {
       subTaskId === undefined
-        ? (res = await AlwayxInstance.get(`internal/job/${taskId}`))
+        ? isCorrelationJobType === CorrelationJobType.Project
+          ? (res = await AlwayxInstance.get(`job/project/${taskId}`))
+          : (res = await AlwayxInstance.get(`internal/job/${taskId}`))
         : (res = await AlwayxInstance.get(`internal/job/${subTaskId}`));
     } else {
       subTaskId === undefined
-        ? (res = await AlwayxInstance.get(`job/${taskId}`))
+        ? isCorrelationJobType === CorrelationJobType.Project
+          ? (res = await AlwayxInstance.get(`job/project/${taskId}`))
+          : (res = await AlwayxInstance.get(`job/${taskId}`))
         : (res = await AlwayxInstance.get(`job/${subTaskId}`));
     }
     setTaskDetail(res.data);
@@ -654,7 +696,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             Trạng thái
             {currentPerson.roleType !== Role.CUSTOMER && (
               <span className="mb-3 text-[13px] font-semibold text-orange-500">
-                <i>(Nội Bộ)</i>
+                <i> (Nội Bộ)</i>
               </span>
             )}
             <RequireText />
@@ -663,8 +705,8 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             disabled={
               // currentPerson.roleType === Role.DESIGNER ||
               (currentPerson.roleType !== Role.ADMIN &&
-                selectedInternalStatus === JobStatusType.Completed) ||
-              (selectedInternalStatus === JobStatusType.Pending &&
+                selectedInternalStatus === InternalJobStatusType.Completed) ||
+              (selectedInternalStatus === InternalJobStatusType.Pending &&
                 currentPerson.roleType === Role.DESIGNER)
             }
             fullWidth
@@ -673,18 +715,19 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             value={selectedInternalStatus}
             onChange={e => setSelectedInternalStatus(Number(e.target.value))}
           >
-            {statusOptions.map(({ key, text }) => (
+            {internalStatusOptions.map(({ key, text }) => (
               <MenuItem
                 key={key}
                 disabled={
-                  (key === JobStatusType.Completed &&
+                  (key === InternalJobStatusType.Completed &&
                     (previewFiles?.length + previewFilesFromAPI?.length < 1 ||
                       currentPerson.roleType === Role.DESIGNER)) ||
-                  (key === JobStatusType.Pending && currentPerson.roleType === Role.DESIGNER)
+                  (key === InternalJobStatusType.Pending &&
+                    currentPerson.roleType === Role.DESIGNER)
                 }
                 value={key}
                 title={
-                  key === JobStatusType.Completed &&
+                  key === InternalJobStatusType.Completed &&
                   previewFiles?.length + previewFilesFromAPI?.length < 1
                     ? "Cần có ảnh preview!"
                     : ""
@@ -703,7 +746,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             Trạng thái{" "}
             {currentPerson.roleType !== Role.CUSTOMER && (
               <span className="mb-3 text-[13px] font-semibold text-orange-500">
-                <i>(Công khai)</i>
+                <i> (Công khai)</i>
               </span>
             )}
             <RequireText />

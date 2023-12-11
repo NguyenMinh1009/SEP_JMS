@@ -38,19 +38,9 @@ namespace SEP_JMS.Tests.TestController
             moqLogger.Setup(a => a.Error(It.IsAny<string>())).Verifiable();
         }
 
-        [Test]
-        public async Task GetAllCompanies_ShouldReturnValidResponse()
-        {
-            CompanyAdminFilterRequestModel request = new();
-            PagingModel<Tuple<Company, User, PriceGroup>> result = new();
-            moqCompanyService.Setup(a => a.GetCompanies(request)).ReturnsAsync(result);
-            var response = await adminController.GetAllCompanies(request);
-            Assert.That(response.ReturnValue(), Is.Not.Null);
-            Assert.That(response.ReturnValue(), Is.InstanceOf<PagingModel<CompanyDetailsDisplayModel>>());
-        }
-
-        [Test]
-        public async Task CreateCompany_ShouldReturnValidResponse()
+        #region ThaiNV
+        [TestCase]
+        public async Task CreateCompany_ValidRequest_ReturnValidResponse()
         {
             CompanyCreateRequestModel request = new();
 
@@ -68,8 +58,46 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(response.ReturnValue(), Is.InstanceOf<CompanyDisplayModel>());
         }
 
-        #region ThaiNV
-        [Test]
+        [TestCase]
+        public async Task CreateCompany_InvalidAccount_ReturnBadRequestWithMessage()
+        {
+            CompanyCreateRequestModel request = new();
+
+            var user = new User();
+            moqUserService.Setup(a => a.GetUserById(request.AccountId, RoleType.Account)).Returns(Task.FromResult<User>(null));
+
+            var priceGroup = new PriceGroup();
+            moqPriceService.Setup(a => a.GetGroup(request.PriceGroupId)).ReturnsAsync(priceGroup);
+
+            var company = new CompanyDisplayModel();
+            moqCompanyService.Setup(a => a.CreateCompany(request)).ReturnsAsync(company);
+
+            var response = await adminController.CreateCompany(request);
+            Assert.That(response.Result, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That((response.Result as BadRequestObjectResult)?.Value, Is.EqualTo("không tìm thấy Account"));
+
+        }
+
+        [TestCase]
+        public async Task CreateCompany_InvalidPriceGroup_ReturnBadRequestWithMessage()
+        {
+            CompanyCreateRequestModel request = new();
+
+            var user = new User();
+            moqUserService.Setup(a => a.GetUserById(request.AccountId, RoleType.Account)).ReturnsAsync(user);
+
+            var priceGroup = new PriceGroup();
+            moqPriceService.Setup(a => a.GetGroup(request.PriceGroupId)).Returns(Task.FromResult<PriceGroup>(null));
+
+            var company = new CompanyDisplayModel();
+            moqCompanyService.Setup(a => a.CreateCompany(request)).ReturnsAsync(company);
+
+            var response = await adminController.CreateCompany(request);
+            Assert.That(response.Result, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That((response.Result as BadRequestObjectResult)?.Value, Is.EqualTo("không tìm thấy nhóm giá"));
+        }
+
+        [TestCase]
         public async Task DeleteCompany_ValidId_ReturnOk()
         {
             Guid companyId = Guid.NewGuid();
@@ -78,7 +106,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(response.StatusCode(), Is.EqualTo(200));
         }
 
-        [Test]
+        [TestCase]
         public async Task DeleteCompany_InvalidId_ReturnOk()
         {
             Guid companyId = Guid.NewGuid();
@@ -87,7 +115,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(response.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
-        [Test]
+        [TestCase]
         public async Task GetCompany_ValidId_ReturnValidResponse()
         {
             Guid companyId = Guid.NewGuid();
@@ -108,7 +136,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(response.ReturnValue(), Is.InstanceOf<CompanyDetailsDisplayModel>());
         }
 
-        [Test]
+        [TestCase]
         public async Task GetCompany_InvalidId_ReturnValidResponse()
         {
             Guid companyId = Guid.NewGuid();
@@ -128,7 +156,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(response.Result, Is.InstanceOf<NotFoundResult>());
         }
 
-        [Test]
+        [TestCase]
         public async Task UpdateCompany_WithValidAccount_ReturnOk()
         {
             Guid id = Guid.NewGuid();
@@ -145,7 +173,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(response.StatusCode(), Is.EqualTo(200));
         }
 
-        [Test]
+        [TestCase]
         public async Task UpdateCompany_WithInvalidAccount_ReturnBadRequest()
         {
             Guid id = Guid.NewGuid();

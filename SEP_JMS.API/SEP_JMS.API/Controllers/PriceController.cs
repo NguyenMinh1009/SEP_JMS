@@ -14,6 +14,7 @@ using SEP_JMS.Common.Utils;
 using SEP_JMS.Service.Services;
 using OfficeOpenXml;
 using SEP_JMS.Common;
+using Microsoft.IdentityModel.Tokens;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -101,6 +102,8 @@ namespace SEP_JMS.API.Controllers
         {
             try
             {
+                if (String.IsNullOrEmpty(model.Name.Trim())) throw new Exception("tên nhóm không được để trống");
+                if (model.Prices == null || model.Prices.Count <= 0) throw new Exception("nhóm giá trống");
                 logger.Info($"{logPrefix} Start to create price group {model.Name}.");
                 var gr = await priceService.AddPriceGroup(model);
                 return gr;

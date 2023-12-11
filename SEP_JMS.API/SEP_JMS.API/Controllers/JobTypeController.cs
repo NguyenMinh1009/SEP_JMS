@@ -45,6 +45,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to create job type.");
+                if (String.IsNullOrEmpty(name)) throw new Exception("Tên loại thiết kế không được để trống");
                 var success = await jobTypeService.CreateJobType(name);
                 return success ? Ok(): StatusCode(500);
             }
@@ -61,6 +62,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to update job type {name}.");
+                if (String.IsNullOrEmpty(name)) throw new Exception("Tên loại thiết kế không được để trống");
                 var success = await jobTypeService.UpdateJobType(id,name);
                 return success ? Ok() : StatusCode(500);
             }

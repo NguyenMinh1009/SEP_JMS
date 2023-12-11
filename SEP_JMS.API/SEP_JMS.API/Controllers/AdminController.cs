@@ -122,13 +122,13 @@ namespace SEP_JMS.API.Controllers
                 if (account == null)
                 {
                     logger.Warn($"{logPrefix} Not found account with Id {model.AccountId} when creating company {model.CompanyName}.");
-                    return BadRequest();
+                    return BadRequest("không tìm thấy Account");
                 }
                 var groupPrice = await priceService.GetGroup(model.PriceGroupId);
                 if (groupPrice == null)
                 {
                     logger.Warn($"{logPrefix} Not found price group with Id {model.PriceGroupId} when creating company {model.CompanyName}.");
-                    return BadRequest();
+                    return BadRequest("không tìm thấy nhóm giá");
                 }
 
                 return await companyService.CreateCompany(model);

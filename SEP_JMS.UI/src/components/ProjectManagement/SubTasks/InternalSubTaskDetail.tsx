@@ -166,7 +166,7 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
         setLoading,
         setImagesLoading,
         setJobDetail,
-        breadCrumbTitle,
+        null,
         setDocFiles,
         setImgFiles,
         setOpenDialog,

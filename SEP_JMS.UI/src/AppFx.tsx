@@ -226,7 +226,7 @@ const PathRules: RouteRule[] = [
       {
         //edit sub task
         path: `:taskId/:subTaskId/${PathString.CHINH_SUA}`,
-        element: <EditTask isInternal isCorrelationJobType={CorrelationJobType.Job} />
+        element: <EditTask isInternal isCorrelationJobType={CorrelationJobType.Job} isSubTask />
       }
     ]
   },
@@ -288,7 +288,7 @@ const PathRules: RouteRule[] = [
       {
         //edit sub task
         path: `:taskId/:subTaskId/${PathString.CHINH_SUA}`,
-        element: <EditTask isCorrelationJobType={CorrelationJobType.Job} />
+        element: <EditTask isCorrelationJobType={CorrelationJobType.Job} isSubTask />
       }
     ]
   },
@@ -365,7 +365,7 @@ const PathRules: RouteRule[] = [
   {
     path: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/:taskId/:subTaskId/${PathString.CHINH_SUA}`,
     roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
-    element: <EditTask isCorrelationJobType={CorrelationJobType.Job} finishedOnly />
+    element: <EditTask isCorrelationJobType={CorrelationJobType.Job} finishedOnly isSubTask />
   }
 ];
 

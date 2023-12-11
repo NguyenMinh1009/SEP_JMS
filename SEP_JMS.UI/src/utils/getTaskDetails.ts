@@ -10,7 +10,7 @@ export const getTaskDetails = async (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setImagesLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setTaskDetail: React.Dispatch<any>,
-  breadCrumbTitle: ITitle,
+  breadCrumbTitle: any,
   setDocFiles: React.Dispatch<React.SetStateAction<FileResponse[]>>,
   setImgFiles: React.Dispatch<React.SetStateAction<File[]>>,
   setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>,

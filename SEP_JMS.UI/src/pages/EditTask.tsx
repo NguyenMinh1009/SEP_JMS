@@ -69,6 +69,7 @@ interface IEditTaskProp {
   isInternal?: boolean;
   isCorrelationJobType: number;
   finishedOnly?: boolean;
+  isSubTask?: boolean;
 }
 
 const getDeadline = (date?: Date): Date => {
@@ -78,7 +79,7 @@ const getDeadline = (date?: Date): Date => {
   return curr;
 };
 
-const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly, isInternal }) => {
+const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly, isInternal, isSubTask }) => {
   const [taskDetail, setTaskDetail] = useState<any>();
   const [value, setValue] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
@@ -593,7 +594,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
         : (res = await AlwayxInstance.get(`job/${subTaskId}`));
     }
     setTaskDetail(res.data);
-    titleBreadCrumb.setContent(res.data.title);
+    if (!isSubTask) titleBreadCrumb.setContent(res.data.title);
     const requirementList: FileResponse[] = res.data?.requirements?.files;
     setOldFilesFromApi(requirementList ?? []);
 

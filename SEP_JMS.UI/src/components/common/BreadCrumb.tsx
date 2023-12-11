@@ -20,7 +20,7 @@ const BreadCrumb = () => {
       key: PathString.NOI_BO,
       value: "Duyệt nội bộ",
       prefix: "task",
-      clickable: true
+      clickable: false
     },
     {
       key: PathString.CONG_KHAI,

@@ -11,7 +11,7 @@ namespace SEP_JMS.Model.Models
         public Guid NotificationId { get; set; }
 
         // Job Identifier - Job / Project
-        public Guid EntityIdentifier { get; set; }
+        public string EntityIdentifier { get; set; } = null!;
 
         public string EntityName { get; set; } = null!;
 

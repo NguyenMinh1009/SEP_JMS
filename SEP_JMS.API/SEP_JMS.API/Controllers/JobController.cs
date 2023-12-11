@@ -200,7 +200,6 @@ namespace SEP_JMS.API.Controllers
                 if (success)
                 {
                     await notificationService.Trigger(jobId, oldJob, null, NotiAction.UpdateJob);
-                    await notificationService.UpdateTitle(jobId, model.Title);
                 }
                 return success ? Ok() : BadRequest();
             }
@@ -326,7 +325,6 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to delete job {jobId}.");
                 await jobService.Delete(jobId);
-                await notificationService.DeleteByEntityId(jobId);
                 return NoContent();
             }
             catch (Exception ex)

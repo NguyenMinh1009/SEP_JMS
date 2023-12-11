@@ -3,7 +3,7 @@
     public class NotificationResponse
     {
         public Guid NotificationId { get; set; }
-        public Guid EntityIdentifier { get; set; }
+        public string EntityIdentifier { get; set; } = null!;
         public string EntityName { get; set; } = null!;
         public string Title { get; set; } = null!;
         public string Message { get; set; } = null!;

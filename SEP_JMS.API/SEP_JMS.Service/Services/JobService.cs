@@ -206,7 +206,7 @@ namespace SEP_JMS.Service.Services
                         await commentRepository.Delete(comment);
                     }
                     await jobRepository.Delete(subJob);
-                    await notificationRepository.DeleteByEntityId(subJob.JobId);
+                    await notificationRepository.DeleteByEntityId($"{jobId}/{subJob.JobId}");
                 }
 
                 var mainJobComments = await commentRepository.GetAll(c => c.CorrelationJobId == jobId);
@@ -215,6 +215,7 @@ namespace SEP_JMS.Service.Services
                     await commentRepository.Delete(mainJobComment);
                 }
                 await jobRepository.Delete(job);
+                await notificationRepository.DeleteByEntityId($"{jobId}");
                 await transaction.CommitAsync();
             }
             catch

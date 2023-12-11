@@ -112,17 +112,17 @@ namespace SEP_JMS.Service.Services
             await notificationRepository.UpdateArchivedTime(id, true);
         }
 
-        public async Task DeleteByEntityId(Guid entityId)
+        public async Task DeleteByEntityId(string entityId)
         {
             await notificationRepository.DeleteByEntityId(entityId);
         }
 
-        public async Task DeleteByReceiver(Guid entityId, Guid receiverId)
+        public async Task DeleteByReceiver(string entityId, Guid receiverId)
         {
             await notificationRepository.DeleteByReceiver(entityId, receiverId);
         }
 
-        public async Task UpdateTitle(Guid entityId, string newTitle)
+        public async Task UpdateTitle(string entityId, string newTitle)
         {
             await notificationRepository.UpdateTitle(entityId, newTitle);
         }
@@ -139,9 +139,22 @@ namespace SEP_JMS.Service.Services
             var recvUsers = new List<User>();
             var notiType = commentContent == null ? NotiType.FromJob : NotiType.FromComment;
 
+            // EntityIdentifier
+            var eId = jobId.ToString();
+            
+
             // get receivers
             var job = await jobRepository.Get(jobId);
             if (job == null) return Guid.Empty;
+            var parentId = job.ParentId;
+            if (parentId != null) eId = $"{parentId}/{jobId}";
+            var jobTitle = job.Title;
+            if (parentId != null)
+            {
+                var pJob = await jobRepository.Get(parentId);
+                if (pJob != null) jobTitle = pJob.Title + "$[PRJ]$" + job.Title;
+            }
+
             recvIds.Add(job.AccountId);
             recvIds.Add(job.DesignerId);
             recvIds.Add(job.CustomerId);
@@ -177,9 +190,9 @@ namespace SEP_JMS.Service.Services
                 {
                     var notify = new Notification();
                     notify.NotificationId = Guid.NewGuid();
-                    notify.EntityIdentifier = job.JobId;
-                    notify.EntityName = "Tạo mới / " + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
-                    notify.Title = job.Title;
+                    notify.EntityIdentifier = eId;
+                    notify.EntityName = "Tạo mới / " + (parentId != null ? "Sub" : "") + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
+                    notify.Title = jobTitle;
                     notify.Message = ApiContext.Current.UserId == user.UserId ? "Bạn" : $"{creator?.Fullname} ({creator?.Username})";
                     notify.Message += " đã tạo một công việc mới";
 
@@ -221,9 +234,9 @@ namespace SEP_JMS.Service.Services
                 {
                     var notify = new Notification();
                     notify.NotificationId = Guid.NewGuid();
-                    notify.EntityIdentifier = job.JobId;
-                    notify.EntityName = "Cập nhật / " + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
-                    notify.Title = job.Title;
+                    notify.EntityIdentifier = eId;
+                    notify.EntityName = "Cập nhật / " + (parentId != null ? "Sub" : "") + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
+                    notify.Title = jobTitle;
                     notify.Message = ApiContext.Current.UserId == user.UserId ? "Bạn" : $"{creator?.Fullname} ({creator?.Username})";
                     notify.Message += " đã cập nhật công việc";
                     notify.Data = "";
@@ -297,9 +310,9 @@ namespace SEP_JMS.Service.Services
 
                     var notify = new Notification();
                     notify.NotificationId = Guid.NewGuid();
-                    notify.EntityIdentifier = job.JobId;
-                    notify.EntityName = "Bình luận / " + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
-                    notify.Title = job.Title;
+                    notify.EntityIdentifier = eId;
+                    notify.EntityName = "Bình luận / " + (parentId != null ? "Sub" : "") + Enum.GetName(typeof(CorrelationJobType), job.CorrelationType);
+                    notify.Title = jobTitle;
                     notify.Message = ApiContext.Current.UserId == user.UserId ? "Bạn" : $"{creator?.Fullname} ({creator?.Username})";
                     notify.Message += " vừa bình luận trong công việc";
 
@@ -312,6 +325,20 @@ namespace SEP_JMS.Service.Services
                     notify.CreatedTime = DateTime.UtcNow.Ticks;
 
                     await notificationRepository.Add(notify);
+                }
+            }
+
+            // update title
+            if (action == NotiAction.UpdateJob && oldJob != null && job != null)
+            {
+                await UpdateTitle(eId, jobTitle);
+                if (job?.CorrelationType == CorrelationJobType.Project)
+                {
+                    var subJobs = await jobRepository.GetAll(a => a.ParentId == jobId);
+                    foreach ( var subJob in subJobs)
+                    {
+                        await UpdateTitle($"{jobId}/{subJob.JobId}", $"{jobTitle}$[PRJ]${subJob.Title}");
+                    }
                 }
             }
             return Guid.Empty;

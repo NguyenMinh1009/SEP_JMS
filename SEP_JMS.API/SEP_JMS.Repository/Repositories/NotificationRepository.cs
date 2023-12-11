@@ -41,14 +41,14 @@ namespace SEP_JMS.Repository.Repositories
             var count = await Context.Notifications.Where(noti=>noti.NotificationId == notificationId).ExecuteDeleteAsync();
         }
 
-        public async Task DeleteByEntityId(Guid entityId)
+        public async Task DeleteByEntityId(string entityId)
         {
-            var count = await Context.Notifications.Where(noti => noti.EntityIdentifier == entityId).ExecuteDeleteAsync();
+            var count = await Context.Notifications.Where(noti => noti.EntityIdentifier.Contains(entityId.ToString())).ExecuteDeleteAsync();
         }
 
-        public async Task DeleteByReceiver(Guid entityId, Guid receiverId)
+        public async Task DeleteByReceiver(string entityId, Guid receiverId)
         {
-            var count = await Context.Notifications.Where(noti => noti.EntityIdentifier == entityId && noti.Receiver == receiverId).ExecuteDeleteAsync();
+            var count = await Context.Notifications.Where(noti => noti.EntityIdentifier.Contains(entityId.ToString()) && noti.Receiver == receiverId).ExecuteDeleteAsync();
         }
 
         public async Task CreateNotification(Notification notification)
@@ -83,9 +83,9 @@ namespace SEP_JMS.Repository.Repositories
             });
         }
 
-        public async Task UpdateTitle(Guid entityId, string newTitle)
+        public async Task UpdateTitle(string entityId, string newTitle)
         {
-            await Context.Notifications.Where(job => job.EntityIdentifier == entityId)
+            await Context.Notifications.Where(job => job.EntityIdentifier.Contains(entityId.ToString()))
                 .ExecuteUpdateAsync(notis => notis
                 .SetProperty(noti => noti.Title, noti => newTitle));
         }

@@ -173,7 +173,7 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
         setLoading,
         setImagesLoading,
         setJobDetail,
-        breadCrumbTitle,
+        null,
         setDocFiles,
         setImgFiles,
         setOpenDialog,

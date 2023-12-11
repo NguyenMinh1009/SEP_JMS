@@ -22,6 +22,9 @@ import { CorrelationJobType } from "../../enums/correlationJobType";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Typography } from "@mui/material";
 import CustomButton from "../common/CustomButton";
 import { cn } from "../../utils/className";
+import useTitle from "../../hooks/store/useCurrentTitle";
+
+
 type IRowProps = {
   row: any;
   index: number;
@@ -40,6 +43,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   const navigate = useNavigate();
   const snakeBar = useSnakeBar();
   const currentPerson = useCurrentPerson();
+  const titleBreadCrumb = useTitle();
 
   const handleClose = () => {
     setOpenConfirmDialog(false);
@@ -47,26 +51,31 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
 
   const navigateToJob = () => {
     // get job status then navigate from UI
+    var bId = row.entityIdentifier.split("/");
+    var isProject = bId.length > 1;
+    var pathDef = isProject ? PathString.VIEC_DU_AN : PathString.VIEC_HANG_NGAY;
     APIClientInstance.get(
-      `/job/${row.entityIdentifier}`
+      `/job/${bId[bId.length-1]}`
     ).then(res => {
       const jobStatus: JobStatusType = res.data.jobStatus;
       const jobCorr: CorrelationJobType = res.data.correlationType;
       // for job
       if (jobCorr === CorrelationJobType.Job) {
+        titleBreadCrumb.setContent(row.title.split("$[PRJ]$")[0]);
+
         if (jobStatus == JobStatusType.Completed) navigate(
-          `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+          `/${PathString.VIEC_DA_XONG}/${pathDef}/${row.entityIdentifier}`
         );
 
         if (jobStatus == JobStatusType.Pending) navigate(
-          `/${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+          `/${PathString.NOI_BO}/${pathDef}/${row.entityIdentifier}`
         );
 
         if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
-          `/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`
+          `/${PathString.CONG_KHAI}/${pathDef}/${row.entityIdentifier}`
         );
 
-        navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}/${row.entityIdentifier}`);
+        navigate(`/${PathString.CONG_KHAI}/${pathDef}/${row.entityIdentifier}`);
       }
       // for project
       if (jobCorr === CorrelationJobType.Project) {
@@ -173,7 +182,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   if (!row) return <></>;
 
   let notiDetails = "";
-  notiDetails += `<b>Công việc:</b> ${row.title}<br>`
+  notiDetails += `<b>Công việc:</b> ${row.title.replace("$[PRJ]$", "/")}<br>`
   notiDetails += `<b>Hành động</b>: ${row.entityName}<br>`
   row.message.substr(0, 3) != "Bạn" && (notiDetails += `<b>Người gửi:</b> ${row.message.substr(0, row.message.indexOf(")") + 1)}<br>`);
   notiDetails += `<b>Thời gian:</b> ${formatDateTime(ticksToDate(row.createdTime))}<br>`
@@ -262,7 +271,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             
               <span className={cn(isUnRead ? "bg-emerald-500	" : "bg-gray-300", "inline-block w-28 rounded-sm text-center")}>{moment(ticksToDate(row.createdTime)).fromNow()}</span>
             
-            {isUnRead ? (<b>{row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "..."}</b>) : (row.message + " [" + row.title + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "...")}
+            {isUnRead ? (<b>{row.message + " [" + row.title.replace("$[PRJ]$", "/") + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "..."}</b>) : (row.message + " [" + row.title.replace("$[PRJ]$", "/") + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "...")}
 
           </div>
         </TableCell>

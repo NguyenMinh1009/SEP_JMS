@@ -26,5 +26,17 @@ namespace SEP_JMS.Model.Models
         public long CreatedTime { get; set; }
 
         public CommentStatus CommentStatus { get; set; }
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        [ForeignKey("CorrelationJobId")]
+        public virtual Job? Job { get; set; }
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        [ForeignKey("UserId")]
+        public virtual User? User { get; set; }
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        [ForeignKey("ReplyCommentId")]
+        public virtual Comment? ReplyComment { get; set; }
     }
 }

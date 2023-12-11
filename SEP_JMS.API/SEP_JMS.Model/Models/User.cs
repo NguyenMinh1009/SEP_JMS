@@ -49,6 +49,10 @@ namespace SEP_JMS.Model.Models
         public long CreatedTime { get; set; }
 
         public AccountStatus AccountStatus { get; set; }
-        public string NotificationConfig { get; set; } = string.Empty; 
+        public string NotificationConfig { get; set; } = string.Empty;
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        [ForeignKey("CompanyId")]
+        public virtual Company? Company { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SEP_JMS.Model.Models
 {
@@ -17,5 +18,13 @@ namespace SEP_JMS.Model.Models
         public Guid PriceGroupId { get; set; }
 
         public Guid AccountId { get; set; }
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        [ForeignKey("AccountId")]
+        public virtual User? Account { get; set; }
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        [ForeignKey("PriceGroupId")]
+        public virtual PriceGroup? PriceGroup { get; set; }
     }
 }

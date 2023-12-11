@@ -17,5 +17,11 @@ namespace SEP_JMS.Model.Models
         public int UnitPrice { get; set; }
 
         public string? Description { get; set; } = null;
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        public virtual JobType? JobType { get; set; } = null!;
+
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        public virtual PriceGroup? PriceGroup { get; set; } = null!;
     }
 }

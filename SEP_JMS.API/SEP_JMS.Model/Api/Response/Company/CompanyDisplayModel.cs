@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SEP_JMS.Model.Enums.System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,7 @@ namespace SEP_JMS.Model.Api.Response
         public string? CompanyAddress { get; set; }
 
         public string? Description { get; set; }
+
+        public CompanyStatus CompanyStatus { get; set; }
     }
 }

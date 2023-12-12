@@ -97,13 +97,13 @@ namespace SEP_JMS.API.Controllers
             }
         }
         
-        [HttpDelete("company/{companyId}")]
-        public async Task<ActionResult<CompanyDetailsDisplayModel>> DeleteCompany([FromRoute] Guid companyId)
+        [HttpGet("company/{companyId}/active")]
+        public async Task<ActionResult<CompanyDetailsDisplayModel>> ActiveCompany([FromRoute] Guid companyId)
         {
             try
             {
                 
-                await companyService.DeleteCompany(companyId);
+                await companyService.UpdateStatus(companyId, CompanyStatus.Active);
                 return Ok();
             }
             catch (Exception ex)
@@ -112,6 +112,23 @@ namespace SEP_JMS.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("company/{companyId}/inactive")]
+        public async Task<ActionResult<CompanyDetailsDisplayModel>> InActiveCompany([FromRoute] Guid companyId)
+        {
+            try
+            {
+
+                await companyService.UpdateStatus(companyId, CompanyStatus.Inactive);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when finding users. Error: {ex}");
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("add/company")]
         public async Task<ActionResult<CompanyDisplayModel>> CreateCompany(CompanyCreateRequestModel model)
         {

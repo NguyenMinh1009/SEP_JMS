@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SEP_JMS.Model.Models;
 
@@ -11,9 +12,11 @@ using SEP_JMS.Model.Models;
 namespace SEP_JMS.Model.Migrations
 {
     [DbContext(typeof(JSMContext))]
-    partial class JSMContextModelSnapshot : ModelSnapshot
+    [Migration("20231212050056_add_company_status_")]
+    partial class add_company_status_
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

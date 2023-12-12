@@ -524,8 +524,14 @@ namespace SEP_JMS.Repository.Repositories
             //Context.Add(cu2);
             //Context.SaveChanges();
 
-            return await Context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() ==  model.Username.ToLower()
+            var account = await Context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() ==  model.Username.ToLower()
                 && u.Password == model.Password);
+            if (account?.AccountStatus == AccountStatus.Inactive) throw new Exception("Tài khoản của bạn bị ngừng hoạt động!");
+            if (account?.CompanyId != null) {
+                var isCompInActive = await Context.Companies.AnyAsync(c => c.CompanyId == account.CompanyId && c.CompanyStatus == CompanyStatus.Inactive);
+                if (isCompInActive) throw new Exception("Công ty của bạn đã ngừng hoạt động!"); 
+            }
+            return account;
         }
 
         public async Task<bool> UpdateAvatar(Guid userId, string path)

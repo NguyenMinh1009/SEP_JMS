@@ -51,11 +51,13 @@ namespace SEP_JMS.Repository.Repositories
                 Items = items
             };
         }
-        public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model)
+        public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model, bool isGetAll = false)
         {
             var query = Context.Companies.AsQueryable();
             if (!string.IsNullOrEmpty(model.SearchText)) 
                 query = query.Where(u => u.CompanyName.ToLower().Contains(model.SearchText.ToLower()));
+
+            if (!isGetAll) { query = query.Where(c => c.CompanyStatus == CompanyStatus.Active); }
 
             var companies = await query.OrderByDescending(u => u.CompanyName)
                 .Skip((model.PageIndex - 1) * model.PageSize)
@@ -99,11 +101,11 @@ namespace SEP_JMS.Repository.Repositories
             await Context.SaveChangesAsync();
         }
 
-        public async Task DeleteCompany(Guid id)
+        public async Task UpdateStatus(Guid id, CompanyStatus status)
         {
-            var isExistsCustomer = await Context.Users.AnyAsync(e => e.CompanyId == id);
-            if (isExistsCustomer) throw new Exception("Có Users trong công ty");
-            int count = await Context.Companies.Where(e=>e.CompanyId==id).ExecuteDeleteAsync();
+            int count = await Context.Companies.Where(c => c.CompanyId == id)
+                .ExecuteUpdateAsync(notis => notis
+                .SetProperty(noti => noti.CompanyStatus, noti => status));
             if (count == 0) throw new Exception("Không tìm thấy công ty");
             return;
         }

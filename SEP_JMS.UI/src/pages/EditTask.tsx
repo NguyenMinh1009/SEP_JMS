@@ -263,7 +263,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
   };
 
   const getOrderList = () => {
-    AlwayxInstance.post("company/search", {
+    AlwayxInstance.post("company/active", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: ""

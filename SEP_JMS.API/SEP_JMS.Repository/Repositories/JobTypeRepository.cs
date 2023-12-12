@@ -49,7 +49,7 @@ namespace SEP_JMS.Repository.Repositories
         public async Task<bool> DeleteJobType(Guid id)
         {
             var isExistsJob = await dbcontext.Jobs.AnyAsync(e=> e.JobType == id);
-            if (isExistsJob) throw new Exception("job type is in used");
+            if (isExistsJob) throw new Exception("loại thiết kế đang được sử dụng");
             await dbcontext.Prices.Where(e => e.JobTypeId == id).ExecuteDeleteAsync();
             await dbcontext.TypeOfJobs.Where(e => e.TypeId == id).ExecuteDeleteAsync();
             return true;

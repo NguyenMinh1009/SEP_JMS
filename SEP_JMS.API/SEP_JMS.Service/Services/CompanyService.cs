@@ -7,6 +7,7 @@ using SEP_JMS.Common.Logger;
 using SEP_JMS.Repository.IRepositories;
 using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Model.Api.Request.File;
+using SEP_JMS.Model.Enums.System;
 
 namespace SEP_JMS.Service.Services
 {
@@ -47,9 +48,9 @@ namespace SEP_JMS.Service.Services
         {
             return await companyRepository.GetCompanyForFilterJobAccountAndDesigner(model);
         }
-        public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model)
+        public async Task<PagingModel<Company>> GetCompanies(CompanyFilterRequest model, bool isGetAll = false)
         {
-            return await companyRepository.GetCompanies(model);
+            return await companyRepository.GetCompanies(model, isGetAll);
         }
         public async Task<PagingModel<Tuple<Company, User, PriceGroup>>> GetCompanies(CompanyAdminFilterRequestModel model)
         {
@@ -62,6 +63,7 @@ namespace SEP_JMS.Service.Services
         public async Task<CompanyDisplayModel> CreateCompany(CompanyCreateRequestModel model)
         {
             var companyModel = mapper.Map<Company>(model);
+            companyModel.CompanyStatus = CompanyStatus.Active;
             await companyRepository.AddCompany(companyModel);
             return mapper.Map<CompanyDisplayModel>(companyModel);
         }
@@ -75,9 +77,9 @@ namespace SEP_JMS.Service.Services
             return await companyRepository.Count(c => true);
         }
 
-        public async Task DeleteCompany(Guid id)
+        public async Task UpdateStatus(Guid id, CompanyStatus status)
         {
-            await companyRepository.DeleteCompany(id);
+            await companyRepository.UpdateStatus(id, status);
         }
     }
 }

@@ -80,7 +80,7 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception while processing login request for user {model.Username}. Error: {ex}");
-                return StatusCode(500);
+                return BadRequest(ex.Message);
             }
         }
 

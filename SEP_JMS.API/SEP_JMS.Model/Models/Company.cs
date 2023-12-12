@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using SEP_JMS.Model.Enums.System;
 
 namespace SEP_JMS.Model.Models
 {
@@ -18,6 +19,8 @@ namespace SEP_JMS.Model.Models
         public Guid PriceGroupId { get; set; }
 
         public Guid AccountId { get; set; }
+
+        public CompanyStatus CompanyStatus { get; set; } = CompanyStatus.Active;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("AccountId")]

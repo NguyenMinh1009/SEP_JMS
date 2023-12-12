@@ -38,7 +38,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to get all companies.");
-                var companies = await companyService.GetCompanies(model);
+                var companies = await companyService.GetCompanies(model, true);
                 return new PagingModel<CompanyResponse>
                 {
                     Count = companies.Count,
@@ -51,6 +51,27 @@ namespace SEP_JMS.API.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpPost("active")]
+        public async Task<ActionResult<PagingModel<CompanyResponse>>> FindCompanyActive(CompanyFilterRequest model)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to get all companies.");
+                var companies = await companyService.GetCompanies(model, false);
+                return new PagingModel<CompanyResponse>
+                {
+                    Count = companies.Count,
+                    Items = mapper.Map<List<CompanyResponse>>(companies.Items)
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"{logPrefix} Got exception when getting all companies. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
         [Authorize(Policy = PolicyConstants.AccountAndDesigner)]
         [HttpPost("related")]
         public async Task<ActionResult<PagingModel<CompanyDisplayModel>>> GetRelatedCompany(BaseFilterRequest model)

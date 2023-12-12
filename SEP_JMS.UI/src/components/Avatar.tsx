@@ -84,7 +84,7 @@ const Avatar = () => {
               }}
               className="cursor-pointer transition-all hover:opacity-60"
             >
-              View Profile
+              Xem hồ sơ
             </p>
           </div>
           <Divider />

@@ -181,7 +181,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
   };
 
   const getOrderList = () => {
-    AlwayxInstance.post("company/search", {
+    AlwayxInstance.post("company/active", {
       pageIndex: 1,
       pageSize: 2147483647,
       searchText: ""

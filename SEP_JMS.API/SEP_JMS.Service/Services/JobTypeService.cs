@@ -45,7 +45,7 @@ namespace SEP_JMS.Service.Services
         } 
         public async Task<bool> CreateJobType(string name)
         {
-            if (await IsExistName(null, name.Trim())) throw new Exception("duplicate name");
+            if (await IsExistName(null, name.Trim())) throw new Exception("trùng tên thiết kế");
             var jobType = new JobType()
             {
                 TypeId = Guid.NewGuid(),
@@ -61,7 +61,7 @@ namespace SEP_JMS.Service.Services
         }
         public async Task<bool> UpdateJobType(Guid id, string name)
         {
-            if (await IsExistName(id, name.Trim())) throw new Exception("duplicate name");
+            if (await IsExistName(id, name.Trim())) throw new Exception("trùng tên thiết kế");
             var jobType = await jobTypeRepository.Get(id);
             if(jobType == null) return false;
             jobType.TypeName = name;
@@ -71,7 +71,7 @@ namespace SEP_JMS.Service.Services
         public async Task<bool> DeleteJobType(Guid id)
         {
             var jobType = await jobTypeRepository.Get(id);
-            if( jobType == null) throw new Exception("not found job type");
+            if( jobType == null) throw new Exception("không tìm thấy loại thiết kế");
             await jobTypeRepository.DeleteJobType(id);
             return true;
         }

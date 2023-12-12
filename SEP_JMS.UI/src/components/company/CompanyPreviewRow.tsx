@@ -8,6 +8,8 @@ import { PathString } from "../../enums/MapRouteToBreadCrumb";
 import APIClientInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import CustomDialog from "../common/CustomDialog";
+import { CompanyStatusType } from "../../enums/companytStatusType";
+import { AiOutlineLock, AiOutlineUnlock } from "react-icons/ai";
 
 interface IRowProps {
   row: Partial<CompanyResponseType>;
@@ -38,18 +40,37 @@ const CompanyPreviewRow: React.FC<IRowProps> = ({ row, index, pageSize, page, se
         snakeBar.setSnakeBar("Có lỗi xảy ra! [" + err.response.data + "]", "error", true);
       });
   }
+
+  const handleActiveCompany = () => {
+    APIClientInstance.get(
+      row.company?.companyStatus === CompanyStatusType.Active
+        ? `admin/company/${row.company?.companyId}/inactive`
+        : `admin/company/${row.company?.companyId}/active`
+    )
+      .then(() => {
+        snakeBar.setSnakeBar("Thay đổi thành công", "success", true);
+        setRefresh(Date.now());
+      })
+      .catch(err => {
+        console.log(err);
+        snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
+      });
+  };
+
   if (!row) return <></>;
   return (
     <>
       <CustomDialog
         openDialog={openConfirmDialog}
         handleClose={handleClose}
-        title="Xoá công ty?"
-        description={`Bạn có muốn xoá công ty ${row.company?.companyName}?`}
+        title="Thay dổi trạng thái công ty này?"
+        description={`Bạn có muốn ${
+          row.company?.companyStatus === CompanyStatusType.Active ? "tạm ngưng" : "kích hoạt"
+        } công ty này? (Bao gồm nhân viên)`}
         primaryBtnText="Quay trở lại"
         secondaryBtnText="Tiếp tục"
         primaryBtnCallback={handleClose}
-        secondaryBtnCallback={handleClickDeleteTask}
+        secondaryBtnCallback={handleActiveCompany}
       />
       <TableRow hover role="checkbox" tabIndex={-1} key={JSON.stringify(row)}>
         <TableCell
@@ -118,10 +139,14 @@ const CompanyPreviewRow: React.FC<IRowProps> = ({ row, index, pageSize, page, se
                   <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
                 </span>
                 <span
-                  onClick={()=>setOpenConfirmDialog(true)}
+                  onClick={() => setOpenConfirmDialog(true)}
                   className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
                 >
-                  <BiTrashAlt size={18} color="#666" />
+                  {row.company?.companyStatus === CompanyStatusType.Active ? (
+                    <AiOutlineUnlock size={18} color="#666" />
+                  ) : (
+                    <AiOutlineLock size={18} color="#f56342" />
+                  )}
                   <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
                 </span>
               </>

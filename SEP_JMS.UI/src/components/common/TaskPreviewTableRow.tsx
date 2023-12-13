@@ -83,6 +83,11 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
   const isDisableWhenComplete = (): boolean => {
     if (currentPerson.roleType !== Role.ADMIN && taskStatus === JobStatusType.Completed)
       return true;
+    if (
+      currentPerson.roleType === Role.DESIGNER &&
+      correlationJobType === CorrelationJobType.Project
+    )
+      return true;
     return false;
   };
 
@@ -270,7 +275,6 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
               >
                 {/* Chi tiết */}
                 <HiOutlineEye size={18} color="#666" />
-                <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
               </span>
               {!isDisableWhenComplete() && (
                 <>
@@ -279,21 +283,24 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
                       navigate(getLinkForEditJob(taskId));
                     }}
                     className={`group relative cursor-pointer ${
-                      currentPerson.roleType === Role.CUSTOMER ? "" : "border-r-[1px]"
+                      currentPerson.roleType === Role.CUSTOMER ||
+                      (currentPerson.roleType === Role.DESIGNER &&
+                        correlationJobType === CorrelationJobType.Job)
+                        ? ""
+                        : "border-r-[1px]"
                     } border-[#999] px-1 pr-2 hover:scale-105`}
                   >
                     <IoCreateOutline size={18} />
-                    <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
                   </span>
-                  {currentPerson.roleType !== Role.CUSTOMER && (
-                    <span
-                      onClick={handleClickDeleteTask}
-                      className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
-                    >
-                      <BiTrashAlt size={18} color="#666" />
-                      <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
-                    </span>
-                  )}
+                  {currentPerson.roleType !== Role.CUSTOMER &&
+                    currentPerson.roleType !== Role.DESIGNER && (
+                      <span
+                        onClick={handleClickDeleteTask}
+                        className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
+                      >
+                        <BiTrashAlt size={18} color="#666" />
+                      </span>
+                    )}
                 </>
               )}
             </div>

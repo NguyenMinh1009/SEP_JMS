@@ -238,7 +238,9 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         <div className="relative mt-5 flex min-h-[100px] items-center gap-4">
           <CustomButton
             disabled={
-              initStatus === JobStatusType.Completed && currentPerson.roleType !== Role.ADMIN
+              (initStatus === JobStatusType.Completed && currentPerson.roleType !== Role.ADMIN) ||
+              (correlationJobType === CorrelationJobType.Project &&
+                currentPerson.roleType === Role.DESIGNER)
             }
             primary
             onClick={handleClickEdit}

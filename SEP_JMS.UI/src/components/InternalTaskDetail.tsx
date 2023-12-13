@@ -342,7 +342,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
                 <div>
                   <div className="mb-6 mt-10 flex items-center">
                     <p className="text-primary //border-r-2 mr-3 w-fit pr-4 text-base leading-5">
-                      Sub công việc
+                      {TaskString.CONG_VIEC_TRONG_DU_AN}
                     </p>
                     {!isLoadingGetJobDetail ? renderButtonCreateNewSubTask() : ""}
                   </div>
@@ -350,24 +350,30 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
                 </div>
               )}
               {/* Comment section */}
-              <div className="mb-6 mt-10 flex items-center">
-                <p className="text-primary mr-4 w-fit pr-4 text-base leading-5">
-                  {TaskString.BINH_LUAN_CONG_VIEC}
-                </p>
-                {/* <p className="text-primary mr-4 w-fit pr-4 text-base font-[400] leading-5">
+              {(isCorrelationJobType === CorrelationJobType.Job ||
+                (isCorrelationJobType === CorrelationJobType.Project &&
+                  currentPerson.roleType !== Role.DESIGNER)) && (
+                <div>
+                  <div className="mb-6 mt-10 flex items-center">
+                    <p className="text-primary mr-4 w-fit pr-4 text-base leading-5">
+                      {TaskString.BINH_LUAN_CONG_VIEC}
+                    </p>
+                    {/* <p className="text-primary mr-4 w-fit pr-4 text-base font-[400] leading-5">
                   Lịch sử hoạt động
                 </p> */}
-              </div>
-              <div ref={commentSectionTopRef}></div>
-              {renderCommentSection()}
-              <div className="mt-5 flex h-16 items-center justify-center gap-2">
-                {isCommentLoading && (
-                  <>
-                    <CircularProgress size={20} />
-                    <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
-                  </>
-                )}
-              </div>
+                  </div>
+                  <div ref={commentSectionTopRef}></div>
+                  {renderCommentSection()}
+                  <div className="mt-5 flex h-16 items-center justify-center gap-2">
+                    {isCommentLoading && (
+                      <>
+                        <CircularProgress size={20} />
+                        <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
               <div ref={observerRef} className="h-2 w-2 pb-5"></div>
             </div>
             <div

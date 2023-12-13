@@ -111,38 +111,34 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
           title="Khách hàng:"
           detail={taskDetail?.company?.companyName ?? "..."}
         />
-
         <BasicTaskInfo
           Icon={<FiUser size={15} color="#555" />}
           title="Người order:"
           detail={taskDetail?.customer?.fullname}
         />
-
         <BasicTaskInfo
           Icon={<BiSupport size={15} color="#555" />}
           title="Account:"
           detail={taskDetail?.account?.fullname}
         />
-
-        <BasicTaskInfo
-          Icon={<AiOutlineEdit size={15} color="#555" />}
-          title="Designer:"
-          detail={taskDetail?.designer?.fullname ?? TaskString.CON_TRONG}
-        />
-
+        {correlationJobType === CorrelationJobType.Job && (
+          <BasicTaskInfo
+            Icon={<AiOutlineEdit size={15} color="#555" />}
+            title="Designer:"
+            detail={taskDetail?.designer?.fullname ?? TaskString.CON_TRONG}
+          />
+        )}
         <BasicTaskInfo
           Icon={<AiOutlineClockCircle size={15} color="#555" />}
           title="Thời gian tạo:"
           detail={moment(ticksToDate(taskDetail?.createdTime)).format("DD-MM-YYYY - h:mm")}
         />
-
         <BasicTaskInfo
           Icon={<AiOutlineClockCircle size={15} color="#555" />}
           title={TaskString.DEADLINE}
           detail={moment(ticksToDate(taskDetail?.deadline)).format("DD-MM-YYYY - h:mm")}
           customText="text-red-600 font-semibold"
         />
-
         <BasicTaskInfo
           Icon={getPriorityIcon(taskDetail?.priority)}
           title="Ưu tiên:"
@@ -159,7 +155,6 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
             customText={getStatusTextColor(initStatus) + " font-semibold"}
           />
         )}
-
         {visibleType === VisibleType.Internal && (
           <div
             className={cn(
@@ -231,13 +226,11 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
             </div>
           </div>
         )}
-
         <BasicTaskInfo
           Icon={<MdOutlineTypeSpecimen size={15} color="#555" />}
           title="Loại thiết kế:"
           detail={taskDetail?.jobType?.typeName || "..."}
         />
-
         {renderCorrelationJobType()}
       </div>
 

@@ -86,7 +86,7 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
 
   const currentPerson = useCurrentPerson();
 
-  useEffect(() => { });
+  useEffect(() => {});
   useClickOutside(
     wrapperRef,
     () => {
@@ -170,33 +170,33 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
     {
       subTaskId === undefined
         ? AlwayxInstance.post(`comment/${taskId}`, formData)
-          .then(() => {
-            getComments();
-            setValue("");
-            setFiles([]);
-            setLoading(false);
-            setOpenReplySection?.(false);
-            if (reply === undefined) setOpenTaskPanel(false);
-          })
-          .catch(_err => {
-            setLoading(false);
-            snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-          })
-          .finally(() => setLoading(false))
+            .then(() => {
+              getComments();
+              setValue("");
+              setFiles([]);
+              setLoading(false);
+              setOpenReplySection?.(false);
+              if (reply === undefined) setOpenTaskPanel(false);
+            })
+            .catch(_err => {
+              setLoading(false);
+              snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+            })
+            .finally(() => setLoading(false))
         : AlwayxInstance.post(`comment/${subTaskId}`, formData)
-          .then(() => {
-            getComments();
-            setValue("");
-            setFiles([]);
-            setLoading(false);
-            setOpenReplySection?.(false);
-            if (reply === undefined) setOpenTaskPanel(false);
-          })
-          .catch(_err => {
-            setLoading(false);
-            snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-          })
-          .finally(() => setLoading(false));
+            .then(() => {
+              getComments();
+              setValue("");
+              setFiles([]);
+              setLoading(false);
+              setOpenReplySection?.(false);
+              if (reply === undefined) setOpenTaskPanel(false);
+            })
+            .catch(_err => {
+              setLoading(false);
+              snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+            })
+            .finally(() => setLoading(false));
     }
   };
 
@@ -310,7 +310,11 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
                   </CustomButton>
                 )}
               </div>
-              <FileSection visibleType={visibleType} fileList={getDocumentsFils} handleDelete={handleDeleteFile} />
+              <FileSection
+                visibleType={visibleType}
+                fileList={getDocumentsFils}
+                handleDelete={handleDeleteFile}
+              />
               {getImagesFils && getImagesFils.length > 0 ? (
                 <ImageSection imgFiles={getImagesFils} handleDelete={handleDeleteFile} />
               ) : (

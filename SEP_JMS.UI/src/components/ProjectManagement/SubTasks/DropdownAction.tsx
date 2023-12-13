@@ -9,7 +9,7 @@ import CustomDialog from "../../common/CustomDialog";
 import useSnakeBar from "../../../hooks/store/useSnakeBar";
 import { IComments } from "../../../interface/comment";
 import useCurrentPerson from "../../../hooks/store/useCurrentPerson";
-import { Role } from "../../../enums/role";
+import { Role } from "../../../enums/Role";
 import { render } from "react-dom";
 
 interface IDropdownAction {

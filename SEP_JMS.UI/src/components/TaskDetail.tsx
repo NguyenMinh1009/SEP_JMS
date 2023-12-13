@@ -7,7 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import "react-quill/dist/quill.snow.css";
 import "react-multi-carousel/lib/styles.css";
 import { VisibleType } from "../enums/visibleType";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import useTitle from "../hooks/store/useCurrentTitle";
 import BasicDetailsSection from "./BasicDetailsSection";

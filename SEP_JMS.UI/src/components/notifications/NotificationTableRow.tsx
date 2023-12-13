@@ -6,7 +6,7 @@ import { formatDateTime, ticksToDate } from "../../utils/Datetime";
 import { useNavigate } from "react-router-dom";
 import { PathString } from "../../enums/MapRouteToBreadCrumb";
 import { IoCreateOutline } from "react-icons/io5";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import CustomDialog from "../common/CustomDialog";
 import APIClientInstance from "../../api/AxiosInstance";
@@ -19,11 +19,18 @@ import { accountStatusOptions, genderOptions, roleOptions } from "../../constant
 import { recursiveStructuredClone } from "../../utils/recursiveStructuredClone";
 import { JobStatusType } from "../../enums/jobStatusType";
 import { CorrelationJobType } from "../../enums/correlationJobType";
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Typography
+} from "@mui/material";
 import CustomButton from "../common/CustomButton";
 import { cn } from "../../utils/className";
 import useTitle from "../../hooks/store/useCurrentTitle";
-
 
 type IRowProps = {
   row: any;
@@ -33,7 +40,13 @@ type IRowProps = {
   setNotifications: (users: any) => void;
 };
 
-const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page, setNotifications }) => {
+const NotificationTableRow: React.FC<IRowProps> = ({
+  row,
+  index,
+  pageSize,
+  page,
+  setNotifications
+}) => {
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
   const [openDetails, setOpenDetailsDialog] = React.useState(false);
   const [tempUnRead, setTempUnRead] = React.useState(true);
@@ -54,64 +67,58 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
     var bId = row.entityIdentifier.split("/");
     var isProject = bId.length > 1;
     var pathDef = isProject ? PathString.VIEC_DU_AN : PathString.VIEC_HANG_NGAY;
-    APIClientInstance.get(
-      `/job/${bId[bId.length-1]}`
-    ).then(res => {
+    APIClientInstance.get(`/job/${bId[bId.length - 1]}`).then(res => {
       const jobStatus: JobStatusType = res.data.jobStatus;
       const jobCorr: CorrelationJobType = res.data.correlationType;
 
       if (row.entityName.includes("Bình luận /")) {
-        
-        if (row.data.includes("[COMMENT_TYPE=Internal") || row.data.includes("[TYPE=Internal")) 
-        {
-          navigate(
-            `/${PathString.NOI_BO}/${pathDef}/${row.entityIdentifier}`
-          )
+        if (row.data.includes("[COMMENT_TYPE=Internal") || row.data.includes("[TYPE=Internal")) {
+          navigate(`/${PathString.NOI_BO}/${pathDef}/${row.entityIdentifier}`);
           return;
         }
-        
       }
       // for job
       if (jobCorr === CorrelationJobType.Job) {
         titleBreadCrumb.setContent(row.title.split("$[PRJ]$")[0]);
 
         if (jobStatus == JobStatusType.Completed) {
-          navigate(
-            `/${PathString.VIEC_DA_XONG}/${pathDef}/${row.entityIdentifier}`
-          );
+          navigate(`/${PathString.VIEC_DA_XONG}/${pathDef}/${row.entityIdentifier}`);
           return;
         }
 
-        if (jobStatus == JobStatusType.Pending) {navigate(
-          `/${PathString.NOI_BO}/${pathDef}/${row.entityIdentifier}`
-        );return}
+        if (jobStatus == JobStatusType.Pending) {
+          navigate(`/${PathString.NOI_BO}/${pathDef}/${row.entityIdentifier}`);
+          return;
+        }
 
-        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) {navigate(
-          `/${PathString.CONG_KHAI}/${pathDef}/${row.entityIdentifier}`
-        );return}
+        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) {
+          navigate(`/${PathString.CONG_KHAI}/${pathDef}/${row.entityIdentifier}`);
+          return;
+        }
 
         navigate(`/${PathString.CONG_KHAI}/${pathDef}/${row.entityIdentifier}`);
       }
       // for project
       if (jobCorr === CorrelationJobType.Project) {
-        if (jobStatus == JobStatusType.Completed) {navigate(
-          `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-        );return}
+        if (jobStatus == JobStatusType.Completed) {
+          navigate(`/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
+          return;
+        }
 
-        if (jobStatus == JobStatusType.Pending) {navigate(
-          `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-        );return}
+        if (jobStatus == JobStatusType.Pending) {
+          navigate(`/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
+          return;
+        }
 
-        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) {navigate(
-          `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-        );return}
+        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) {
+          navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
+          return;
+        }
 
         navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
       }
-
     });
-
-  }
+  };
 
   const handleClickNoti = () => {
     setOpenDetailsDialog(true);
@@ -121,9 +128,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   const handleCloseNoti = () => {
     setOpenDetailsDialog(false);
     // mark as read
-    APIClientInstance.post(
-      `/notification/read/${row.notificationId}`
-    )
+    APIClientInstance.post(`/notification/read/${row.notificationId}`)
       .then(() => {
         // setNotifications((prev: any) => {
         //   let clone = recursiveStructuredClone(prev);
@@ -138,23 +143,27 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
         console.log(err);
         snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
       });
-  }
+  };
 
   const handleArchiveNoti = () => {
     APIClientInstance.post(
-      (row.archivedAt == null || row.archivedAt == 0) ?
-        `/notification/archive/${row.notificationId}` : `/notification/unarchive/${row.notificationId}`
+      row.archivedAt == null || row.archivedAt == 0
+        ? `/notification/archive/${row.notificationId}`
+        : `/notification/unarchive/${row.notificationId}`
     )
       .then(() => {
-        snakeBar.setSnakeBar((row.archivedAt == null || row.archivedAt == 0) ? "Lưu thông báo thành công" : "Huỷ lưu thông báo thành công", "success", true);
+        snakeBar.setSnakeBar(
+          row.archivedAt == null || row.archivedAt == 0
+            ? "Lưu thông báo thành công"
+            : "Huỷ lưu thông báo thành công",
+          "success",
+          true
+        );
         setNotifications((prev: any) => {
           let clone = recursiveStructuredClone(prev);
           const index = clone.findIndex((user: any) => user.notificationId === row.notificationId);
           if (index > -1) {
-            clone[index].archivedAt =
-              row.archivedAt === 0 || row.archivedAt === null
-                ? 1
-                : 0;
+            clone[index].archivedAt = row.archivedAt === 0 || row.archivedAt === null ? 1 : 0;
           }
           return clone;
         });
@@ -166,9 +175,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   };
 
   const handleDeleteNoti = () => {
-    APIClientInstance.delete(
-      `/notification/${row.notificationId}`
-    )
+    APIClientInstance.delete(`/notification/${row.notificationId}`)
       .then(() => {
         snakeBar.setSnakeBar("Xoá thành công", "success", true);
         setNotifications((prev: any) => {
@@ -181,7 +188,6 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
         console.log(err);
         snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
       });
-
   };
 
   const descriptionElementRef = React.useRef<HTMLElement>(null);
@@ -197,12 +203,13 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   if (!row) return <></>;
 
   let notiDetails = "";
-  notiDetails += `<b>Công việc:</b> ${row.title.replace("$[PRJ]$", "/")}<br>`
-  notiDetails += `<b>Hành động</b>: ${row.entityName}<br>`
-  row.message.substr(0, 3) != "Bạn" && (notiDetails += `<b>Người gửi:</b> ${row.message.substr(0, row.message.indexOf(")") + 1)}<br>`);
-  notiDetails += `<b>Thời gian:</b> ${formatDateTime(ticksToDate(row.createdTime))}<br>`
-  notiDetails += `<br>`
-  notiDetails += `<b><span class="bg-stone-200 inline-block w-full rounded-sm text-center">Nội dung</span></b><br>`
+  notiDetails += `<b>Công việc:</b> ${row.title.replace("$[PRJ]$", "/")}<br>`;
+  notiDetails += `<b>Hành động</b>: ${row.entityName}<br>`;
+  row.message.substr(0, 3) != "Bạn" &&
+    (notiDetails += `<b>Người gửi:</b> ${row.message.substr(0, row.message.indexOf(")") + 1)}<br>`);
+  notiDetails += `<b>Thời gian:</b> ${formatDateTime(ticksToDate(row.createdTime))}<br>`;
+  notiDetails += `<br>`;
+  notiDetails += `<b><span class="bg-stone-200 inline-block w-full rounded-sm text-center">Nội dung</span></b><br>`;
   notiDetails += row.data.replace(/\[COMMENT_TYPE\=(Internal|Public)\]/, "");
 
   const isUnRead = tempUnRead && !row.readAt;
@@ -228,8 +235,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             className="text-[14px]"
             color={"rgb(63 63 70)"}
             dangerouslySetInnerHTML={{ __html: notiDetails }}
-          >
-          </DialogContentText>
+          ></DialogContentText>
         </DialogContent>
         <DialogActions className="px-5 pb-4">
           {/* <Button size="small" className="text-[13px] normal-case" onClick={handleClose} autoFocus>
@@ -266,16 +272,16 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
         secondaryBtnCallback={handleDeleteNoti}
       />
       <TableRow hover role="checkbox" tabIndex={-1} key={JSON.stringify(row)}>
-
-
-
         <TableCell
           padding="none"
           className="cursor-pointer border-r-[1px] p-2 align-top text-[13px] font-[400]"
           align="left"
         >
-          <div className="mx-auto flex gap-1"
-            onClick={() => { handleClickNoti(); }}
+          <div
+            className="mx-auto flex gap-1"
+            onClick={() => {
+              handleClickNoti();
+            }}
           >
             {isUnRead ? (
               <GoDotFill color="green" size={18} />
@@ -283,15 +289,36 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
               <GoDotFill color="gray" size={18} />
             )}
 
-            
-              <span className={cn(isUnRead ? "bg-emerald-500	" : "bg-gray-300", "inline-block w-28 rounded-sm text-center")}>{moment(ticksToDate(row.createdTime)).fromNow()}</span>
-            
-            {isUnRead ? (<b>{row.message + " [" + row.title.replace("$[PRJ]$", "/") + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "..."}</b>) : (row.message + " [" + row.title.replace("$[PRJ]$", "/") + "] " + (row.entityName.indexOf("Comment") === - 1 && row.message.indexOf("Bạn") === - 1 ? "" : "") ?? "...")}
+            <span
+              className={cn(
+                isUnRead ? "bg-emerald-500	" : "bg-gray-300",
+                "inline-block w-28 rounded-sm text-center"
+              )}
+            >
+              {moment(ticksToDate(row.createdTime)).fromNow()}
+            </span>
 
+            {isUnRead ? (
+              <b>
+                {row.message +
+                  " [" +
+                  row.title.replace("$[PRJ]$", "/") +
+                  "] " +
+                  (row.entityName.indexOf("Comment") === -1 && row.message.indexOf("Bạn") === -1
+                    ? ""
+                    : "") ?? "..."}
+              </b>
+            ) : (
+              row.message +
+                " [" +
+                row.title.replace("$[PRJ]$", "/") +
+                "] " +
+                (row.entityName.indexOf("Comment") === -1 && row.message.indexOf("Bạn") === -1
+                  ? ""
+                  : "") ?? "..."
+            )}
           </div>
         </TableCell>
-
-
 
         {/* Actions */}
         <TableCell
@@ -307,12 +334,11 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
                   onClick={handleArchiveNoti}
                   className={`group relative cursor-pointer border-r-[1px] border-[#999] px-1 pr-2 hover:scale-105`}
                 >
-                  {row.archivedAt === 0 || row.archivedAt === null ?
-                    (<RiArchiveDrawerFill size={18} />)
-                    : (
-                      <RiArchiveDrawerFill size={18} color="red" />
-                    )
-                  }
+                  {row.archivedAt === 0 || row.archivedAt === null ? (
+                    <RiArchiveDrawerFill size={18} />
+                  ) : (
+                    <RiArchiveDrawerFill size={18} color="red" />
+                  )}
 
                   <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-[#777] transition-all group-hover:w-full"></span>
                 </span>
@@ -329,7 +355,6 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
             </div>
           </div>
         </TableCell>
-
       </TableRow>
     </>
   );

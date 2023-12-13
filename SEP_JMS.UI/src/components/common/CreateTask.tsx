@@ -20,7 +20,7 @@ import { Priority, priorityOptions } from "../../enums/priority";
 import { useLocation, useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { CorrelationJobType } from "../../enums/correlationJobType";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 import { VisibleType } from "../../enums/visibleType";
 import { Autocomplete, MenuItem, Select, TextField } from "@mui/material";
 import {

@@ -4,7 +4,7 @@ import { IoAddCircleOutline } from "react-icons/io5";
 import TaskPreview from "../components/TaskPreview";
 import { CiExport } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import { useState } from "react";
 import { CircularProgress } from "@mui/material";

@@ -13,7 +13,7 @@ import { VisibleType } from "../../enums/visibleType";
 import ImageSection from "./ImageSection";
 import { BiComment } from "react-icons/bi";
 import { MdEdit, MdHideSource } from "react-icons/md";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 import ReplyCommentSection from "../ReplyCommentSection";
 import { useClickOutside } from "../../utils/useClickOutside";
 import CustomDialog from "./CustomDialog";
@@ -62,7 +62,8 @@ const ReplyComment = ({
   useClickOutside(
     wrapperRef,
     () => {
-      if ((isOpenReplySection || isOpenEditSection) && !openConfirmDialog) setOpenConfirmDialog(true);
+      if ((isOpenReplySection || isOpenEditSection) && !openConfirmDialog)
+        setOpenConfirmDialog(true);
     },
     ".reply-btn"
   );
@@ -148,7 +149,7 @@ const ReplyComment = ({
     setBindAt(attachments);
     setDocFiles([]);
     setImgFiles([]);
-  }
+  };
 
   return (
     <div ref={wrapperRef}>
@@ -160,7 +161,10 @@ const ReplyComment = ({
         primaryBtnText="Tiếp tục comment"
         secondaryBtnText="Đồng ý hủy"
         primaryBtnCallback={handleClose}
-        secondaryBtnCallback={() => {setOpenReplySection(false); setOpenEditSection(false)}}
+        secondaryBtnCallback={() => {
+          setOpenReplySection(false);
+          setOpenEditSection(false);
+        }}
       />
       <CustomDialog
         openDialog={openConfirmDeleteDialog}
@@ -176,7 +180,9 @@ const ReplyComment = ({
         <div className="flex w-full">
           <div className="h-8 w-8 shrink-0 rounded-full bg-slate-500">
             <img
-              src={user?.avatarUrl ? APIUrlHost + "/" + user.avatarUrl + "?t=0" : Images.avtPlaceHolder}
+              src={
+                user?.avatarUrl ? APIUrlHost + "/" + user.avatarUrl + "?t=0" : Images.avtPlaceHolder
+              }
               className="h-full w-full rounded-full"
               alt=""
             />
@@ -262,7 +268,7 @@ const ReplyComment = ({
                 <BiComment size={12} color="#333" className="mt-[1px]" />
                 <p className="text-xs font-[500]">Phản hồi</p>
               </div>
-              {(currentPerson.userId === user?.userId) && (
+              {currentPerson.userId === user?.userId && (
                 <div
                   onClick={() => setOpenEditSection(!isOpenEditSection)}
                   className="flex cursor-pointer items-center gap-1 transition-all hover:opacity-70"

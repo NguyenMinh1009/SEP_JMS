@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 
 export interface IEmployee {
   userId: string;

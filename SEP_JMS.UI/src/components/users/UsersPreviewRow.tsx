@@ -5,7 +5,7 @@ import moment from "moment";
 import { ticksToDate } from "../../utils/Datetime";
 import { IoCreateOutline } from "react-icons/io5";
 import { BiTrashAlt } from "react-icons/bi";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import CustomDialog from "../common/CustomDialog";
 import { UsersPreviewData } from "../../interface/usersPreviewData";

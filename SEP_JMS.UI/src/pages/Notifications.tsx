@@ -4,7 +4,7 @@ import { IoAddCircleOutline } from "react-icons/io5";
 import TaskPreview from "../components/TaskPreview";
 import { CiExport } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import { notificationStatusOptions } from "../constants";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import { useState } from "react";
@@ -22,8 +22,7 @@ import useSnakeBar from "../hooks/store/useSnakeBar";
 import { MdDelete } from "react-icons/md";
 import CustomDialog from "../components/common/CustomDialog";
 
-
-interface IFinishedTasks { }
+interface IFinishedTasks {}
 const UsersPage: React.FC<IFinishedTasks> = () => {
   const navigate = useNavigate();
 
@@ -36,9 +35,7 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
   const snakeBar = useSnakeBar();
 
   const handleMarkReadAllNoti = () => {
-    APIClientInstance.post(
-      `/notification/readAll`
-    )
+    APIClientInstance.post(`/notification/readAll`)
       .then(() => {
         snakeBar.setSnakeBar("Successfully", "success", true);
         // setSelectedStatus(NotificationStatus.ALL);
@@ -48,13 +45,10 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
         console.log(err);
         snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
       });
-
   };
 
   const handleDeleteAllNoti = () => {
-    APIClientInstance.post(
-      `/notification/deleteAll`
-    )
+    APIClientInstance.post(`/notification/deleteAll`)
       .then(() => {
         snakeBar.setSnakeBar("Successfully", "success", true);
         // setSelectedStatus(NotificationStatus.ALL);
@@ -64,7 +58,6 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
         console.log(err);
         snakeBar.setSnakeBar("Có lỗi xảy ra", "error", true);
       });
-
   };
 
   const handleClose = () => {
@@ -106,7 +99,6 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
                 </MenuItem>
               ))}
             </Select>
-
           </div>
         </div>
         <div className="flex items-start gap-3">
@@ -126,18 +118,20 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
             }}
             className="flex cursor-pointer items-center gap-2 rounded-md bg-orange-600 p-3 text-white hover:opacity-75"
           >
-            <MdDelete  size={20} className="text-white" />
+            <MdDelete size={20} className="text-white" />
             <span>Xoá tất cả thông báo</span>
           </div>
         </div>
-
       </div>
-      <p className="text-primary mb-6 text-base">
-        Thông báo ({totalNum})
-      </p>
+      <p className="text-primary mb-6 text-base">Thông báo ({totalNum})</p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
-          <NotificationTable key={timeRefresh} status={selectedStatus as unknown as NotificationStatus} searchValue={searchValue} onGetNewNotification={(e) => setTotal(e)} />
+          <NotificationTable
+            key={timeRefresh}
+            status={selectedStatus as unknown as NotificationStatus}
+            searchValue={searchValue}
+            onGetNewNotification={e => setTotal(e)}
+          />
         </div>
       </div>
     </>

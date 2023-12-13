@@ -6,7 +6,7 @@ import { IoCreateOutline, IoAddCircleOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 // import ProjectPreview from "../components/ProjectManagement/ProjectPreview";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import JobFilterSection from "../components/common/JobFilterSection";
 import { useState } from "react";

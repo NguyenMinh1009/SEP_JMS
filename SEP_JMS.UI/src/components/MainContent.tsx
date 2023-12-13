@@ -1,5 +1,5 @@
 import React from "react";
-import Sidebar from "./sidebar/Sidebar"; // rname
+import Sidebar from "./SideBar/Sidebar"; // rname
 import { Outlet } from "react-router-dom";
 import useSideBarPanel from "../hooks/store/useSideBarPanel";
 import BreadCrumb from "./common/BreadCrumb";
@@ -18,7 +18,7 @@ const MainContent: React.FC<any> = () => {
           <Avatar />
         </header>
         <Divider />
-        <div className="main-content-container h-[calc(100vh-75px)] px-6 lg:px-12 pt-6">
+        <div className="main-content-container h-[calc(100vh-75px)] px-6 pt-6 lg:px-12">
           <Outlet />
         </div>
       </div>

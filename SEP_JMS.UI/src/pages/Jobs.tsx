@@ -6,7 +6,7 @@ import InternalTaskPreview from "../components/InternalTaskPreview";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import JobFilterSection from "../components/common/JobFilterSection";
 import { CorrelationJobType } from "../enums/correlationJobType";

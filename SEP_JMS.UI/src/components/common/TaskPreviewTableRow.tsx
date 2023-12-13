@@ -16,7 +16,7 @@ import { PathString } from "../../enums/MapRouteToBreadCrumb";
 import { IoCreateOutline } from "react-icons/io5";
 import { HiOutlineEye } from "react-icons/hi";
 import { BiTrashAlt } from "react-icons/bi";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import { JobStatusType } from "../../enums/jobStatusType";
 import CustomDialog from "./CustomDialog";

@@ -5,7 +5,7 @@ import Comment from "./common/Comment";
 import ReplyComment from "./common/ReplyComment";
 import TextFieldJobComment from "./common/TextFieldComment";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import { CommentString } from "../enums/commentEnum";
 
 interface ICommentsProps {

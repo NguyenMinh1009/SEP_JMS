@@ -23,7 +23,7 @@ import { InternalJobStatusType } from "../enums/internalJobStatusType";
 import AlwayxInstance from "../api/AxiosInstance";
 import { useParams } from "react-router-dom";
 import useSnakeBar from "../hooks/store/useSnakeBar";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import useCurrentPerson from "../hooks/store/useCurrentPerson";
 import { convertVND } from "../utils/VNDConvert";
 import useSideBarPanel from "../hooks/store/useSideBarPanel";

@@ -19,7 +19,7 @@ import { jobOptions, JobType } from "../enums/jobType";
 import { Priority, priorityOptions } from "../enums/priority";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import { VisibleType } from "../enums/visibleType";
 import { Autocomplete, MenuItem, Select, TextField, Tooltip } from "@mui/material";
 import { statusOptions, internalStatusOptions } from "../components/common/StatusSection";

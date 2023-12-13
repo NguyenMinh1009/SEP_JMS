@@ -11,7 +11,7 @@ const companyHeadCell: readonly CompaniesHeadCell[] = [
   {
     id: "companyName",
     disablePadding: false,
-    label: "Tên company"
+    label: "Tên công ty"
   },
   {
     id: "companyAddress",

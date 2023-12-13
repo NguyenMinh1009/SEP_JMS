@@ -2,7 +2,7 @@ export enum TaskString {
   EMPTY = "",
   CON_TRONG = "Còn trống",
   Dang_Tai_Them = "Đang tải thêm...",
-  BINH_LUAN_CONG_VIEC = "Bình luận cồng việc",
+  BINH_LUAN_CONG_VIEC = "Bình luận công việc",
   CHI_TIET = "Chi tiết",
   CHI_TIET_CONG_VIEC = "Chi tiết công việc",
   CHI_TIET_DU_AN = "Chi tiết dự án",

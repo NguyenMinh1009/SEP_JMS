@@ -91,8 +91,8 @@ const UsersPage: React.FC<IUsersManageProps> = () => {
       <CustomDialog
         openDialog={openConfirmDialog}
         handleClose={handleClose}
-        title="Tạo tải khoản/company mới!"
-        description="Lựa chọn loại tài khoản/company để tạo:"
+        title="Tạo tài khoản/công ty mới!"
+        description="Lựa chọn loại tài khoản/công ty để tạo:"
         primaryBtnText={getCreateAccountDialogText()}
         secondaryBtnText={"Quay trở lại"}
         primaryBtnCallback={handleNavigate}
@@ -150,7 +150,7 @@ const UsersPage: React.FC<IUsersManageProps> = () => {
         </div>
       </div>
       <p className="text-primary mb-6 text-base">
-        {selectedRole === CreateRole.COMPANY ? "Danh sách company" : "Danh sách người dùng"}
+        {selectedRole === CreateRole.COMPANY ? "Danh sách công ty" : "Danh sách người dùng"}
       </p>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">{renderPreviewSection()}</div>

@@ -205,9 +205,9 @@ namespace SEP_JMS.Service.Services
                     notify.Data += $"Designer: {designer?.Fullname} ({designer?.Username})" + newLineChar;
                     notify.Data += $"Loại thiết kế: {jType?.TypeName}" + newLineChar;
                     notify.Data += $"Deadline: {new DateTime(job.Deadline)}" + newLineChar;
-                    notify.Data += $"Độ ưu tiên: {Enum.GetName(typeof(Priority), job.Priority)}" + newLineChar;
+                    notify.Data += $"Độ ưu tiên: {ToVietnamese(Enum.GetName(typeof(Priority), job.Priority))}" + newLineChar;
                     notify.Data += $"Số lượng: {job.Quantity}" + newLineChar;
-                    notify.Data += $"Trạng thái: {Enum.GetName(typeof(JobStatus), job.JobStatus)}" + newLineChar;
+                    notify.Data += $"Trạng thái: {ToVietnamese(Enum.GetName(typeof(JobStatus), job.JobStatus))}" + newLineChar;
                     notify.Data += $"Mô tả: ..." + newLineChar;
 
                     notify.TriggerBy = ApiContext.Current.UserId;
@@ -251,7 +251,7 @@ namespace SEP_JMS.Service.Services
 
                     if (!oldJob.Description.Equals(job.Description))
                     {
-                        notify.Data += $"Mô tả: [] --> []" + newLineChar;
+                        notify.Data += $"Mô tả: ..." + newLineChar;
                     }
 
                     if (oldJob.AccountId != job.AccountId) {
@@ -273,7 +273,7 @@ namespace SEP_JMS.Service.Services
                     if (oldJob.Priority != job.Priority)
                     {
 
-                        notify.Data += $"Độ ưu tiên: {Enum.GetName(typeof(Priority), oldJob.Priority)} --> {Enum.GetName(typeof(Priority), job.Priority)}" + newLineChar;
+                        notify.Data += $"Độ ưu tiên: {ToVietnamese(Enum.GetName(typeof(Priority), oldJob.Priority))} --> {ToVietnamese(Enum.GetName(typeof(Priority), job.Priority))}" + newLineChar;
                     }
 
                     if (oldJob.Quantity != job.Quantity)
@@ -288,7 +288,7 @@ namespace SEP_JMS.Service.Services
 
                     if (oldJob.JobStatus != job.JobStatus)
                     {
-                        notify.Data += $"Trạng thái: {Enum.GetName(typeof(JobStatus), oldJob.JobStatus)} --> {Enum.GetName(typeof(JobStatus), job.JobStatus)}" + newLineChar;
+                        notify.Data += $"Trạng thái: {ToVietnamese(Enum.GetName(typeof(JobStatus), oldJob.JobStatus))} --> {ToVietnamese(Enum.GetName(typeof(JobStatus), job.JobStatus))}" + newLineChar;
                     }
 
                     notify.TriggerBy = ApiContext.Current.UserId;
@@ -319,7 +319,7 @@ namespace SEP_JMS.Service.Services
 
 
                     notify.Data = commentModel.Content ?? "";
-                    notify.Data += $"[TYPE={commentModel.VisibleType}]";
+                    notify.Data += $"[COMMENT_TYPE={commentModel.VisibleType}]";
                     
 
                     notify.TriggerBy = ApiContext.Current.UserId;
@@ -344,6 +344,20 @@ namespace SEP_JMS.Service.Services
                 }
             }
             return Guid.Empty;
+        }
+    
+        private string ToVietnamese(string? text)
+        {
+            if (text == null) return string.Empty;
+            if (text.Equals("NotDo")) return "Chưa làm";
+            if (text.Equals("Doing")) return "Đang làm";
+            if (text.Equals("CustomerReview")) return "Chờ khách duyệt";
+            if (text.Equals("Completed")) return "Đã xong";
+            if (text.Equals("Job")) return "Công việc";
+            if (text.Equals("Project")) return "Dự án";
+            if (text.Equals("Medium")) return "Vừa";
+            if (text.Equals("High")) return "Cao";
+            return text;
         }
     }
 }

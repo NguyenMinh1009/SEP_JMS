@@ -202,6 +202,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
             comments={comments?.items}
             handleHideComment={handleHideComment}
             finishedOnly
+            correlationJobType={isCorrelationJobType}
           />
         );
       } else {
@@ -212,6 +213,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
             setComments={setComments}
             comments={comments?.items}
             handleHideComment={handleHideComment}
+            correlationJobType={isCorrelationJobType}
           />
         );
       }

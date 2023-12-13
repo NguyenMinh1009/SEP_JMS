@@ -107,7 +107,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
           className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
           onClick={handleUpdateClick}
         >
-          Update
+          Chỉnh sửa
         </button>
       );
     }
@@ -120,7 +120,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
           className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
           onClick={handleClickDeleteTask}
         >
-          Delete
+          Xoá công việc
         </button>
       );
     }
@@ -159,7 +159,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 onClick={handleViewClick}
               >
-                View
+                Xem chi tiết
               </button>
               {renderUpdateButton()}
               {renderDeleteButton()}

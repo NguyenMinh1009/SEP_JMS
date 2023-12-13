@@ -346,29 +346,34 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
               )}
 
               {/* Comment section */}
-              <div className="mb-6 mt-10 flex items-center">
-                <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
-                  {TaskString.BINH_LUAN_CONG_VIEC}
-                </p>
-              </div>
-              <div ref={commentSectionTopRef}></div>
-              <CommentSection
-                getComments={getLatestComments}
-                visibleType={VisibleType.Public}
-                setComments={setComments}
-                comments={comments?.items}
-                handleHideComment={handleHideComment}
-                finishedOnly={finishOnly ? true : false}
-                correlationJobType={isCorrelationJobType}
-              />
-              <div className="mt-5 flex h-16 items-center justify-center gap-2">
-                {isCommentLoading && (
-                  <>
-                    <CircularProgress size={20} />
-                    <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
-                  </>
+              {isCorrelationJobType === CorrelationJobType.Job &&
+                currentPerson.roleType !== Role.DESIGNER && (
+                  <div>
+                    <div className="mb-6 mt-10 flex items-center">
+                      <p className="text-primary //border-r-2 mr-4 w-fit pr-4 text-base leading-5">
+                        {TaskString.BINH_LUAN_CONG_VIEC}
+                      </p>
+                    </div>
+                    <div ref={commentSectionTopRef}></div>
+                    <CommentSection
+                      getComments={getLatestComments}
+                      visibleType={VisibleType.Public}
+                      setComments={setComments}
+                      comments={comments?.items}
+                      handleHideComment={handleHideComment}
+                      finishedOnly={finishOnly ? true : false}
+                    />
+                    <div className="mt-5 flex h-16 items-center justify-center gap-2">
+                      {isCommentLoading && (
+                        <>
+                          <CircularProgress size={20} />
+                          <p className="text-base italic">{TaskString.Dang_Tai_Them}</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 )}
-              </div>
+
               <div ref={observerRef} className="h-2 w-2 pb-5"></div>
             </div>
             <div

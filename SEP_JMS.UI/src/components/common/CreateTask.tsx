@@ -361,7 +361,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
     if (!deadline) return true;
     if (!selectedAccount) return true;
     if (currentPerson.roleType !== Role.CUSTOMER) {
-      if (!selectedCustomer || !selectedDesigner || !selectedAccount) return true;
+      if (!selectedCustomer || !selectedAccount) return true;
     }
 
     return false;

@@ -40,6 +40,7 @@ import moment from "moment";
 import { checkInputCreateJob } from "../../utils/checkInputJob";
 import APIClientInstance from "../../api/AxiosInstance";
 import { InternalJobStatusType } from "../../enums/internalJobStatusType";
+import { TaskString } from "../../enums/taskEnums";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -622,39 +623,40 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 )}
               />
             </div>
-            {currentPerson.roleType !== Role.CUSTOMER && (
-              <div className="flex flex-col items-start gap-3">
-                <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Designer
-                  <RequireText />
-                </label>
-                <Autocomplete
-                  noOptionsText="Không có lựa chọn"
-                  id="designers"
-                  value={selectedDesigner}
-                  onChange={(_, newValue) => {
-                    setSelectedDesigner(newValue);
-                  }}
-                  getOptionLabel={option => option.fullname}
-                  size="small"
-                  options={designers}
-                  fullWidth
-                  // disabled
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      sx={{
-                        "& .MuiInputBase-sizeSmall": {
-                          height: "40px !important"
-                        },
-                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                      }}
-                      placeholder="-- Chọn NTK --"
-                    />
-                  )}
-                />
-              </div>
-            )}
+            {currentPerson.roleType !== Role.CUSTOMER &&
+              correlationJobType === CorrelationJobType.Job && (
+                <div className="flex flex-col items-start gap-3">
+                  <label htmlFor="" className="text-primary col-span-2 mr-4">
+                    Designer
+                    <RequireText />
+                  </label>
+                  <Autocomplete
+                    noOptionsText="Không có lựa chọn"
+                    id="designers"
+                    value={selectedDesigner}
+                    onChange={(_, newValue) => {
+                      setSelectedDesigner(newValue);
+                    }}
+                    getOptionLabel={option => option.fullname}
+                    size="small"
+                    options={designers}
+                    fullWidth
+                    // disabled
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        sx={{
+                          "& .MuiInputBase-sizeSmall": {
+                            height: "40px !important"
+                          },
+                          "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                        }}
+                        placeholder="-- Chọn NTK --"
+                      />
+                    )}
+                  />
+                </div>
+              )}
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại thiết kế
@@ -723,7 +725,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Deadline
+                {TaskString.DEADLINE}
                 <RequireText />
               </label>
               <DateTimePicker

@@ -79,7 +79,12 @@ const getDeadline = (date?: Date): Date => {
   return curr;
 };
 
-const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly, isInternal, isSubTask }) => {
+const EditTask: React.FC<IEditTaskProp> = ({
+  isCorrelationJobType,
+  finishedOnly,
+  isInternal,
+  isSubTask
+}) => {
   const [taskDetail, setTaskDetail] = useState<any>();
   const [value, setValue] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
@@ -792,6 +797,40 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
     }
   };
 
+  const renderDropdownSelectDesigner = () => {
+    if (isCorrelationJobType === CorrelationJobType.Job)
+      return (
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            Designer
+            <RequireText />
+          </label>
+          {currentPerson.roleType === Role.DESIGNER || currentPerson.roleType === Role.CUSTOMER ? (
+            <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
+              <span className="col-span-3 p-2 pl-0 opacity-60">
+                {taskDetail?.designer?.fullname ?? TaskString.CON_TRONG}
+              </span>
+            </div>
+          ) : (
+            <Autocomplete
+              noOptionsText="Không có lựa chọn"
+              id="designers"
+              value={selectedDesigner}
+              onChange={(_, newValue) => {
+                setSelectedDesigner(newValue);
+              }}
+              getOptionLabel={option => option.fullname}
+              size="small"
+              options={designers}
+              fullWidth
+              // disabled
+              renderInput={params => <TextField {...params} placeholder="-- Chọn NTK --" />}
+            />
+          )}
+        </div>
+      );
+  };
+
   useEffect(() => {
     if (currentPerson.roleType !== undefined) {
       if (currentPerson.roleType !== Role.CUSTOMER && currentPerson.roleType !== Role.DESIGNER) {
@@ -1131,36 +1170,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
                 )}
               />
             </div>
-
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Designer
-                <RequireText />
-              </label>
-              {currentPerson.roleType === Role.DESIGNER ||
-              currentPerson.roleType === Role.CUSTOMER ? (
-                <div className="flex h-10 w-full items-center justify-start rounded-[4px] border-[1px] border-[#0000003b] px-3">
-                  <span className="col-span-3 p-2 pl-0 opacity-60">
-                    {taskDetail?.designer?.fullname ?? TaskString.CON_TRONG}
-                  </span>
-                </div>
-              ) : (
-                <Autocomplete
-                  noOptionsText="Không có lựa chọn"
-                  id="designers"
-                  value={selectedDesigner}
-                  onChange={(_, newValue) => {
-                    setSelectedDesigner(newValue);
-                  }}
-                  getOptionLabel={option => option.fullname}
-                  size="small"
-                  options={designers}
-                  fullWidth
-                  // disabled
-                  renderInput={params => <TextField {...params} placeholder="-- Chọn NTK --" />}
-                />
-              )}
-            </div>
+            {renderDropdownSelectDesigner()}
 
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
@@ -1209,7 +1219,7 @@ const EditTask: React.FC<IEditTaskProp> = ({ isCorrelationJobType, finishedOnly,
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Deadline
+                {TaskString.DEADLINE}
                 <RequireText />
               </label>
               <DateTimePicker

@@ -32,6 +32,7 @@ import { correlationJobOptions } from "../constants";
 import { checkStatusCompletedProjectEdit } from "../utils/checkInputJob";
 import { Error } from "../enums/validateInput";
 import { TaskString } from "../enums/taskEnums";
+import { RoleString } from "../enums/roleEnums";
 
 interface IBasicDetailsSectionProps {
   taskDetail: any;
@@ -137,7 +138,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
 
         <BasicTaskInfo
           Icon={<AiOutlineClockCircle size={15} color="#555" />}
-          title="Deadline:"
+          title={TaskString.DEADLINE}
           detail={moment(ticksToDate(taskDetail?.deadline)).format("DD-MM-YYYY - h:mm")}
           customText="text-red-600 font-semibold"
         />

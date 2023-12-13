@@ -17,7 +17,7 @@ interface ICommentsProps {
     }>
   >;
   getComments: () => void;
-  // correlationJobType: CorrelationJobType;
+  correlationJobType: CorrelationJobType;
   visibleType: VisibleType;
   handleHideComment?: (id: string) => void;
   finishedOnly?: boolean;
@@ -26,7 +26,7 @@ interface ICommentsProps {
 const CommentSection = ({
   comments,
   setComments,
-  // correlationJobType,
+  correlationJobType,
   getComments,
   visibleType,
   handleHideComment,
@@ -37,6 +37,11 @@ const CommentSection = ({
   const renderAddComment = () => {
     let flagHidden;
     finishedOnly ? (flagHidden = true) : (flagHidden = false);
+    // if (
+    //   correlationJobType === CorrelationJobType.Project &&
+    //   currentPerson.roleType === Role.DESIGNER
+    // )
+    //   flagHidden = true;
     if (!flagHidden) {
       return (
         <TextFieldJobComment

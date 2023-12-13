@@ -359,6 +359,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                 comments={comments?.items}
                 handleHideComment={handleHideComment}
                 finishedOnly={finishOnly ? true : false}
+                correlationJobType={isCorrelationJobType}
               />
               <div className="mt-5 flex h-16 items-center justify-center gap-2">
                 {isCommentLoading && (

@@ -64,7 +64,7 @@ export const createRoleOptions = [
   },
   {
     key: CreateRole.COMPANY,
-    text: "Company"
+    text: "Công ty"
   }
 ];
 

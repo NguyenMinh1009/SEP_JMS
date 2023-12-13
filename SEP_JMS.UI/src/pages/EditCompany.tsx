@@ -80,7 +80,7 @@ const EditCompany = () => {
       accountId: selectedAccounts?.userId
     })
       .then(() => {
-        snakeBar.setSnakeBar("Chỉnh sửa company thành công", "success", true);
+        snakeBar.setSnakeBar("Chỉnh sửa công ty thành công", "success", true);
         handleCancelJob();
       })
       .catch(err => {

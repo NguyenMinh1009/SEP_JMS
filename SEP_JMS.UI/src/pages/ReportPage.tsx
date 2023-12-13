@@ -4,18 +4,23 @@ import JobFilterSection from "../components/common/JobFilterSection";
 import useFilterInfo from "../hooks/store/useFilterInfo";
 import ReportPreview from "../components/report/ReportPreview";
 import { useState } from "react";
+import { CorrelationJobType } from "../enums/correlationJobType";
 
 interface ReportPageProps {
   isInternal?: boolean;
 }
 const ReportPage: React.FC<ReportPageProps> = () => {
-  const [quickSelect, setQuickSelect] = useState<number>(0)
+  const [quickSelect, setQuickSelect] = useState<number>(0);
   const filterInfoController = useFilterInfo();
   return (
     <div className="h-full overflow-auto scrollbar-hide">
       <div className="mb-10">
         <div className="flex items-end justify-between gap-3">
-          <JobFilterSection report quickSelect={quickSelect}/>
+          <JobFilterSection
+            report
+            quickSelect={quickSelect}
+            isCorrelationJobType={CorrelationJobType.Job}
+          />
 
           <div className="flex items-start gap-3">
             <div

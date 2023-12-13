@@ -68,7 +68,11 @@ const FinishedProjects: React.FC<IFinishedProjects> = ({ isInternal }) => {
       <div className="h-full overflow-auto scrollbar-hide">
         <div className="mb-10">
           <div className="flex items-end justify-between gap-3">
-            <JobFilterSection finishedOnly isInternal={isInternal} />
+            <JobFilterSection
+              finishedOnly
+              isInternal={isInternal}
+              isCorrelationJobType={CorrelationJobType.Project}
+            />
             <div className="flex flex-col gap-11">
               {currentPerson.roleType === Role.ADMIN && (
                 <div

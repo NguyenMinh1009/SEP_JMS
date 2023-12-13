@@ -27,13 +27,15 @@ interface JobFilterSectionProps {
   finishedOnly?: boolean;
   report?: boolean;
   quickSelect?: number;
+  isCorrelationJobType: number;
 }
 
 const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   isInternal,
   finishedOnly,
   report,
-  quickSelect
+  quickSelect,
+  isCorrelationJobType
 }) => {
   const [from, setFrom] = useState<moment.Moment | null>(null);
   const [to, setTo] = useState<moment.Moment | null>(null);
@@ -68,7 +70,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
     if (!report || !quickSelect) return;
     let now = new Date();
     let past = structuredClone(now);
-    past.setMonth(past.getMonth()-quickSelect);
+    past.setMonth(past.getMonth() - quickSelect);
     setFrom(moment(past));
     setTo(moment(now));
   }, [quickSelect]);
@@ -266,6 +268,50 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
     );
   };
 
+  const renderDesignerFilter = () => {
+    if (isCorrelationJobType === CorrelationJobType.Job)
+      return (
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            Designer
+          </label>
+          <Autocomplete
+            disabled={currentPerson.roleType === Role.DESIGNER}
+            noOptionsText="Không có lựa chọn"
+            id="designers"
+            value={
+              currentPerson.roleType === Role.DESIGNER
+                ? currentInfo?.fullname || "..."
+                : selectedDesigner
+            }
+            onChange={(_, newValue) => {
+              setSelectedDesigner(newValue);
+            }}
+            getOptionLabel={
+              // currentPerson.roleType === Role.ACCOUNT
+              currentPerson.roleType === Role.DESIGNER ? undefined : option => option.fullname
+            }
+            size="small"
+            options={designers}
+            fullWidth
+            // disabled
+            renderInput={params => (
+              <TextField
+                {...params}
+                sx={{
+                  "& .MuiInputBase-sizeSmall": {
+                    height: "40px !important"
+                  },
+                  "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                }}
+                placeholder={currentPerson.roleType === Role.DESIGNER ? "" : "-- Chọn NTK --"}
+              />
+            )}
+          />
+        </div>
+      );
+  };
+
   return (
     <div>
       <div key={location.pathname} className="grid grid-cols-5 items-end gap-3">
@@ -429,44 +475,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
               />
             </div>
             {renderCustomerFilter()}
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Designer
-              </label>
-              <Autocomplete
-                disabled={currentPerson.roleType === Role.DESIGNER}
-                noOptionsText="Không có lựa chọn"
-                id="designers"
-                value={
-                  currentPerson.roleType === Role.DESIGNER
-                    ? currentInfo?.fullname || "..."
-                    : selectedDesigner
-                }
-                onChange={(_, newValue) => {
-                  setSelectedDesigner(newValue);
-                }}
-                getOptionLabel={
-                  // currentPerson.roleType === Role.ACCOUNT
-                  currentPerson.roleType === Role.DESIGNER ? undefined : option => option.fullname
-                }
-                size="small"
-                options={designers}
-                fullWidth
-                // disabled
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    sx={{
-                      "& .MuiInputBase-sizeSmall": {
-                        height: "40px !important"
-                      },
-                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                    }}
-                    placeholder={currentPerson.roleType === Role.DESIGNER ? "" : "-- Chọn NTK --"}
-                  />
-                )}
-              />
-            </div>
+            {renderDesignerFilter()}
+
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Account

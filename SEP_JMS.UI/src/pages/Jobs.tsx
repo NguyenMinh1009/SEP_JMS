@@ -22,7 +22,7 @@ const Jobs: React.FC<IJobs> = ({ isInternal, isCorrelationJobType }) => {
     <div className="h-full overflow-auto scrollbar-hide">
       <div className="mb-10">
         <div className="flex items-end justify-between gap-3">
-          <JobFilterSection isInternal={isInternal} />
+          <JobFilterSection isInternal={isInternal} isCorrelationJobType={isCorrelationJobType} />
           {currentPerson.roleType !== Role.DESIGNER && (
             <div
               onClick={() => {

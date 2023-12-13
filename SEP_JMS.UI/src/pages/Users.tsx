@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import UsersPreview from "../components/users/UsersPreview";
 import { MenuItem, Select, TextField } from "@mui/material";
 import { createRoleOptions } from "../constants";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import { IoAddCircleOutline } from "react-icons/io5";
 import CustomDialog from "../components/common/CustomDialog";
 import { CreateRole } from "../enums/createRole";
@@ -26,7 +26,7 @@ const UsersPage: React.FC<IUsersManageProps> = () => {
 
   const onSearch = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.code == "Enter") {
-      setSearchValue(value)
+      setSearchValue(value);
     }
   };
 
@@ -80,9 +80,9 @@ const UsersPage: React.FC<IUsersManageProps> = () => {
 
   const renderPreviewSection = () => {
     return selectedRole !== CreateRole.COMPANY ? (
-      <UsersPreview role={selectedRole as unknown as Role} searchValue = {searchValue}/>
+      <UsersPreview role={selectedRole as unknown as Role} searchValue={searchValue} />
     ) : (
-      <CompanyPreview searchValue = {searchValue}/>
+      <CompanyPreview searchValue={searchValue} />
     );
   };
 

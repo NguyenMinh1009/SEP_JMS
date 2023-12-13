@@ -3,7 +3,7 @@ import { AccountStatusType } from "../enums/accountStatusType";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { CreateRole } from "../enums/createRole";
 import { GenderType } from "../enums/genderType";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 
 export const allowFileTypes: string = `image/*, 
 application/pdf, 
@@ -153,4 +153,4 @@ export const commonRegex = {
   username: /^[a-zA-Z0-9_-]{3,20}$/
 };
 
-export const APIUrlHost = "http://localhost:5206"
+export const APIUrlHost = "http://localhost:5206";

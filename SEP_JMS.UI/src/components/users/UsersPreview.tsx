@@ -7,7 +7,7 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "../common/TablePagination";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 import UsersTableHead from "./UsersTableHead";
 import UsersPreviewRow from "./UsersPreviewRow";
 import { useIsFirstRender } from "../../hooks/useIsFirstRender";

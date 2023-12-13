@@ -4,7 +4,7 @@ import TableCell from "@mui/material/TableCell";
 import { UsersHeadCell } from "../../interface/table";
 import { CorrelationJobType } from "../../enums/correlationJobType";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 
 interface EnhancedTableProps {
   role: Role;

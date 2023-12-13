@@ -14,7 +14,7 @@ import { JobStatusType } from "../../enums/jobStatusType";
 import { allKey, correlationJobOptions, defaultCompany } from "../../constants";
 import { CorrelationJobType } from "../../enums/correlationJobType";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 import useFilterInfo from "../../hooks/store/useFilterInfo";
 import CustomButton from "./CustomButton";

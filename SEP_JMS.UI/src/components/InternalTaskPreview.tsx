@@ -20,11 +20,12 @@ import { useIsFirstRender } from "../hooks/useIsFirstRender";
 interface ITaskPreview {
   sidebar?: boolean;
   isCorrelationJobType: number;
+  setPageInfo?: (pageInfo: any) => void;
 }
 
 const pageSize = 10;
 
-const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) => {
+const InternalTaskPreview = ({ sidebar, setPageInfo, isCorrelationJobType }: ITaskPreview) => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = React.useState<number>(0);
@@ -75,14 +76,19 @@ const InternalTaskPreview = ({ sidebar, isCorrelationJobType }: ITaskPreview) =>
   };
 
   useEffect(() => {
-    isCorrelationJobType === CorrelationJobType.Project ? getProjects() : getJobs();
+    if (isCorrelationJobType === CorrelationJobType.Job) {
+      getJobs();
+    } else {
+      getProjects();
+    }
+    setPageInfo?.({ page: page, pageSize: pageSize });
   }, [page]);
 
   useEffect(() => {
     if (!isFirstRender) {
       if (page !== 1) setPage(1);
       else {
-        isCorrelationJobType === CorrelationJobType.Project ? getProjects : getJobs();
+        isCorrelationJobType === CorrelationJobType.Project ? getProjects() : getJobs();
       }
     }
   }, [filterInfoController.content, isCorrelationJobType]);

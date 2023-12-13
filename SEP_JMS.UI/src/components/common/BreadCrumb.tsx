@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import useTitle from "../../hooks/store/useCurrentTitle";
 import { PathString } from "../../enums/MapRouteToBreadCrumb";
-import { Role } from "../../enums/role";
+import { Role } from "../../enums/Role";
 
 const BreadCrumb = () => {
   const location = useLocation();
@@ -143,10 +143,10 @@ const BreadCrumb = () => {
   };
 
   const getPrefixForBreadCrumb = (): string => {
-    var _prx = breadCrumb.find(({ key }) => key === routeList[0])?.prefix 
-    if (_prx === "task") return "Công việc"
-    if (_prx === "report") return "Báo cáo"
-    return "Trung tâm"
+    var _prx = breadCrumb.find(({ key }) => key === routeList[0])?.prefix;
+    if (_prx === "task") return "Công việc";
+    if (_prx === "report") return "Báo cáo";
+    return "Trung tâm";
   };
 
   const getRouteFromBreadCrumb = (path: string): string => {
@@ -161,8 +161,8 @@ const BreadCrumb = () => {
   const getBreadCrumbText = (path: string, _index: number): string => {
     const crumbItem = breadCrumb.find(({ key }) => key === path);
     const preFix: string = " > ";
-    let text = (shouldRenderTitle(path) ? breadCrumbTitle.content : crumbItem?.value);
-    if (!text) text = "..."
+    let text = shouldRenderTitle(path) ? breadCrumbTitle.content : crumbItem?.value;
+    if (!text) text = "...";
     return preFix + text;
   };
 

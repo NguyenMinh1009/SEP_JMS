@@ -8,7 +8,7 @@ import useCurrentPerson, { defaultPerson } from "./hooks/store/useCurrentPerson"
 
 import jwt_decode from "jwt-decode";
 import { Token } from "./interface/token";
-import { Role } from "./enums/role";
+import { Role } from "./enums/Role";
 import SignInSide from "./pages/SignIn";
 import HomeSide from "./pages/Home";
 import MainContent from "./components/MainContent";
@@ -50,9 +50,8 @@ import _401Page from "./pages/401Page";
 import _404Page from "./pages/404Page";
 import PriceListAccount from "./pages/PriceListAccount";
 
-import moment from 'moment';
-import 'moment/dist/locale/vi';
-
+import moment from "moment";
+import "moment/dist/locale/vi";
 
 const theme = createTheme(
   {
@@ -376,7 +375,10 @@ function AppFx() {
 
   const currentPerson = useCurrentPerson();
   const snakeBar = useSnakeBar();
-  useEffect(()=> {  console.log("set language"); moment.locale("vi"); }, [])
+  useEffect(() => {
+    console.log("set language");
+    moment.locale("vi");
+  }, []);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {

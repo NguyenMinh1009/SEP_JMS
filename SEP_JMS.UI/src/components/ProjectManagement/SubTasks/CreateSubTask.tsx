@@ -21,7 +21,7 @@ import { CorrelationJobType } from "../../../enums/correlationJobType";
 import { JobStatusType } from "../../../enums/jobStatusType";
 import { PathString } from "../../../enums/MapRouteToBreadCrumb";
 import { Priority, priorityOptions } from "../../../enums/priority";
-import { Role } from "../../../enums/role";
+import { Role } from "../../../enums/Role";
 import { VisibleType } from "../../../enums/visibleType";
 import useCurrentPerson from "../../../hooks/store/useCurrentPerson";
 import useSnakeBar from "../../../hooks/store/useSnakeBar";

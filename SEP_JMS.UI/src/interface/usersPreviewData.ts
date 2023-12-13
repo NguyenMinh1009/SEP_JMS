@@ -1,5 +1,5 @@
 import { GenderType } from "../enums/genderType";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 
 export interface UsersPreviewData {
   accountStatus: number;
@@ -13,7 +13,7 @@ export interface UsersPreviewData {
   gender: GenderType;
   hiddenPrice: boolean;
   idCardNumber: number;
-  offboardTime?: number ;
+  offboardTime?: number;
   onboardTime?: number;
   phone?: string;
   roleType: Role;

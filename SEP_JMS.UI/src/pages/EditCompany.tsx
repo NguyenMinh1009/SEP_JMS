@@ -1,7 +1,7 @@
 import { Autocomplete, CircularProgress, Divider, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import APIClientInstance from "../api/AxiosInstance";
-import { Role } from "../enums/role";
+import { Role } from "../enums/Role";
 import { UsersPreviewData } from "../interface/usersPreviewData";
 import RequireText from "../components/common/RequireText";
 import CustomButton from "../components/common/CustomButton";
@@ -23,7 +23,7 @@ const EditCompany = () => {
   const [isButtonLoading, setButtonLoading] = useState<boolean>(false);
   const snakeBar = useSnakeBar();
   const navigate = useNavigate();
-  const companyTitle = useTitle()
+  const companyTitle = useTitle();
   const { companyId } = useParams();
 
   useEffect(() => {

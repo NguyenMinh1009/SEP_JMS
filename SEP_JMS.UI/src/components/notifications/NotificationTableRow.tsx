@@ -59,37 +59,52 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
     ).then(res => {
       const jobStatus: JobStatusType = res.data.jobStatus;
       const jobCorr: CorrelationJobType = res.data.correlationType;
+
+      if (row.entityName.includes("Bình luận /")) {
+        
+        if (row.data.includes("[COMMENT_TYPE=Internal") || row.data.includes("[TYPE=Internal")) 
+        {
+          navigate(
+            `/${PathString.NOI_BO}/${pathDef}/${row.entityIdentifier}`
+          )
+          return;
+        }
+        
+      }
       // for job
       if (jobCorr === CorrelationJobType.Job) {
         titleBreadCrumb.setContent(row.title.split("$[PRJ]$")[0]);
 
-        if (jobStatus == JobStatusType.Completed) navigate(
-          `/${PathString.VIEC_DA_XONG}/${pathDef}/${row.entityIdentifier}`
-        );
+        if (jobStatus == JobStatusType.Completed) {
+          navigate(
+            `/${PathString.VIEC_DA_XONG}/${pathDef}/${row.entityIdentifier}`
+          );
+          return;
+        }
 
-        if (jobStatus == JobStatusType.Pending) navigate(
+        if (jobStatus == JobStatusType.Pending) {navigate(
           `/${PathString.NOI_BO}/${pathDef}/${row.entityIdentifier}`
-        );
+        );return}
 
-        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
+        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) {navigate(
           `/${PathString.CONG_KHAI}/${pathDef}/${row.entityIdentifier}`
-        );
+        );return}
 
         navigate(`/${PathString.CONG_KHAI}/${pathDef}/${row.entityIdentifier}`);
       }
       // for project
       if (jobCorr === CorrelationJobType.Project) {
-        if (jobStatus == JobStatusType.Completed) navigate(
+        if (jobStatus == JobStatusType.Completed) {navigate(
           `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-        );
+        );return}
 
-        if (jobStatus == JobStatusType.Pending) navigate(
+        if (jobStatus == JobStatusType.Pending) {navigate(
           `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-        );
+        );return}
 
-        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) navigate(
+        if (jobStatus == JobStatusType.CustomerReview || jobStatus == JobStatusType.Doing) {navigate(
           `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`
-        );
+        );return}
 
         navigate(`/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${row.entityIdentifier}`);
       }
@@ -188,7 +203,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({ row, index, pageSize, page,
   notiDetails += `<b>Thời gian:</b> ${formatDateTime(ticksToDate(row.createdTime))}<br>`
   notiDetails += `<br>`
   notiDetails += `<b><span class="bg-stone-200 inline-block w-full rounded-sm text-center">Nội dung</span></b><br>`
-  notiDetails += row.data;
+  notiDetails += row.data.replace(/\[COMMENT_TYPE\=(Internal|Public)\]/, "");
 
   const isUnRead = tempUnRead && !row.readAt;
 

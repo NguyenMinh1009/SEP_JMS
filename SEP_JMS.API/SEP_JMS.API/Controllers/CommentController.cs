@@ -47,7 +47,7 @@ namespace SEP_JMS.API.Controllers
                 logger.Info($"{logPrefix} Start to post comment for the job {jobId}.");
                 if (ApiContext.Current.Role == RoleType.Customer && model.VisibleType == VisibleType.Internal) return StatusCode(403);
                 var success = await commentService.CreateComment(jobId, model);
-                if (success) { await notificationService.Trigger(jobId, null, model.Content, NotiAction.Comment); }
+                if (success) { await notificationService.Trigger(jobId, null, model, NotiAction.Comment); }
                 return success ? Ok() : BadRequest();
             }
             catch (Exception ex)

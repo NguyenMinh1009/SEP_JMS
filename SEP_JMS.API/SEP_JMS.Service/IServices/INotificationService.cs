@@ -4,13 +4,14 @@ using SEP_JMS.Model.Enums.System;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request.Job;
 using SEP_JMS.Model.Models;
+using SEP_JMS.Model.Api.Request.Comment;
 
 namespace SEP_JMS.Service.IServices
 {
     public interface INotificationService
     {
         public Task<Guid> CreateNotification(NotiCreationRequest model, NotiAction action);
-        public Task<Guid> Trigger(Guid jobId, Job? oldJob, string? commentContent, NotiAction action);
+        public Task<Guid> Trigger(Guid jobId, Job? oldJob, CommentCreateRequestModel? commentModel, NotiAction action);
         public Task<Tuple<int, PagingModel<NotificationResponse>>> GetNotifications(NotificationFilterRequest requestModel);
         public Task DeleteNotification(Guid id);
         public Task DeleteByEntityId(string entityId);

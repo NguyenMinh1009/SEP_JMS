@@ -6,6 +6,7 @@ using SEP_JMS.Common.Constants;
 using SEP_JMS.Common.Logger;
 using SEP_JMS.Model;
 using SEP_JMS.Model.Api.Request;
+using SEP_JMS.Model.Api.Request.Comment;
 using SEP_JMS.Model.Api.Request.Job;
 using SEP_JMS.Model.Api.Response;
 using SEP_JMS.Model.Enums.System;
@@ -132,12 +133,12 @@ namespace SEP_JMS.Service.Services
             await notificationRepository.DeleteByReceiver(receiverId);
         }
 
-        public async Task<Guid> Trigger(Guid jobId, Job? oldJob, string? commentContent, NotiAction action)
+        public async Task<Guid> Trigger(Guid jobId, Job? oldJob, CommentCreateRequestModel? commentModel, NotiAction action)
         {
             var newLineChar = "<br>";
             var recvIds = new List<Guid?>();
             var recvUsers = new List<User>();
-            var notiType = commentContent == null ? NotiType.FromJob : NotiType.FromComment;
+            var notiType = commentModel == null ? NotiType.FromJob : NotiType.FromComment;
 
             // EntityIdentifier
             var eId = jobId.ToString();
@@ -163,6 +164,7 @@ namespace SEP_JMS.Service.Services
             recvIds = recvIds.Distinct().ToList();
 
             var rcv = recvIds.Where(id => id != null).ToList();
+            if (action == NotiAction.Comment && commentModel != null && commentModel.VisibleType == VisibleType.Internal) rcv.Remove(job?.CustomerId);
             foreach (var id in rcv)
             {
 
@@ -299,10 +301,9 @@ namespace SEP_JMS.Service.Services
                 
             }
 
-            if (action == NotiAction.Comment && commentContent != null)
+            if (action == NotiAction.Comment && commentModel != null)
             {
                 var creator = await userRepository.Get(ApiContext.Current.UserId);
-                
                 foreach (var user in recvUsers)
                 {
                     // not create for me
@@ -317,7 +318,8 @@ namespace SEP_JMS.Service.Services
                     notify.Message += " vừa bình luận trong công việc";
 
 
-                    notify.Data = commentContent ?? "";
+                    notify.Data = commentModel.Content ?? "";
+                    notify.Data += $"[TYPE={commentModel.VisibleType}]";
                     
 
                     notify.TriggerBy = ApiContext.Current.UserId;

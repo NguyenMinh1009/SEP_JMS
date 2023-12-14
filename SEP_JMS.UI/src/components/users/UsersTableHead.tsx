@@ -29,7 +29,7 @@ const customerHeadCell: readonly UsersHeadCell[] = [
   {
     id: "username",
     disablePadding: false,
-    label: "Username"
+    label: "Tài khoản"
   },
   {
     id: "company",
@@ -98,7 +98,7 @@ const employeeHeadCell: readonly UsersHeadCell[] = [
   {
     id: "username",
     disablePadding: false,
-    label: "Username"
+    label: "Tài khoản"
   },
   {
     id: "address",

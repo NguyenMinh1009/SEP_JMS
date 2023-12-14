@@ -134,6 +134,7 @@ namespace SEP_JMS.API.Controllers
         {
             try
             {
+                if (String.IsNullOrEmpty(model.CompanyName.Trim())) throw new Exception("Tên công ty không được để trống");
                 logger.Info($"{logPrefix} Start to create a new company with name {model.CompanyName}.");
                 var account = await userService.GetUserById(model.AccountId, RoleType.Account);
                 if (account == null)

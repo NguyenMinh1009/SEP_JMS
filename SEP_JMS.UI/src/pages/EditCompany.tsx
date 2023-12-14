@@ -100,7 +100,7 @@ const EditCompany = () => {
         <div className="flex items-center">
           <div className="flex min-w-[150px] items-center">
             <label htmlFor="" className="text-secondary whitespace-nowrap">
-              Tên company
+              Tên công ty
             </label>
             <RequireText />
           </div>
@@ -223,7 +223,7 @@ const EditCompany = () => {
           primary
           className="px-3 font-[400] normal-case text-white"
         >
-          Chỉnh sửa company
+          Chỉnh sửa công ty
         </CustomButton>
         {isButtonLoading && <CircularProgress size={20} />}
       </div>

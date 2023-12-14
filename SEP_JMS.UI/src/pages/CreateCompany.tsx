@@ -60,14 +60,14 @@ const CreateCompany = () => {
   const handleCreateCompany = () => {
     setButtonLoading(true);
     APIClientInstance.post("admin/add/company", {
-      companyName: companyName,
+      companyName: companyName.trim(),
       companyAddress: companyAddress,
       description: description,
       priceGroupId: selectedPriceGroups?.priceGroupId,
       accountId: selectedAccounts?.userId
     })
       .then(() => {
-        snakeBar.setSnakeBar("Tạo company thành công", "success", true);
+        snakeBar.setSnakeBar("Tạo công ty thành công", "success", true);
         handleReset();
       })
       .catch(err => {
@@ -92,7 +92,7 @@ const CreateCompany = () => {
           Tạo mới nhân viên
         </p>
         <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
-        <p className="text-primary text-base">Tạo mới company</p>
+        <p className="text-primary text-base">Tạo mới công ty</p>
         <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <p
           onClick={() => navigate(`/${PathString.USERS}/${PathString.CREATE_CUSTOMER}`)}
@@ -118,7 +118,7 @@ const CreateCompany = () => {
         <div className="flex items-center">
           <div className="flex min-w-[150px] items-center">
             <label htmlFor="" className="text-secondary whitespace-nowrap">
-              Tên company
+              Tên công ty
             </label>
             <RequireText />
           </div>
@@ -241,7 +241,7 @@ const CreateCompany = () => {
           primary
           className="px-3 font-[400] normal-case text-white"
         >
-          Tạo company
+          Tạo công ty
         </CustomButton>
         {isButtonLoading && <CircularProgress size={20} />}
       </div>

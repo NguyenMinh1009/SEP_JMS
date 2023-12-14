@@ -215,6 +215,7 @@ namespace SEP_JMS.Service.Services
                     await commentRepository.Delete(mainJobComment);
                 }
                 await jobRepository.Delete(job);
+                if (job.ParentId != null) await notificationRepository.DeleteByEntityId($"{job.ParentId}/{jobId}");
                 await notificationRepository.DeleteByEntityId($"{jobId}");
                 await transaction.CommitAsync();
             }

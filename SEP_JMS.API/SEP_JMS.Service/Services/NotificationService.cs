@@ -153,7 +153,13 @@ namespace SEP_JMS.Service.Services
             if (parentId != null)
             {
                 var pJob = await jobRepository.Get(parentId);
-                if (pJob != null) jobTitle = pJob.Title + "$[PRJ]$" + job.Title;
+                if (pJob != null)
+                {
+                    jobTitle = pJob.Title + "$[PRJ]$" + job.Title;
+                    recvIds.Add(pJob.AccountId);
+                    recvIds.Add(pJob.CustomerId);
+                    recvIds.Add(pJob.CreatedBy);
+                }
             }
 
             recvIds.Add(job.AccountId);
@@ -255,13 +261,13 @@ namespace SEP_JMS.Service.Services
                     }
 
                     if (oldJob.AccountId != job.AccountId) {
-                        await notificationRepository.DeleteByReceiver(oldJob.AccountId);
+                        await notificationRepository.DeleteByReceiver(eId, oldJob.AccountId);
                         notify.Data += $"Người quản lí: {oldAccount?.Fullname} ({oldAccount?.Username}) --> {account?.Fullname} ({account?.Username})" + newLineChar;
                     }
 
                     if (oldJob.DesignerId != job.DesignerId)
                     {
-                        await notificationRepository.DeleteByReceiver(oldJob.DesignerId??Guid.Empty);
+                        await notificationRepository.DeleteByReceiver(eId, oldJob.DesignerId??Guid.Empty);
                         notify.Data += $"Designer: {oldDesigner?.Fullname} ({oldDesigner?.Username}) --> {designer?.Fullname} ({designer?.Username})" + newLineChar;
                     }
 

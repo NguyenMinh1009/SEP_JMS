@@ -164,7 +164,7 @@ const CreateEmployee = () => {
           onClick={() => navigate(`/${PathString.USERS}/${PathString.CREATE_COMPANY}`)}
           className="text-primary cursor-pointer text-xs opacity-30 transition-all hover:opacity-60"
         >
-          Tạo mới company
+          Tạo mới công ty
         </p>
         <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <p
@@ -220,7 +220,7 @@ const CreateEmployee = () => {
         <div className="order-last flex items-center md:order-3">
           <div className="flex min-w-[120px] items-center">
             <label htmlFor="" className="text-secondary whitespace-nowrap">
-              Username
+              Tài khoản
             </label>
             <RequireText />
           </div>
@@ -237,7 +237,7 @@ const CreateEmployee = () => {
         <div className="group relative order-last flex items-center md:order-5">
           <div className="flex min-w-[120px] items-center">
             <label htmlFor="" className="text-secondary whitespace-nowrap">
-              Password
+              Mật khẩu
             </label>
             <RequireText />
           </div>

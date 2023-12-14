@@ -227,7 +227,7 @@ const SideBar = () => {
           },
           {
             parent: {
-              text: "Quản lý users",
+              text: "Quản lý tài khoản",
               to: `${PathString.USERS}`,
               Icon: <PiUsersThreeLight size={18} />,
               prefix: `${PathString.USERS}`

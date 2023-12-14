@@ -28,6 +28,7 @@ import ASwitchButton from "../components/common/ASwitchButton";
 const EditEmployee = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
   const [onBoardTime, setOnBoardTime] = useState<moment.Moment | null>(null);
+  const [offBoardTime, setOffBoardTime] = useState<moment.Moment | null>(null);
   const [username, setUsername] = useState<string>("");
   const [initUsername, setInitUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -94,6 +95,9 @@ const EditEmployee = () => {
     setOnBoardTime(
       currentEmployee.onboardTime ? moment(ticksToDate(currentEmployee.onboardTime)) : null
     );
+    setOffBoardTime(
+      currentEmployee.offboardTime ? moment(ticksToDate(currentEmployee.offboardTime)) : null
+    );
     userTitle.setContent(`${currentEmployee.fullname} (${currentEmployee.username})`);
   };
   const handleChangePasswordCheckBox = (
@@ -128,6 +132,7 @@ const EditEmployee = () => {
       phone: phone.trim(),
       dob: dob ? dateToTicks(dob.toDate()) : undefined,
       onBoardTime: dateToTicks(onBoardTime ? onBoardTime.toDate() : new Date()),
+      offBoardTime: dateToTicks(offBoardTime ? offBoardTime.toDate() : new Date()),
       idCardNumber: cardId,
       address: address,
       gender: gender,
@@ -504,6 +509,33 @@ const EditEmployee = () => {
             value={onBoardTime}
             onChange={value => {
               setOnBoardTime(value);
+            }}
+          />
+        </div>
+
+        {/* onboard time */}
+        <div className="order-last flex items-center">
+          <div className="flex min-w-[120px] items-center">
+            <label htmlFor="" className="text-secondary whitespace-nowrap">
+              Ngày nghỉ
+            </label>
+          </div>
+          <DatePicker
+            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+            className="h-[40px] w-full"
+            sx={{
+              "& .MuiInputBase-root": {
+                height: "40px"
+              },
+              "& .MuiSvgIcon-root": {
+                fontSize: "1rem"
+              }
+            }}
+            format="DD-MM-YYYY"
+            closeOnSelect={false}
+            value={offBoardTime}
+            onChange={value => {
+              setOffBoardTime(value);
             }}
           />
         </div>

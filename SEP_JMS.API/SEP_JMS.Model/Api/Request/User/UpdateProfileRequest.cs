@@ -13,6 +13,8 @@ namespace SEP_JMS.Model.Api.Request.User
 
         public string Fullname { get; set; } = null!;
 
+        public string? Email { get; set; }
+
         public string? Phone { get; set; }
 
         public long? DOB { get; set; }

@@ -96,6 +96,7 @@ const Profile = () => {
       avatarUrl: currentInfo?.avatarUrl,
       fullname: currentInfo?.fullname,
       phone: currentInfo?.phone,
+      email: currentInfo?.email,
       dob: currentInfo?.dob ? moment(ticksToDate(currentInfo?.dob)) : null,
       gender: currentInfo?.gender,
       address: currentInfo?.address
@@ -205,6 +206,11 @@ const Profile = () => {
 
     if (infoUpdate.phone?.trim() && !commonRegex.phone.test(infoUpdate.phone)) {
       snakeBar.setSnakeBar("Số điện thoại sai định dạng!", "warning", true);
+      return false;
+    }
+
+    if (infoUpdate.email?.trim() && !commonRegex.email.test(infoUpdate.email)) {
+      snakeBar.setSnakeBar("Email sai định dạng!", "warning", true);
       return false;
     }
 
@@ -404,6 +410,10 @@ const Profile = () => {
           <div>
             <p className="mt-6 opacity-60">Thông tin cơ bản</p>
             <div className="flex flex-col gap-4 pt-6">
+              <div className="flex items-center">
+                <p className="w-[134px] font-semibold">Tài khoản</p>
+                <p className="font-semibold text-accent">{currentInfo?.username}</p>
+              </div>
               <div className="flex items-center">
                 <p className="w-[134px] font-semibold">Điện thoại</p>
                 <p className="font-semibold text-accent">{currentInfo?.phone}</p>
@@ -620,6 +630,23 @@ const Profile = () => {
                 value={infoUpdate.phone ?? ""}
                 onChange={e => onChangeBindInfo(e.target.value, "phone")}
                 type="number"
+                className={cn("common-input-border w-full rounded-md p-2 leading-5 shadow-sm")}
+              />
+            </div>
+
+            {/* phone number */}
+            <div className="group relative flex items-center">
+              <div className="flex min-w-[100px] items-center">
+                <label htmlFor="" className="text-secondary whitespace-nowrap">
+                  Email
+                </label>
+              </div>
+
+              <input
+                maxLength={150}
+                value={infoUpdate.email ?? ""}
+                onChange={e => onChangeBindInfo(e.target.value, "email")}
+                type="email"
                 className={cn("common-input-border w-full rounded-md p-2 leading-5 shadow-sm")}
               />
             </div>

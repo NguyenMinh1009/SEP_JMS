@@ -31,6 +31,7 @@ namespace SEP_JMS.Repository.Repositories
             user.AvatarUrl = model.AvatarUrl;
             user.Fullname = model.Fullname;
             user.Phone = model.Phone;
+            user.Email = model.Email;
             user.DOB = model.DOB;
             user.Gender = model.Gender;
             Context.Users.Update(user);

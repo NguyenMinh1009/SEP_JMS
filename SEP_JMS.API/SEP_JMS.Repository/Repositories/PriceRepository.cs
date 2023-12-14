@@ -153,7 +153,7 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task<List<Tuple<Guid, Company, List<Price>>>> GetPricesForAccount(Guid accountId)
         {
-            var query = dbcontext.Companies.AsQueryable();
+            var query = dbcontext.Companies.AsQueryable().Where(c => c.CompanyStatus == Model.Enums.System.CompanyStatus.Active);
             var rst = from comp in query
                       join price in dbcontext.Prices
                       on comp.PriceGroupId equals price.PriceGroupId

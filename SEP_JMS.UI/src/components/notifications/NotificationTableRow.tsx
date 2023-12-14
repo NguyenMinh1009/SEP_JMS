@@ -63,6 +63,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({
   };
 
   const navigateToJob = () => {
+    handleCloseNoti();
     // get job status then navigate from UI
     var bId = row.entityIdentifier.split("/");
     var isProject = bId.length > 1;

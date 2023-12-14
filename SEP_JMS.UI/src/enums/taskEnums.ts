@@ -26,5 +26,6 @@ export enum TaskString {
   Xuat_Tep_CONG_VIEC = "Xuất tệp công việc",
   Xuat_Tep_DU_AN = "Xuất tệp dự án",
 
-  DEADLINE = "Hạn chót"
+  DEADLINE = "Hạn chót",
+  CONG_VIEC_TRONG_DU_AN = "Công việc trong dự án"
 }

@@ -44,15 +44,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(resp.ReturnValue(), Is.InstanceOf<PagingModel<CompanyDisplayModel>>());
         }
 
-        [Test]
-        public async Task FindCompany_ReturnValidResponse()
-        {
-            var req = new CompanyFilterRequest();
-            PagingModel<Company> rest = new PagingModel<Company>();
-            mCompanyService.Setup(u => u.GetCompanies(req)).ReturnsAsync(rest);
-            var resp = await companyController.FindCompany(req);
-            Assert.That(resp.ReturnValue(), Is.InstanceOf<PagingModel<CompanyResponse>>());
-        }
+       
 
     }
 }

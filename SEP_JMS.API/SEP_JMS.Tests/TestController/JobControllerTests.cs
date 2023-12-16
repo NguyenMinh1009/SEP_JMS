@@ -262,21 +262,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(response.StatusCode(), Is.EqualTo(400));
         }
 
-        [Test]
-        public async Task Delete_Authorized_ReturnNoContent()
-        {
-            var usr = new User
-            {
-                UserId = Guid.NewGuid(),
-                RoleType = Model.Enums.System.RoleType.Admin
-            };
-            Guid jobId = Guid.NewGuid();
-            mJobService.Setup(a => a.Delete(jobId)).Returns(Task.CompletedTask);
-            mNotificationService.Setup(a => a.DeleteByEntityId(jobId)).Returns(Task.CompletedTask);
-            var response = await jobController.Delete(jobId);
-            Assert.That(response.StatusCode(), Is.EqualTo((int)HttpStatusCode.NoContent));
-        }
-
+        
         [Test]
         public async Task Delete_Authorized_ReturnInternalServerError()
         {

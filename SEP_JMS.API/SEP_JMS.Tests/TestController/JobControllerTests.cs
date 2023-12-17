@@ -176,6 +176,38 @@ namespace SEP_JMS.Tests.TestController
         }
 
         [Test]
+        public async Task CreateJob_Authorized_Designer_ReturnValidResponse()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Designer
+            };
+            ApiContext.SetUser(usr);
+            CreateJobRequest model = new()
+            {
+                AccountId = Guid.NewGuid(),
+                CorrelationType = Model.Enums.System.CorrelationJobType.Job,
+                CustomerId = Guid.NewGuid(),
+                Deadline = 0L,
+                Description = "description",
+                DesignerId = Guid.NewGuid(),
+                JobStatus = Model.Enums.System.JobStatus.NotDo,
+                JobType = Guid.NewGuid(),
+                ParentId = null,
+                Priority = Model.Enums.System.Priority.Medium,
+                Quantity = 1,
+                Title = "title"
+            };
+            var jobId = Guid.NewGuid();
+            mJobService.Setup(m => m.CreateJob(model)).ReturnsAsync(jobId);
+
+            var resp = await jobController.CreateJob(model);
+            Assert.That(resp.ReturnValue(), Is.InstanceOf<CreateJobResponse>());
+            Assert.That(resp.ReturnValue()?.JobId, Is.EqualTo(jobId));
+        }
+
+        [Test]
         public async Task UpdateJob_Authorized_ReturnOk()
         {
             var usr = new User
@@ -278,6 +310,20 @@ namespace SEP_JMS.Tests.TestController
         }
 
         [Test]
+        public async Task Delete_Authorized_ReturnOk()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Admin
+            };
+            Guid jobId = Guid.NewGuid();
+            mJobService.Setup(a => a.Delete(jobId)).Returns(Task.CompletedTask);
+            var response = await jobController.Delete(jobId);
+            Assert.That(response.StatusCode(), Is.EqualTo((int)HttpStatusCode.NoContent));
+        }
+
+        [Test]
         public async Task GetJobStatistics_Authorized_ReturnValidResponse()
         {
             var usr = new User
@@ -307,6 +353,21 @@ namespace SEP_JMS.Tests.TestController
             mJobService.Setup(a => a.GetProjectDetailStatistics(projectId)).ReturnsAsync(result);
             var response = await jobController.GetProjectDetailStatistics(projectId);
             Assert.That(response.ReturnValue(), Is.InstanceOf<ProjectDetailStatistics>());
+        }
+
+        [Test]
+        public async Task Delete_Authorized_ReturnNoContent()
+        {
+            var usr = new User
+            {
+                UserId = Guid.NewGuid(),
+                RoleType = Model.Enums.System.RoleType.Admin
+            };
+            Guid jobId = Guid.NewGuid();
+            mJobService.Setup(a => a.Delete(jobId)).Returns(Task.CompletedTask);
+            mNotificationService.Setup(a => a.DeleteByEntityId(jobId.ToString())).Returns(Task.CompletedTask);
+            var response = await jobController.Delete(jobId);
+            Assert.That(response.StatusCode(), Is.EqualTo((int)HttpStatusCode.NoContent));
         }
     }
 }

@@ -71,6 +71,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That(resp.StatusCode(), Is.EqualTo(403));
         }
 
+        [Test]
         public async Task CreateComment_WithCustomerAndPublicJob_ReturnOK()
         {
             ApiContext.SetUser(new User { RoleType = RoleType.Customer });

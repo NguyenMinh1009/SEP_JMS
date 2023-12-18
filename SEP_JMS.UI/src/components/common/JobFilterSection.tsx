@@ -65,7 +65,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const [isLoading, setLoading] = useState<boolean>(false);
 
   // reset state when prop change
-  useEffect(() => handleApply(), [report]);
+  // useEffect(() => handleApply(), [report]);
   useEffect(() => {
     if (!report || !quickSelect) return;
     let now = new Date();

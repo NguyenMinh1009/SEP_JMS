@@ -37,7 +37,7 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
   const handleMarkReadAllNoti = () => {
     APIClientInstance.post(`/notification/readAll`)
       .then(() => {
-        snakeBar.setSnakeBar("Successfully", "success", true);
+        snakeBar.setSnakeBar("Lưu trữ thành công", "success", true);
         // setSelectedStatus(NotificationStatus.ALL);
         setTimeRefresh(Date.now());
       })
@@ -50,7 +50,7 @@ const UsersPage: React.FC<IFinishedTasks> = () => {
   const handleDeleteAllNoti = () => {
     APIClientInstance.post(`/notification/deleteAll`)
       .then(() => {
-        snakeBar.setSnakeBar("Successfully", "success", true);
+        snakeBar.setSnakeBar("Xoá thành công", "success", true);
         // setSelectedStatus(NotificationStatus.ALL);
         setTimeRefresh(Date.now());
       })

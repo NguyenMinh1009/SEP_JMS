@@ -86,7 +86,7 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
         } else {
           if (getCommentTimes.current > 1) {
             setHasOlderComment(false);
-            snakeBar.setSnakeBar("Không có comment cũ hơn!", "info", true);
+            snakeBar.setSnakeBar("Không có bình luận cũ hơn!", "info", true);
           }
         }
       })

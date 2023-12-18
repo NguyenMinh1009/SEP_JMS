@@ -520,6 +520,9 @@ const EditTask: React.FC<IEditTaskProp> = ({
       editPreviewFilePromise()
     ])
       .then(() => {
+        isCorrelationJobType === CorrelationJobType.Job
+          ? snakeBar.setSnakeBar("Cập nhật công việc thành công!", "success", true)
+          : snakeBar.setSnakeBar("Cập nhật dự án thành công!", "success", true);
         handleAfterEditTaskSuccess();
       })
       .catch(err => {

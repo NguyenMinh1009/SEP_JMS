@@ -110,7 +110,7 @@ const ReplyComment = ({
     APIClientInstance.post(`comment/${commentId}/hide`)
       .then(() => {
         handleHideComment?.(commentId as string);
-        snakeBar.setSnakeBar("Ẩn comment thành công!", "success", true);
+        snakeBar.setSnakeBar("Ẩn bình luận thành công!", "success", true);
       })
       .catch(err => err);
   };
@@ -156,9 +156,9 @@ const ReplyComment = ({
       <CustomDialog
         openDialog={openConfirmDialog}
         handleClose={handleClose}
-        title="Cảnh báo - comment chưa hoàn thành!"
-        description="Nội dung comment sẽ bị xóa, bạn có chắc không?"
-        primaryBtnText="Tiếp tục comment"
+        title="Cảnh báo - bình luận chưa hoàn thành!"
+        description="Nội dung bình luận sẽ bị ẩn, bạn có chắc không?"
+        primaryBtnText="Tiếp tục bình luận"
         secondaryBtnText="Đồng ý hủy"
         primaryBtnCallback={handleClose}
         secondaryBtnCallback={() => {
@@ -169,8 +169,8 @@ const ReplyComment = ({
       <CustomDialog
         openDialog={openConfirmDeleteDialog}
         handleClose={handleCloseDeleteDialog}
-        title="Cảnh báo - bạn sẽ ẩn comment này!"
-        description="Liên hệ người quản lí để khôi phục comment!"
+        title="Cảnh báo - bạn sẽ ẩn bình luận này!"
+        description="Liên hệ người quản lí để khôi phục bình luận!"
         primaryBtnText="Quay lại"
         secondaryBtnText="Đồng ý ẩn"
         primaryBtnCallback={handleCloseDeleteDialog}

@@ -335,6 +335,11 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             return;
         }
       })
+      .then(() => {
+        correlationJobType === CorrelationJobType.Job
+          ? snakeBar.setSnakeBar("Tạo công việc thành công!", "success", true)
+          : snakeBar.setSnakeBar("Tạo dự án thành công!", "success", true);
+      })
       .catch(err => {
         console.error(err);
         snakeBar.setSnakeBar("Tạo không thành công", "error", true);

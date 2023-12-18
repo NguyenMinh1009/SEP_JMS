@@ -32,6 +32,7 @@ import ImageSection from "../../../components/common/ImageSection";
 import RequireText from "../../../components/common/RequireText";
 import { statusFilterOptions, statusOptions } from "../../../components/common/StatusSection";
 import APIClientInstance from "../../../api/AxiosInstance";
+import { checkInputCreateJob } from "../../../utils/checkInputJob";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -245,6 +246,14 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
       snakeBar.setSnakeBar("Tổng file vượt quá 100MB!", "warning", true);
       return;
     }
+
+    //check validate input create job
+    var errors = checkInputCreateJob(quantity, deadline);
+    errors.forEach(error => {
+      snakeBar.setSnakeBar(error, "warning", true);
+    });
+    if (errors.length !== 0) return;
+
     setLoading(true);
     const formData = new FormData();
     const jobPayloadData = {
@@ -288,6 +297,9 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
           default:
             return;
         }
+      })
+      .then(() => {
+        snakeBar.setSnakeBar("Tạo công việc thành công!", "success", true);
       })
       .catch(err => {
         console.error(err);

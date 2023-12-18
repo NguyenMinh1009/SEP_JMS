@@ -83,7 +83,6 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
     } else {
       getProjects();
     }
-    setPageInfo?.({ page: page, pageSize: pageSize });
   }, [page]);
 
   useEffect(() => {

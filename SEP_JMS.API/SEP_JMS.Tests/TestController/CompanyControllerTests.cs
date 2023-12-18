@@ -49,7 +49,7 @@ namespace SEP_JMS.Tests.TestController
         {
             var req = new CompanyFilterRequest();
             PagingModel<Company> rest = new PagingModel<Company>();
-            mCompanyService.Setup(u => u.GetCompanies(req)).ReturnsAsync(rest);
+            mCompanyService.Setup(u => u.GetCompanies(req, true)).ReturnsAsync(rest);
             var resp = await companyController.FindCompany(req);
             Assert.That(resp.ReturnValue(), Is.InstanceOf<PagingModel<CompanyResponse>>());
         }

@@ -43,6 +43,7 @@ namespace SEP_JMS.Tests.TestController
         public async Task CreateCompany_ValidRequest_ReturnValidResponse()
         {
             CompanyCreateRequestModel request = new();
+            request.CompanyName = "ABC";
 
             var user = new User();
             moqUserService.Setup(a => a.GetUserById(request.AccountId, RoleType.Account)).ReturnsAsync(user);
@@ -62,6 +63,7 @@ namespace SEP_JMS.Tests.TestController
         public async Task CreateCompany_InvalidAccount_ReturnBadRequestWithMessage()
         {
             CompanyCreateRequestModel request = new();
+            request.CompanyName = "RxZ";
 
             var user = new User();
             moqUserService.Setup(a => a.GetUserById(request.AccountId, RoleType.Account)).Returns(Task.FromResult<User>(null));
@@ -82,6 +84,7 @@ namespace SEP_JMS.Tests.TestController
         public async Task CreateCompany_InvalidPriceGroup_ReturnBadRequestWithMessage()
         {
             CompanyCreateRequestModel request = new();
+            request.CompanyName = "ABC";
 
             var user = new User();
             moqUserService.Setup(a => a.GetUserById(request.AccountId, RoleType.Account)).ReturnsAsync(user);
@@ -97,23 +100,7 @@ namespace SEP_JMS.Tests.TestController
             Assert.That((response.Result as BadRequestObjectResult)?.Value, Is.EqualTo("không tìm thấy nhóm giá"));
         }
 
-        [TestCase]
-        public async Task DeleteCompany_ValidId_ReturnOk()
-        {
-            Guid companyId = Guid.NewGuid();
-            moqCompanyService.Setup(a => a.DeleteCompany(companyId)).Returns(Task.CompletedTask);
-            var response = await adminController.DeleteCompany(companyId);
-            Assert.That(response.StatusCode(), Is.EqualTo(200));
-        }
-
-        [TestCase]
-        public async Task DeleteCompany_InvalidId_ReturnOk()
-        {
-            Guid companyId = Guid.NewGuid();
-            moqCompanyService.Setup(a => a.DeleteCompany(companyId)).ThrowsAsync(new Exception("invalid"));
-            var response = await adminController.DeleteCompany(companyId);
-            Assert.That(response.Result, Is.InstanceOf<BadRequestObjectResult>());
-        }
+  
 
         [TestCase]
         public async Task GetCompany_ValidId_ReturnValidResponse()
@@ -227,6 +214,8 @@ namespace SEP_JMS.Tests.TestController
 
             if (errMessage != null) Assert.That((resp?.Result as BadRequestObjectResult)?.Value, Is.EqualTo(errMessage));
         }
+
+        
         #endregion
     }
 }

@@ -60,7 +60,7 @@ const BreadCrumb = () => {
     },
     {
       key: PathString.TAI_KHOAN,
-      value: "Tài khoản",
+      value: "Hồ sơ",
       prefix: "center",
       clickable: true
     },
@@ -72,7 +72,7 @@ const BreadCrumb = () => {
     },
     {
       key: PathString.USERS,
-      value: "Quản lý users",
+      value: "Quản lý tài khoản",
       prefix: "report",
       clickable: true
     },

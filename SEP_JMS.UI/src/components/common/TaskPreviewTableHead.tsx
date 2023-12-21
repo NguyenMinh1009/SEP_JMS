@@ -29,7 +29,7 @@ const jobHeadCells: readonly TaskHeadCell[] = [
   {
     id: "createdBy",
     disablePadding: false,
-    label: "Người order"
+    label: "Người ĐH"
   },
   {
     id: "title",
@@ -44,7 +44,7 @@ const jobHeadCells: readonly TaskHeadCell[] = [
   {
     id: "designer",
     disablePadding: false,
-    label: "Designer"
+    label: "NTK"
   },
   {
     id: "jobType",
@@ -64,7 +64,7 @@ const jobHeadCells: readonly TaskHeadCell[] = [
   {
     id: "deadline",
     disablePadding: false,
-    label: "Deadline"
+    label: "Hạn cuối"
   },
   {
     id: "priority",
@@ -97,7 +97,7 @@ const projectHeadCells: readonly TaskHeadCell[] = [
   {
     id: "createdBy",
     disablePadding: false,
-    label: "Người order"
+    label: "Người ĐH"
   },
   {
     id: "title",
@@ -127,7 +127,7 @@ const projectHeadCells: readonly TaskHeadCell[] = [
   {
     id: "deadline",
     disablePadding: false,
-    label: "Deadline"
+    label: "Hạn cuối"
   },
   {
     id: "priority",
@@ -165,7 +165,7 @@ const finishedJobHeadCells: readonly TaskHeadCell[] = [
   {
     id: "createdBy",
     disablePadding: false,
-    label: "Người order"
+    label: "Người ĐH"
   },
   {
     id: "title",
@@ -180,7 +180,7 @@ const finishedJobHeadCells: readonly TaskHeadCell[] = [
   {
     id: "designer",
     disablePadding: false,
-    label: "Designer"
+    label: "NTK"
   },
   {
     id: "jobType",
@@ -200,7 +200,7 @@ const finishedJobHeadCells: readonly TaskHeadCell[] = [
   {
     id: "deadline",
     disablePadding: false,
-    label: "Deadline"
+    label: "Hạn cuối"
   },
   {
     id: "priority",
@@ -228,7 +228,7 @@ const finishedProjectHeadCells: readonly TaskHeadCell[] = [
   {
     id: "createdBy",
     disablePadding: false,
-    label: "Người order"
+    label: "Người ĐH"
   },
   {
     id: "title",
@@ -258,7 +258,7 @@ const finishedProjectHeadCells: readonly TaskHeadCell[] = [
   {
     id: "deadline",
     disablePadding: false,
-    label: "Deadline"
+    label: "Hạn cuối"
   },
   {
     id: "priority",

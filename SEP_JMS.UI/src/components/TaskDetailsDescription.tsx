@@ -20,10 +20,18 @@ interface ITaskDetailsDescriptionProps {
   setFinalFiles?: React.Dispatch<React.SetStateAction<File[]>>;
   isImagesLoading: boolean;
   jobParentTitle?: string;
+  isCorrelationJobType?: number;
 }
 
 const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => {
-  const { taskDetail: jobDetail, docFiles, imgFiles, isImagesLoading, jobParentTitle } = props;
+  const {
+    taskDetail: jobDetail,
+    docFiles,
+    imgFiles,
+    isImagesLoading,
+    jobParentTitle,
+    isCorrelationJobType
+  } = props;
   const [overflowActive, setOverflowActive] = useState<boolean>(false);
   const [isDetailExpanded, setDetailExpanded] = useState<boolean>(false);
   const overflowingText = useRef<HTMLDivElement | null>(null);
@@ -65,7 +73,9 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
       {renderJobParentTitle()}
       <div className="flex flex-col items-start gap-2">
         <label htmlFor="" className="text-primary min-w-[75px]">
-          {TaskString.TEN_CONG_VIEC}
+          {isCorrelationJobType === CorrelationJobType.Project
+            ? TaskString.TEN_DU_AN
+            : TaskString.TEN_CONG_VIEC}
         </label>
         <p className="w-full rounded-md leading-5">{jobDetail?.title}</p>
       </div>
@@ -77,7 +87,11 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
                 <div className="mb-1 flex flex-col gap-2">
                   <div className="flex flex-1 items-center justify-between gap-2">
                     {/* <BiInfoCircle size={15} color="#333" /> */}
-                    <span className="text-primary"> {TaskString.MO_TA_CONG_VIEC}</span>
+                    <span className="text-primary">
+                      {isCorrelationJobType === CorrelationJobType.Project
+                        ? TaskString.MO_TA_DU_AN
+                        : TaskString.MO_TA_CONG_VIEC}
+                    </span>
                     <div
                       onClick={() => setDetailExpanded(!isDetailExpanded)}
                       className="flex cursor-pointer items-center gap-1 text-[#0655a7] hover:opacity-75"
@@ -114,7 +128,7 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
                 {docFiles && docFiles.length > 0 && (
                   <>
                     <p className="text-primary mb-6 mt-10 flex items-center gap-2">
-                      <span>{TaskString.TEP_DINH_KEM}</span>
+                      <span>{TaskString.TAI_LIEU_DINH_KEM}</span>
                       <span className="text-[13px] font-semibold text-orange-500">
                         <i>{TaskString.CLICK_DE_TAI_VE}</i>
                       </span>
@@ -146,7 +160,7 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
                 {driveFiles && driveFiles.length > 0 && (
                   <>
                     <p className="text-primary mb-6 mt-10 flex items-center gap-2">
-                      <span className="text-[13px]">{TaskString.FILE_FINAL}</span>
+                      <span className="text-[13px]">{TaskString.TAI_LIEU_KET_THUC}</span>
                       <span className="text-[13px] font-semibold text-orange-500">
                         <i>{TaskString.CLICK_DE_TAI_VE}</i>
                       </span>

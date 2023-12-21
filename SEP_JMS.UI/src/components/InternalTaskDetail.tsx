@@ -334,6 +334,7 @@ const InternalTasksDetail: React.FC<ITaskDetail> = ({ isCorrelationJobType }) =>
                 taskDetail={jobDetail}
                 docFiles={docFiles}
                 imgFiles={imgFiles}
+                isCorrelationJobType={isCorrelationJobType}
               />
 
               {/*SubtasksSection */}

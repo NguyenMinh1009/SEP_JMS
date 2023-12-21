@@ -41,6 +41,7 @@ import { checkInputCreateJob } from "../../utils/checkInputJob";
 import APIClientInstance from "../../api/AxiosInstance";
 import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 import { TaskString } from "../../enums/taskEnums";
+import { ToastString } from "../../enums/toastEnums";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -229,7 +230,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
         return (
           <>
             <label htmlFor="" className="text-primary col-span-2">
-              Số lượng
+              {TaskString.SO_LUONG}
               <RequireText />
             </label>
             <input
@@ -269,7 +270,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
   const handlePost = () => {
     const totalSizeInBytes = files.reduce((total, file) => total + file.size, 0);
     if (totalSizeInBytes / (1024 * 1024) > 100) {
-      snakeBar.setSnakeBar("Tổng file vượt quá 100MB!", "warning", true);
+      snakeBar.setSnakeBar(ToastString.TONG_TAI_LIEU_VUOT_QUA_100MB, "warning", true);
       return;
     }
 
@@ -337,12 +338,12 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
       })
       .then(() => {
         correlationJobType === CorrelationJobType.Job
-          ? snakeBar.setSnakeBar("Tạo công việc thành công!", "success", true)
-          : snakeBar.setSnakeBar("Tạo dự án thành công!", "success", true);
+          ? snakeBar.setSnakeBar(ToastString.TAO_CONG_VIEC_THANH_CONG, "success", true)
+          : snakeBar.setSnakeBar(ToastString.TAO_DU_AN_THANH_CONG, "success", true);
       })
       .catch(err => {
         console.error(err);
-        snakeBar.setSnakeBar("Tạo không thành công", "error", true);
+        snakeBar.setSnakeBar(ToastString.TAO_KHONG_THANH_CONG, "error", true);
       });
   };
 
@@ -413,7 +414,8 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
     return (
       <div className="flex flex-col items-start gap-3">
         <label htmlFor="" className="text-primary col-span-2 mr-4">
-          Người order
+          {TaskString.NGUOI_ORDER}
+          <RequireText />
         </label>
         <Autocomplete
           loading={isLoading}
@@ -456,7 +458,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
           className={openDetailsEditPanel ? "rotate-90" : "-rotate-90"}
         />
         <p>
-          <i className="text-[13px] font-[500]">Chi tiết</i>
+          <i className="text-[13px] font-[500]">{TaskString.CHI_TIET}</i>
         </p>
       </div>
       <div
@@ -470,9 +472,9 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="mb-6 flex flex-col items-start gap-3">
               <div className="flex h-fit w-full items-center justify-between">
                 <label htmlFor="" className="text-primary min-w-[75px]">
-                  Tên công việc
+                  {TaskString.TEN_CONG_VIEC}
                   <RequireText />
-                  <i className="text-[13px] text-orange-500"> (Tối đa 150 kí tự)</i>
+                  <i className="text-[13px] text-orange-500">{TaskString.TOI_DA_150_KI_TU}</i>
                 </label>
                 <div className="text-[13px]">{`${title.length ?? 0}/150`}</div>
               </div>
@@ -485,7 +487,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
               />
             </div>
             <div className="text-primary mb-3 min-w-[75px]">
-              Mô tả công việc <RequireText />
+              {TaskString.MO_TA_CONG_VIEC} <RequireText />
             </div>
             <div className="overflow-hidden rounded-md border-2">
               <ReactQuill
@@ -498,11 +500,8 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             </div>
             <div className="min-h-fit w-full rounded-b-md bg-white pt-5">
               <p className="mb-3 mt-6 text-sm font-semibold text-orange-500">
-                <span className="text-[13px] text-[#444]">File đính kèm </span>
-                <i>
-                  (File đính kèm dung lượng tổng 100MB, lớn hơn vui lòng gửi link drive ở phần mô
-                  tả)
-                </i>
+                <span className="text-[13px] text-[#444]">{TaskString.TAI_LIEU_DINH_KEM}</span>
+                <i>{TaskString.TAI_LIEU_DINH_KEM_100MB}</i>
               </p>
               <div className="mb-4 flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -510,7 +509,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                     <div className="flex items-center gap-2">
                       <IoMdDocument size={15} color="#555" />
                       <span className="text-secondary mt-[1px] text-[13px] normal-case">
-                        Thêm file
+                        {TaskString.THEM_TAI_LIEU}
                       </span>
                     </div>
                   </CustomButton>
@@ -523,7 +522,9 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
               </div>
               {getDocumentsFils && getDocumentsFils.length > 0 && (
                 <>
-                  <p className="text-secondary mb-6 mt-10 text-sm">Tài liệu đính kèm</p>
+                  <p className="text-secondary mb-6 mt-10 text-sm">
+                    {TaskString.TAI_LIEU_DINH_KEM}
+                  </p>
                   <FileSection
                     handleDelete={handleDeleteFile}
                     visibleType={visibleType}
@@ -533,7 +534,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
               )}
               {getImagesFiles && getImagesFiles.length > 0 && (
                 <div className="mb-6">
-                  <p className="text-secondary mb-6 text-sm">Ảnh đính kèm</p>
+                  <p className="text-secondary mb-6 text-sm">{TaskString.ANH_DINH_KEM}</p>
                   <ImageSection handleDelete={handleDeleteFile} imgFiles={getImagesFiles} />
                 </div>
               )}
@@ -553,14 +554,15 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
           <div className="grid grid-cols-2 gap-x-10 gap-y-6">
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Khách hàng
+                {TaskString.KHACH_HANG}
+                <RequireText />
               </label>
               <Autocomplete
                 noOptionsText="Không có lựa chọn"
                 id="companies"
                 value={
                   currentPerson.roleType === Role.CUSTOMER
-                    ? currentInfo?.company?.companyName || "..."
+                    ? currentInfo?.company?.companyName || TaskString.TRONG
                     : selectedCompany
                 }
                 onChange={(_, newValue) => {
@@ -594,7 +596,8 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             {renderCustomerCreate()}
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Account
+                {TaskString.ACCOUNT_MANAGER}
+                <RequireText />
               </label>
               <Autocomplete
                 disabled={
@@ -702,7 +705,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             >
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Ưu tiên
+                  {TaskString.UU_TIEN}
                   <RequireText />
                 </label>
                 <Select
@@ -755,7 +758,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Trạng thái
+                {TaskString.TRANG_THAI}
                 <RequireText />
               </label>
               <Select
@@ -818,7 +821,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 <div className="flex items-center gap-2 px-2 text-[#333]">
                   <AiOutlineCloseCircle size={20} />
                   <p className="text-secondary text-xs font-semibold normal-case leading-7">
-                    Hủy công việc
+                    {TaskString.HUY_CONG_VIEC}
                   </p>
                 </div>
               </CustomButton>
@@ -826,7 +829,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 <div className="flex items-center gap-2 px-2">
                   <IoAddCircleOutline color="white" size={20} />
                   <p className="text-secondary text-xs normal-case leading-7 text-white">
-                    Tạo công việc
+                    {TaskString.TAO_CONG_VIEC}
                   </p>
                 </div>
               </CustomButton>

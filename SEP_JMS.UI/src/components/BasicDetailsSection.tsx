@@ -33,6 +33,7 @@ import { checkStatusCompletedProjectEdit } from "../utils/checkInputJob";
 import { Error } from "../enums/validateInput";
 import { TaskString } from "../enums/taskEnums";
 import { RoleString } from "../enums/roleEnums";
+import { ToastString } from "../enums/toastEnums";
 
 interface IBasicDetailsSectionProps {
   taskDetail: any;
@@ -77,7 +78,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         })
           .then(() => {
             setSelectedStatus(status);
-            snakeBar.setSnakeBar("Cập nhật trạng thái thành công", "success", true);
+            snakeBar.setSnakeBar(ToastString.CAP_NHAT_TRANG_THAI_THANH_CONG, "success", true);
           })
           .catch(err => console.error(err))
       : await AlwayxInstance.put(`internal/job/${subTaskId}/status`, {
@@ -85,7 +86,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         })
           .then(() => {
             setSelectedStatus(status);
-            snakeBar.setSnakeBar("Cập nhật trạng thái thành công", "success", true);
+            snakeBar.setSnakeBar(ToastString.CAP_NHAT_TRANG_THAI_THANH_CONG, "success", true);
           })
           .catch(err => console.error(err));
   };
@@ -95,7 +96,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
       return (
         <BasicTaskInfo
           Icon={<HiOutlineCircleStack size={15} color="#555" />}
-          title="Số lượng:"
+          title={TaskString.SO_LUONG + TaskString.HAI_CHAM}
           detail={taskDetail?.quantity}
         />
       );
@@ -108,50 +109,53 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
       <div className="grid grid-cols-2 gap-[2px] bg-third p-[2px]">
         <BasicTaskInfo
           Icon={<FiUsers size={15} color="#555" />}
-          title="Khách hàng:"
-          detail={taskDetail?.company?.companyName ?? "..."}
+          title={TaskString.KHACH_HANG + TaskString.HAI_CHAM}
+          detail={taskDetail?.company?.companyName ?? TaskString.TRONG}
         />
         <BasicTaskInfo
           Icon={<FiUser size={15} color="#555" />}
-          title="Người order:"
+          title={TaskString.NGUOI_ORDER + TaskString.HAI_CHAM}
           detail={taskDetail?.customer?.fullname}
         />
         <BasicTaskInfo
           Icon={<BiSupport size={15} color="#555" />}
-          title="Account:"
+          title={TaskString.ACCOUNT_MANAGER + TaskString.HAI_CHAM}
           detail={taskDetail?.account?.fullname}
         />
         {correlationJobType === CorrelationJobType.Job && (
           <BasicTaskInfo
             Icon={<AiOutlineEdit size={15} color="#555" />}
-            title="Designer:"
+            title={TaskString.NGUOI_THIET_KE + TaskString.HAI_CHAM}
             detail={taskDetail?.designer?.fullname ?? TaskString.CON_TRONG}
           />
         )}
         <BasicTaskInfo
           Icon={<AiOutlineClockCircle size={15} color="#555" />}
-          title="Thời gian tạo:"
+          title={TaskString.THOI_GIAN_TAO + TaskString.HAI_CHAM}
           detail={moment(ticksToDate(taskDetail?.createdTime)).format("DD-MM-YYYY - h:mm")}
         />
         <BasicTaskInfo
           Icon={<AiOutlineClockCircle size={15} color="#555" />}
-          title={TaskString.DEADLINE}
+          title={TaskString.DEADLINE + TaskString.HAI_CHAM}
           detail={moment(ticksToDate(taskDetail?.deadline)).format("DD-MM-YYYY - h:mm")}
           customText="text-red-600 font-semibold"
         />
         <BasicTaskInfo
           Icon={getPriorityIcon(taskDetail?.priority)}
-          title="Ưu tiên:"
+          title={TaskString.UU_TIEN + TaskString.HAI_CHAM}
           detail={
-            priorityOptions.find(option => option.key === taskDetail?.priority)?.text ?? "..."
+            priorityOptions.find(option => option.key === taskDetail?.priority)?.text ??
+            TaskString.TRONG
           }
           customText={getTextColorFromPriority(taskDetail?.priority) + " font-semibold"}
         />
         {visibleType === VisibleType.Public && (
           <BasicTaskInfo
             Icon={<MdSignalWifiStatusbarNull size={15} color="#555" />}
-            title="Trạng thái:"
-            detail={statusOptions.find(option => option.key === initStatus)?.text ?? "..."}
+            title={TaskString.TRANG_THAI + TaskString.HAI_CHAM}
+            detail={
+              statusOptions.find(option => option.key === initStatus)?.text ?? TaskString.TRONG
+            }
             customText={getStatusTextColor(initStatus) + " font-semibold"}
           />
         )}
@@ -172,7 +176,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
                 <MdSignalWifiStatusbarNull size={15} color="#555" />
               </div>
               <label htmlFor="" className="text-primary">
-                Trạng thái:
+                {TaskString.TRANG_THAI + TaskString.HAI_CHAM}
               </label>
             </div>
             <div
@@ -228,8 +232,8 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         )}
         <BasicTaskInfo
           Icon={<MdOutlineTypeSpecimen size={15} color="#555" />}
-          title="Loại thiết kế:"
-          detail={taskDetail?.jobType?.typeName || "..."}
+          title={TaskString.LOAI_THIET_KE + TaskString.HAI_CHAM}
+          detail={taskDetail?.jobType?.typeName || TaskString.TRONG}
         />
         {renderCorrelationJobType()}
       </div>
@@ -248,7 +252,9 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
             <div className="flex items-center gap-2 px-2">
               <IoCreateOutline color="white" size={20} />
               <p className="text-secondary mt-[2px] text-sm  normal-case leading-6 text-white">
-                Chỉnh sửa công việc
+                {correlationJobType === CorrelationJobType.Job
+                  ? TaskString.CHINH_SUA_CONG_VIEC
+                  : TaskString.CHINH_SUA_DU_AN}
               </p>
             </div>
           </CustomButton>

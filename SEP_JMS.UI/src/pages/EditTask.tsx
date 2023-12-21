@@ -41,6 +41,7 @@ import { AxiosRequestConfig } from "axios";
 import { InternalJobStatusType } from "../enums/internalJobStatusType";
 import { checkInputEditJob, checkStatusCompletedProjectEdit } from "../utils/checkInputJob";
 import { Error } from "../enums/validateInput";
+import { ToastString } from "../enums/toastEnums";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -283,7 +284,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
         {isCorrelationJobType === CorrelationJobType.Job && (
           <>
             <label htmlFor="" className="text-primary col-span-2">
-              Số lượng
+              {TaskString.SO_LUONG}
               <RequireText />
             </label>
             <input
@@ -484,12 +485,12 @@ const EditTask: React.FC<IEditTaskProp> = ({
   const handleEdit = async () => {
     const totalSizeInBytes = files.reduce((total, file) => total + file.size, 0);
     if (totalSizeInBytes / (1024 * 1024) > 100) {
-      snakeBar.setSnakeBar("Tổng file vượt quá 100MB!", "warning", true);
+      snakeBar.setSnakeBar(ToastString.TONG_TAI_LIEU_VUOT_QUA_100MB, "warning", true);
       return;
     }
     const totalFinalSizeInBytes = finalFiles.reduce((total, file) => total + file.size, 0);
     if (totalFinalSizeInBytes / (1024 * 1024) > 100) {
-      snakeBar.setSnakeBar("Tổng file vượt quá 100MB!", "warning", true);
+      snakeBar.setSnakeBar(ToastString.TONG_TAI_LIEU_VUOT_QUA_100MB, "warning", true);
       return;
     }
     //check validate input edit job
@@ -686,7 +687,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
   };
 
   const renderButtonProgressText = (): string => {
-    if (!isButtonLoading) return "Lưu chỉnh sửa";
+    if (!isButtonLoading) return TaskString.LUU_CHINH_SUA;
     else {
       const totalProgress = uploadProgress + uploadFinalProgress;
       if (finalFilesFromAPI?.length >= 0 || finalFiles?.length > 0) {
@@ -702,10 +703,10 @@ const EditTask: React.FC<IEditTaskProp> = ({
       return (
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Trạng thái
+            {TaskString.TRANG_THAI}{" "}
             {currentPerson.roleType !== Role.CUSTOMER && (
               <span className="mb-3 text-[13px] font-semibold text-orange-500">
-                <i> (Nội Bộ)</i>
+                <i> ({TaskString.NOI_BO})</i>
               </span>
             )}
             <RequireText />
@@ -752,10 +753,10 @@ const EditTask: React.FC<IEditTaskProp> = ({
       return (
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Trạng thái{" "}
+            {TaskString.TRANG_THAI}{" "}
             {currentPerson.roleType !== Role.CUSTOMER && (
               <span className="mb-3 text-[13px] font-semibold text-orange-500">
-                <i> (Công khai)</i>
+                <i> ({TaskString.CONG_KHAI})</i>
               </span>
             )}
             <RequireText />
@@ -805,7 +806,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
       return (
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Designer
+            {TaskString.NGUOI_THIET_KE}
             <RequireText />
           </label>
           {currentPerson.roleType === Role.DESIGNER || currentPerson.roleType === Role.CUSTOMER ? (
@@ -846,16 +847,18 @@ const EditTask: React.FC<IEditTaskProp> = ({
 
       getTaskDetails();
     }
-    // if (currentPerson.roleType === Role.CUSTOMER) {
-    //   setSelectedAccount(currentPerson.account);
-    // }
   }, [currentPerson.roleType]);
 
   return isLoading ? (
     <CircularProgress size={20} />
   ) : (
     <>
-      <p className="text-primary mb-6 text-lg">Chỉnh sửa công việc hàng ngày</p>
+      {isCorrelationJobType === CorrelationJobType.Job ? (
+        <p className="text-primary mb-6 text-lg">{TaskString.CHINH_SUA_CONG_VIEC_HANG_NGAY}</p>
+      ) : (
+        <p className="text-primary mb-6 text-lg">{TaskString.CHINH_SUA_DU_AN}</p>
+      )}
+
       <div className="relative -mx-2 -mt-2 grid h-max grid-cols-12 gap-6 px-2 ">
         <div
           onClick={() => setOpenDetailsEditPanel(!openDetailsEditPanel)}
@@ -867,7 +870,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
             className={openDetailsEditPanel ? "rotate-90" : "-rotate-90"}
           />
           <p>
-            <i className="text-[13px] font-[500]">Chi tiết</i>
+            <i className="text-[13px] font-[500]">{TaskString.CHI_TIET}</i>
           </p>
         </div>
         <div
@@ -881,9 +884,11 @@ const EditTask: React.FC<IEditTaskProp> = ({
               <div className="mb-6 flex flex-col items-start gap-3">
                 <div className="flex w-full items-center justify-between">
                   <label htmlFor="" className="text-primary min-w-[75px]">
-                    Tên công việc
+                    {isCorrelationJobType === CorrelationJobType.Job
+                      ? TaskString.TEN_CONG_VIEC
+                      : TaskString.TEN_DU_AN}
                     <RequireText />
-                    <i className="text-[13px] text-orange-500"> (Tối đa 150 kí tự)</i>
+                    <i className="text-[13px] text-orange-500"> {TaskString.TOI_DA_150_KI_TU}</i>
                   </label>
                   <div className="text-[13px]">{`${title.length ?? 0}/150`}</div>
                 </div>
@@ -897,7 +902,9 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 />
               </div>
               <div className="text-primary mb-3 min-w-[75px]">
-                Mô tả công việc
+                {isCorrelationJobType === CorrelationJobType.Job
+                  ? TaskString.MO_TA_CONG_VIEC
+                  : TaskString.MO_TA_DU_AN}
                 <RequireText />
               </div>
               <div className="mb-6 overflow-hidden rounded-md border-2">
@@ -914,11 +921,10 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 {currentPerson.roleType !== Role.DESIGNER && (
                   <>
                     <p className="mb-3 text-sm font-semibold text-orange-500">
-                      <span className="text-[13px] text-[#444]">File đính kèm </span>
-                      <i>
-                        (File đính kèm dung lượng tổng 100MB, lớn hơn vui lòng gửi link drive ở phần
-                        mô tả)
-                      </i>
+                      <span className="text-[13px] text-[#444]">
+                        {TaskString.TAI_LIEU_DINH_KEM}
+                      </span>
+                      <i>{TaskString.TAI_LIEU_DINH_KEM_100MB}</i>
                     </p>
                     <div className="mb-4 flex w-full items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -926,7 +932,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                           <div className="flex items-center gap-2">
                             <IoMdDocument size={15} color="#555" />
                             <span className="text-secondary mt-[1px] text-[13px] normal-case">
-                              Thêm file
+                              {TaskString.THEM_TAI_LIEU}
                             </span>
                           </div>
                         </CustomButton>
@@ -941,7 +947,9 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 )}
                 {getDocumentsFiles && getDocumentsFiles.length > 0 && (
                   <>
-                    <p className="text-secondary mb-6 mt-10 text-sm">Tài liệu đính kèm</p>
+                    <p className="text-secondary mb-6 mt-10 text-sm">
+                      {TaskString.TAI_LIEU_DINH_KEM}
+                    </p>
                     <FileSection
                       handleDelete={handleDeleteFile}
                       visibleType={VisibleType.Public}
@@ -951,7 +959,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 )}
                 {getImagesFiles && getImagesFiles.length > 0 && (
                   <div className="mb-16">
-                    <p className="text-secondary mb-6 text-sm">Ảnh đính kèm</p>
+                    <p className="text-secondary mb-6 text-sm">{TaskString.ANH_DINH_KEM}</p>
                     <ImageSection handleDelete={handleDeleteFile} imgFiles={getImagesFiles} />
                   </div>
                 )}
@@ -960,11 +968,8 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 <>
                   {/* Final */}
                   <p className="mb-3 text-sm font-semibold text-orange-500">
-                    <span className="text-[13px] text-[#444]">File Final </span>
-                    <i>
-                      (File đính kèm dung lượng tổng 100MB, lớn hơn vui lòng gửi link drive ở phần
-                      mô tả)
-                    </i>
+                    <span className="text-[13px] text-[#444]">{TaskString.TAI_LIEU_KET_THUC}</span>
+                    <i>{TaskString.TAI_LIEU_DINH_KEM_100MB}</i>
                   </p>
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -975,7 +980,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                         <div className="flex items-center gap-2">
                           <IoMdDocument size={15} color="#555" />
                           <span className="text-secondary mt-[1px] text-[13px] normal-case">
-                            Thêm file
+                            {TaskString.THEM_TAI_LIEU}
                           </span>
                         </div>
                       </CustomButton>
@@ -996,7 +1001,9 @@ const EditTask: React.FC<IEditTaskProp> = ({
                       )}
                   </div>
                   {finalFilesFromAPI && finalFilesFromAPI.length > 0 && (
-                    <p className="text-secondary mb-2 text-[13px]">File final cũ</p>
+                    <p className="text-secondary mb-2 text-[13px]">
+                      {TaskString.TAI_LIEU_KET_THUC_CU}
+                    </p>
                   )}
                   <FileSection
                     visibleType={VisibleType.Public}
@@ -1007,7 +1014,9 @@ const EditTask: React.FC<IEditTaskProp> = ({
                     handleDelete={handleDeleteFinalFileAPI}
                   />
                   {finalFiles && finalFiles.length > 0 && (
-                    <p className="text-secondary mb-2 text-[13px]">File final mới</p>
+                    <p className="text-secondary mb-2 text-[13px]">
+                      {TaskString.TAI_LIEU_KET_THUC_MOI}
+                    </p>
                   )}
                   <FileSection
                     visibleType={VisibleType.Public}
@@ -1017,10 +1026,8 @@ const EditTask: React.FC<IEditTaskProp> = ({
 
                   {/* Preview */}
                   <p className="mb-3 mt-16 text-sm font-semibold text-orange-500">
-                    <span className="text-[13px] text-[#444]">Ảnh báo cáo </span>
-                    <i>
-                      (Để chỉnh trạng thái đã xong, cần tải lên một file ảnh preview tối đa 5MB!)
-                    </i>
+                    <span className="text-[13px] text-[#444]">{TaskString.ANH_BAO_CAO}</span>
+                    <i>{TaskString.DE_CHINH_TRANG_THAI_DA_XONG}</i>
                   </p>
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -1031,7 +1038,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                         <div className="flex items-center gap-2">
                           <IoMdDocument size={15} color="#555" />
                           <span className="text-secondary mt-[1px] text-[13px] normal-case">
-                            Thêm file
+                            {TaskString.THEM_TAI_LIEU}
                           </span>
                         </div>
                       </CustomButton>
@@ -1052,7 +1059,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                       )}
                   </div>
                   {previewFilesFromAPI && previewFilesFromAPI.length > 0 && (
-                    <p className="text-secondary mb-2 text-[13px]">Ảnh báo cáo cũ</p>
+                    <p className="text-secondary mb-2 text-[13px]">{TaskString.ANH_BAO_CAO_CU}</p>
                   )}
                   <FileSection
                     visibleType={VisibleType.Public}
@@ -1063,7 +1070,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                     handleDelete={handleDeletePreviewFileAPI}
                   />
                   {previewFiles && previewFiles.length > 0 && (
-                    <p className="text-secondary mb-2 text-[13px]">Ảnh báo cáo mới</p>
+                    <p className="text-secondary mb-2 text-[13px]">{TaskString.ANH_BAO_CAO_MOI}</p>
                   )}
                   <FileSection
                     visibleType={VisibleType.Public}
@@ -1115,7 +1122,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Người order
+                {TaskString.NGUOI_ORDER}
                 <RequireText />
               </label>
               <Autocomplete
@@ -1138,7 +1145,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Account
+                {TaskString.ACCOUNT_MANAGER}
                 <RequireText />
               </label>
               <Autocomplete
@@ -1168,7 +1175,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                       },
                       "& .MuiAutocomplete-input": { fontSize: "13px !important" }
                     }}
-                    placeholder="-- Chọn Account --"
+                    placeholder="-- Chọn Account Manager --"
                   />
                 )}
               />
@@ -1177,7 +1184,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
 
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Loại thiết kế
+                {TaskString.LOAI_THIET_KE}
                 <RequireText />
               </label>
               <Autocomplete
@@ -1198,7 +1205,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col items-start gap-3">
                 <label htmlFor="" className="text-primary col-span-2 mr-4">
-                  Ưu tiên
+                  {TaskString.UU_TIEN}
                   <RequireText />
                 </label>
                 <Select
@@ -1265,7 +1272,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 <div className="flex items-center gap-2 px-2 text-[#333]">
                   <AiOutlineCloseCircle size={20} />
                   <p className="text-secondary text-xs font-semibold normal-case leading-7">
-                    Hủy chỉnh sửa
+                    {TaskString.HUY_CHINH_SUA}
                   </p>
                 </div>
               </CustomButton>

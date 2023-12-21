@@ -23,6 +23,7 @@ import CustomDialog from "./CustomDialog";
 import AlwayxInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { correlationJobOptions } from "../../constants";
+import { TaskString } from "../../enums/taskEnums";
 type IRowProps = {
   row: any;
   index: number;
@@ -177,7 +178,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
           align="center"
         >
-          {row.company?.companyName ?? "..."}
+          {row.company?.companyName ?? TaskString.TRONG}
         </TableCell>
         <TableCell
           padding="none"
@@ -206,7 +207,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
             className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
             align="center"
           >
-            {row.designer?.fullname ?? "..."}
+            {row.designer?.fullname ?? TaskString.TRONG}
           </TableCell>
         )}
 
@@ -215,7 +216,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
           align="center"
         >
-          {row.jobType?.typeName ?? "..."}
+          {row.jobType?.typeName ?? TaskString.TRONG}
         </TableCell>
         {renderPriceCellBasedOnJobType()}
         <TableCell

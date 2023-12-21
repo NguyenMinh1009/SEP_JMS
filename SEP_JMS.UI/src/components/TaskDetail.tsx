@@ -294,7 +294,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                 className={openDetailsEditPanel ? "rotate-90" : "-rotate-90"}
               />
               <p>
-                <i className="text-[13px] font-[500]">Chi tiết</i>
+                <i className="text-[13px] font-[500]">{TaskString.CHI_TIET}</i>
               </p>
             </div>
             <div
@@ -310,6 +310,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                 taskDetail={jobDetail}
                 docFiles={docFiles}
                 imgFiles={imgFiles}
+                isCorrelationJobType={isCorrelationJobType}
               />
               {/*SubtasksSection */}
 

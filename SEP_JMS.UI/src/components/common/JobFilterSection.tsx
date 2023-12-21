@@ -21,6 +21,7 @@ import CustomButton from "./CustomButton";
 import { useLocation } from "react-router-dom";
 import APIClientInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
+import { TaskString } from "../../enums/taskEnums";
 
 interface JobFilterSectionProps {
   isInternal?: boolean;
@@ -228,7 +229,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
     return (
       <div className="flex flex-col items-start gap-3">
         <label htmlFor="" className="text-primary col-span-2 mr-4">
-          Người order
+          {TaskString.NGUOI_ORDER}
         </label>
         <Autocomplete
           loading={isLoading}
@@ -273,7 +274,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       return (
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Designer
+            {TaskString.NGUOI_THIET_KE}
           </label>
           <Autocomplete
             disabled={currentPerson.roleType === Role.DESIGNER}
@@ -317,7 +318,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       <div key={location.pathname} className="grid grid-cols-5 items-end gap-3">
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Từ ngày
+            {TaskString.TU_NGAY}
           </label>
           <DateTimePicker
             slotProps={{
@@ -346,7 +347,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
         </div>
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
-            Đến ngày
+            {TaskString.DEN_NGAY}
           </label>
           <DateTimePicker
             slotProps={{
@@ -378,7 +379,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
           <>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Loại thiết kế
+                {TaskString.LOAI_THIET_KE}
               </label>
               <Autocomplete
                 id="types"
@@ -407,7 +408,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Trạng thái
+                {TaskString.TRANG_THAI}
               </label>
               <Select
                 disabled={finishedOnly}
@@ -436,7 +437,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
             </div>
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Khách hàng
+                {TaskString.KHACH_HANG}
               </label>
               <Autocomplete
                 noOptionsText="Không có lựa chọn"
@@ -479,7 +480,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
 
             <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
-                Account
+                {TaskString.ACCOUNT_MANAGER}
               </label>
               <Autocomplete
                 disabled={
@@ -517,7 +518,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                       "& .MuiAutocomplete-input": { fontSize: "13px !important" }
                     }}
                     placeholder={
-                      currentPerson.roleType === Role.ACCOUNT ? "" : "-- Chọn Account --"
+                      currentPerson.roleType === Role.ACCOUNT ? "" : "-- Chọn Account Manager --"
                     }
                   />
                 )}
@@ -529,14 +530,14 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
           className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
           onClick={clearAll}
         >
-          Xóa tất cả
+          {TaskString.XOA_TAT_CA}
         </button>
         <CustomButton
           primary
           className=" h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
           onClick={handleApply}
         >
-          Áp dụng
+          {TaskString.AP_DUNG}
         </CustomButton>
       </div>
     </div>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using SEP_JMS.Common;
 using SEP_JMS.Common.Constants;
 using SEP_JMS.Common.Logger;
 using SEP_JMS.Model.Api.Request.File;
@@ -37,7 +38,16 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to get job file of the job {jobId}.");
                 var job = await jobService.GetBasicJob(jobId);
-                if (job == null) return StatusCode(404);
+                if (job == null)
+                {
+                    if (ApiContext.Current.Role == RoleType.Designer)
+                    {
+                        var project = await jobService.GetProject(jobId);
+                        if (project == null) return NotFound();
+                        else job = project.Item1;
+                    }
+                    else return NotFound();
+                }
 
                 var basePath = AppDomain.CurrentDomain.BaseDirectory;
                 switch (model.PostsType)
@@ -80,7 +90,16 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to get internal job file of the job {jobId}.");
                 var job = await jobService.GetBasicJob(jobId);
-                if (job == null) return StatusCode(404);
+                if (job == null)
+                {
+                    if (ApiContext.Current.Role == RoleType.Designer)
+                    {
+                        var project = await jobService.GetProject(jobId);
+                        if (project == null) return NotFound();
+                        else job = project.Item1;
+                    }
+                    else return NotFound();
+                }
 
                 var basePath = AppDomain.CurrentDomain.BaseDirectory;
                 switch (model.PostsType)

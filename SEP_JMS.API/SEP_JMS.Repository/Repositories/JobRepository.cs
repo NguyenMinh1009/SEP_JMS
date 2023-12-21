@@ -666,8 +666,8 @@ namespace SEP_JMS.Repository.Repositories
                         from company in companies.DefaultIfEmpty()
 
                         join jobType in Context.TypeOfJobs
-                       on job.JobType equals jobType.TypeId
-                       into jobTypes
+                        on job.JobType equals jobType.TypeId
+                        into jobTypes
                         from jobType in jobTypes.DefaultIfEmpty()
 
                         where job.JobId == jobId &&
@@ -697,8 +697,6 @@ namespace SEP_JMS.Repository.Repositories
                         select job;
 
             var currentJob = await query.FirstAsync();
-            if (currentJob.JobStatus == JobStatus.Pending || currentJob.JobStatus == JobStatus.Completed) return null;
-
             var now = DateTime.UtcNow.Ticks;
 
             currentJob.JobStatus = model.JobStatus;
@@ -716,9 +714,6 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task<Job?> UpdateJob(Guid jobId, UpdateJobRequest model)
         {
-            if (model.CorrelationType == CorrelationJobType.Project && model.ParentId != null)
-                throw new ArgumentException("project can't have parent id");
-
             var userId = ApiContext.Current.UserId;
             var role = ApiContext.Current.Role;
             var query = from job in Context.Jobs
@@ -726,10 +721,7 @@ namespace SEP_JMS.Repository.Repositories
                         select job;
 
             var currentJob = await query.FirstAsync();
-            if (currentJob.JobStatus == JobStatus.Completed && role != RoleType.Admin) return null;
-
             var now = DateTime.UtcNow.Ticks;
-
             currentJob.Title = model.Title;
             currentJob.Description = model.Description;
             currentJob.Quantity = model.Quantity;
@@ -812,8 +804,7 @@ namespace SEP_JMS.Repository.Repositories
             using var transaction = await Context.Database.BeginTransactionAsync();
             try
             {
-                _ = await Context.Comments.Where(com => com.CorrelationJobId == jobId)
-                    .ExecuteDeleteAsync();
+                _ = await Context.Comments.Where(com => com.CorrelationJobId == jobId).ExecuteDeleteAsync();
                 _ = await Context.Jobs.Where(job => job.JobId == jobId).ExecuteDeleteAsync();
                 await transaction.CommitAsync();
             }
@@ -834,13 +825,9 @@ namespace SEP_JMS.Repository.Repositories
                         join company in Context.Companies
                         on customer.CompanyId equals company.CompanyId
 
-                        where job.JobStatus == JobStatus.Completed
+                        where job.JobStatus == JobStatus.Completed && job.ParentId == null && job.CorrelationType == model.CorrelationType
                         select new { job, company };
 
-            if (model.CorrelationType != null)
-            {
-                query = query.Where(d => d.job.CorrelationType == model.CorrelationType.Value);
-            }
             if (!string.IsNullOrEmpty(model.SearchText))
             {
                 query = from data in query
@@ -901,6 +888,25 @@ namespace SEP_JMS.Repository.Repositories
                         where data.job.JobType == model.JobType.Value
                         select data;
             }
+            return await query.OrderByDescending(data => data.job.CreatedTime)
+                .Select(data => Tuple.Create(data.job, data.company))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<Tuple<Job, Company>>> GetAllJobsSubJobForExport(Guid projectId)
+        {
+            var query = from job in Context.Jobs
+
+                        join customer in Context.Users
+                        on job.CustomerId equals customer.UserId
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+
+                        where job.JobStatus == JobStatus.Completed && job.ParentId == projectId
+                        select new { job, company };
+
             return await query.OrderByDescending(data => data.job.CreatedTime)
                 .Select(data => Tuple.Create(data.job, data.company))
                 .AsNoTracking()
@@ -1088,8 +1094,28 @@ namespace SEP_JMS.Repository.Repositories
 
                         group new { job, price, company } by company.CompanyId into groupData
 
-                        select Tuple.Create(groupData.First().company, groupData.Sum(info => (long)info.price.UnitPrice * info.job.Quantity), groupData.Count());
+                        select Tuple.Create(groupData.First().company,
+                        groupData.Sum(info => info.job.FinalUnitPrice.HasValue ? (long)info.job.FinalUnitPrice.Value * info.job.Quantity : (long)info.price.UnitPrice * info.job.Quantity),
+                        groupData.Count());
             return await query.ToListAsync();
+        }
+
+        public async Task<bool> UpdatePaymentSuccess(Guid jobId)
+        {
+            var job = await Context.Jobs
+                .Include(job => job.TypeOfJob)
+                .Include(job => job.Customer)
+                .ThenInclude(cus => cus.Company)
+                .ThenInclude(cus => cus.PriceGroup)
+                .SingleAsync(job => job.JobId == jobId);
+            var price = await Context.Prices.AsNoTracking().Include(p => p.JobType)
+                .SingleAsync(a => a.PriceGroupId == job.Customer.Company.PriceGroupId && a.JobType.TypeId == job.JobType);
+
+            job.FinalJobType = job.TypeOfJob.TypeName;
+            job.FinalUnitPrice = price.UnitPrice;
+            job.PaymentSuccess = true;
+            var count = await Context.SaveChangesAsync();
+            return count > 0;
         }
     }
 }

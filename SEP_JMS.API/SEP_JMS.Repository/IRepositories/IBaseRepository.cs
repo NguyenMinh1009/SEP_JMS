@@ -7,7 +7,7 @@ namespace SEP_JMS.Repository.IRepositories
     {
         public JSMContext Context { get; }
 
-        public Task<List<T>> GetAll(Expression<Func<T, bool>> conditions, int skip = 0, int top = 1000);
+        public Task<List<T>> GetAll(Expression<Func<T, bool>> conditions, int skip = 0, int top = int.MaxValue);
 
         public Task<int> Count(Expression<Func<T, bool>> conditions);
 

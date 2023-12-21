@@ -24,10 +24,10 @@ namespace SEP_JMS.Model.Models
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("AccountId")]
-        public virtual User? Account { get; set; }
+        public virtual User Account { get; set; } = null!;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("PriceGroupId")]
-        public virtual PriceGroup? PriceGroup { get; set; }
+        public virtual PriceGroup PriceGroup { get; set; } = null!;
     }
 }

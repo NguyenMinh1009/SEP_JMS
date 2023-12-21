@@ -20,6 +20,8 @@ using SEP_JMS.Model.Api.Response.JobType;
 using SEP_JMS.Model.Api.Request.File;
 using SEP_JMS.Model.Api.Request;
 using SEP_JMS.Model.Api.Response;
+using SEP_JMS.Model.Models;
+using SEP_JMS.Common.Converters;
 
 namespace SEP_JMS.API.Controllers
 {
@@ -30,18 +32,21 @@ namespace SEP_JMS.API.Controllers
         private readonly string logPrefix = "[JobController]";
 
         private readonly IJobService jobService;
+        private readonly IInternalJobService internalJobService;
         private readonly INotificationService notificationService;
         private readonly IMapper mapper;
         private readonly IJMSLogger logger;
 
         public JobController(IJobService jobService,
             INotificationService notificationService,
+            IInternalJobService internalJobService,
             IMapper mapper,
             IJMSLogger logger)
         {
             this.jobService = jobService;
             this.mapper = mapper;
             this.logger = logger;
+            this.internalJobService = internalJobService;
             this.notificationService = notificationService;
         }
 
@@ -120,6 +125,11 @@ namespace SEP_JMS.API.Controllers
                 jobDisplay.Designer = mapper.Map<EmployeeResponse>(job.Item5);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(job.Item6);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(job.Item7);
+                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                {
+                    jobDisplay.FinalProducts = null;
+                    jobDisplay.PreviewProducts = null;
+                }
                 return jobDisplay;
             }
             catch (Exception ex)
@@ -146,6 +156,11 @@ namespace SEP_JMS.API.Controllers
                 jobDisplay.Designer = mapper.Map<EmployeeResponse>(job.Item5);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(job.Item6);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(job.Item7);
+                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                {
+                    jobDisplay.FinalProducts = null;
+                    jobDisplay.PreviewProducts = null;
+                }
                 return jobDisplay;
             }
             catch (Exception ex)
@@ -163,6 +178,12 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to update the job designer {jobId}.");
                 if (model.JobStatus == JobStatus.Pending || model.JobStatus == JobStatus.Completed) return BadRequest();
+
+                var job = await jobService.GetBasicJob(jobId);
+                if (job == null) return NotFound();
+                if (job.JobStatus == JobStatus.Pending || job.JobStatus == JobStatus.Completed) return Forbid();
+                if (job.PaymentSuccess) return Forbid();
+
                 var success = await jobService.UpdateDesignerJob(jobId, model);
                 return success ? Ok() : BadRequest();
             }
@@ -180,9 +201,13 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to update the job {jobId}.");
+                if (model.CorrelationType == CorrelationJobType.Project && model.ParentId != null) throw new ArgumentException("project can't have parent id");
 
                 // for make notify
-                var oldJob = await jobService.GetBasicJob(jobId);
+                var job = await jobService.GetBasicJob(jobId);
+                if (job == null) return NotFound();
+                if (job.JobStatus == JobStatus.Completed && ApiContext.Current.Role != RoleType.Admin) return Forbid();
+                if (job.PaymentSuccess) return Forbid();
 
                 if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project)
                 {
@@ -195,11 +220,16 @@ namespace SEP_JMS.API.Controllers
                     if (projectDetail.SuccessJob != projectDetail.TotalJob) return BadRequest();
                 }
                 var success = await jobService.UpdateJob(jobId, model);
-
-                // trigger noti
+                if (job.JobStatus == JobStatus.Completed && model.JobStatus != JobStatus.Completed && job.ParentId.HasValue)
+                {
+                    var internalStatus = model.JobStatus.ToInternalJobStatus();
+                    if (internalStatus == InternalJobStatus.NotDo) internalStatus = InternalJobStatus.Doing;
+                    _ = await internalJobService.UpdateInternalJobStatus(job.ParentId.Value, internalStatus);
+                }
+                // trigger notification
                 if (success)
                 {
-                    await notificationService.Trigger(jobId, oldJob, null, NotiAction.UpdateJob);
+                    await notificationService.Trigger(jobId, job, null, NotiAction.UpdateJob);
                 }
                 return success ? Ok() : BadRequest();
             }
@@ -221,6 +251,8 @@ namespace SEP_JMS.API.Controllers
                 logger.Info($"{logPrefix} Start to update final files for job {jobId}.");
                 var job = await jobService.GetBasicJob(jobId);
                 if (job == null) return NotFound();
+                if (job.JobStatus == JobStatus.Completed && ApiContext.Current.Role != RoleType.Admin) return Forbid();
+                if (job.PaymentSuccess) return Forbid();
 
                 var keepingFiles = JsonConvert.DeserializeObject<List<FileItem>>(model.OldFiles) ?? new();
                 var jobFolderPath = FileUtility.GetFolderPath(ApiConstants.FinalUploadFolder, jobId.ToString());
@@ -255,8 +287,12 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to update preview files for job {jobId}.");
                 model.Files = model.Files.Where(file => file.ContentType.StartsWith("image/")).ToList();
+                if (!model.Files.Any()) return BadRequest();
+
                 var job = await jobService.GetBasicJob(jobId);
                 if (job == null) return NotFound();
+                if (job.JobStatus == JobStatus.Completed && ApiContext.Current.Role != RoleType.Admin) return Forbid();
+                if (job.PaymentSuccess) return Forbid();
 
                 var keepingFiles = JsonConvert.DeserializeObject<List<FileItem>>(model.OldFiles) ?? new();
                 var jobFolderPath = FileUtility.GetFolderPath(ApiConstants.PreviewUploadFolder, jobId.ToString());
@@ -293,6 +329,8 @@ namespace SEP_JMS.API.Controllers
                 logger.Info($"{logPrefix} Start to update requirement files for job {jobId}.");
                 var job = await jobService.GetBasicJob(jobId);
                 if (job == null) return NotFound();
+                if (job.JobStatus == JobStatus.Completed && ApiContext.Current.Role != RoleType.Admin) return Forbid();
+                if (job.PaymentSuccess) return Forbid();
 
                 var keepingFiles = JsonConvert.DeserializeObject<List<FileItem>>(model.OldFiles) ?? new();
                 var jobFolderPath = FileUtility.GetFolderPath(ApiConstants.RequirementUploadFolder, jobId.ToString());
@@ -395,6 +433,23 @@ namespace SEP_JMS.API.Controllers
             catch (Exception ex)
             {
                 logger.Error($"{logPrefix} Got exception when getting project detail statistics. Error: {ex}");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize(Roles = PolicyConstants.Admin)]
+        [HttpPost("{id}/paymentsuccess")]
+        public async Task<IActionResult> UpdateJobPaymentSuccess([FromRoute] Guid jobId)
+        {
+            try
+            {
+                logger.Info($"{logPrefix} Start to update payment success for {jobId}.");
+                var success = await jobService.UpdatePaymentSuccess(jobId);
+                return success ? Ok() : BadRequest();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{logPrefix} Got exception when updating payment success for {jobId}. Error: {ex}");
                 return StatusCode(500);
             }
         }

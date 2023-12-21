@@ -63,28 +63,34 @@ namespace SEP_JMS.Model.Models
 
         public CorrelationJobType CorrelationType { get; set; } = CorrelationJobType.Job;
 
+        public string? FinalJobType { get; set; } = null;
+
+        public int? FinalUnitPrice { get; set; } = null;
+
+        public bool PaymentSuccess { get; set; } = false;
+
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("CustomerId")]
-        public virtual User? Customer { get; set; }
-        
+        public virtual User Customer { get; set; } = null!;
+
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("ParentId")]
-        public virtual Job? Parent { get; set; }
-        
+        public virtual Job Parent { get; set; } = null!;
+
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("AccountId")]
-        public virtual User? Account { get; set; }
+        public virtual User Account { get; set; } = null!;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("DesignerId")]
-        public virtual User? Designer { get; set; }
+        public virtual User? Designer { get; set; } = null!;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("CreatedBy")]
-        public virtual User? UserCreated { get; set; }
-        
+        public virtual User UserCreated { get; set; } = null!;
+
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("JobType")]
-        public virtual JobType? TypeOfJob { get; set; }
+        public virtual JobType TypeOfJob { get; set; } = null!;
     }
 }

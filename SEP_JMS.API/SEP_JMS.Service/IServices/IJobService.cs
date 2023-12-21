@@ -44,5 +44,7 @@ namespace SEP_JMS.Service.IServices
         public Task<int> GetTotalJob();
 
         public Task<int> GetTotalProject();
+
+        public Task<bool> UpdatePaymentSuccess(Guid jobId);
     }
 }

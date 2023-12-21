@@ -27,6 +27,8 @@ namespace SEP_JMS.Model.Api.Response.Job
 
         public int Quantity { get; set; }
 
+        public Guid? ParentId { get; set; } = null;
+
         public JobTypeResponse JobType { get; set; } = null!;
 
         public long CreatedTime { get; set; }
@@ -50,5 +52,11 @@ namespace SEP_JMS.Model.Api.Response.Job
         public CorrelationJobType CorrelationType { get; set; }
 
         public string? FinalLink { get; set; }
+
+        public string? FinalJobType { get; set; } = null;
+
+        public int? FinalUnitPrice { get; set; } = null;
+
+        public bool PaymentSuccess { get; set; } = false;
     }
 }

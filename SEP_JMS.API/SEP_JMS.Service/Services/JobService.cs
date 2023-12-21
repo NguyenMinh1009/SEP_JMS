@@ -69,6 +69,11 @@ namespace SEP_JMS.Service.Services
                 jobDisplay.Account = mapper.Map<EmployeeResponse>(jobInfo.Item4);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(jobInfo.Item5);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(jobInfo.Item6);
+                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                {
+                    jobDisplay.FinalProducts = null;
+                    jobDisplay.PreviewProducts = null;
+                }
                 result.Add(jobDisplay);
             }
             return new PagingModel<JobResponse>
@@ -91,6 +96,11 @@ namespace SEP_JMS.Service.Services
                 jobDisplay.Designer = mapper.Map<EmployeeResponse>(jobInfo.Item5);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(jobInfo.Item6);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(jobInfo.Item7);
+                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                {
+                    jobDisplay.FinalProducts = null;
+                    jobDisplay.PreviewProducts = null;
+                }
                 result.Add(jobDisplay);
             }
             return new PagingModel<JobResponse>
@@ -245,7 +255,7 @@ namespace SEP_JMS.Service.Services
             worksheet.Rows.Height = 60;
             worksheet.Columns.Width = 15;
             worksheet.Column(2).Width = 70;
-            worksheet.Column(9).Width = 30;
+            worksheet.Column(11).Width = 30;
 
             worksheet.Cells.Style.WrapText = true;
             worksheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -254,17 +264,19 @@ namespace SEP_JMS.Service.Services
             worksheet.Column(1).Width = 4;
             worksheet.Column(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
             worksheet.Row(1).Height = 30;
-
+            var imgIndex = 10;
             worksheet.Cells["A1"].Value = "STT";
-            worksheet.Cells["B1"].Value = "Tên công việc";
-            worksheet.Cells["C1"].Value = "Khách hàng";
-            worksheet.Cells["D1"].Value = "Loại Job";
-            worksheet.Cells["E1"].Value = "Loại thiết kế";
-            worksheet.Cells["F1"].Value = "Số lượng";
-            worksheet.Cells["G1"].Value = "Đơn giá";
-            worksheet.Cells["H1"].Value = "Thành tiền";
-            worksheet.Cells["I1"].Value = "Ảnh sản phẩm";
-            worksheet.Cells["A1:I1"].Style.Font.Bold = true;
+            worksheet.Cells["B1"].Value = "Dự án";
+            worksheet.Cells["C1"].Value = "Tên công việc";
+            worksheet.Cells["D1"].Value = "Khách hàng";
+            worksheet.Cells["E1"].Value = "Loại Job";
+            worksheet.Cells["F1"].Value = "Loại thiết kế";
+            worksheet.Cells["G1"].Value = "Số lượng";
+            worksheet.Cells["H1"].Value = "Đơn giá";
+            worksheet.Cells["I1"].Value = "Thành tiền";
+            worksheet.Cells["J1"].Value = "Thanh toán";
+            worksheet.Cells["K1"].Value = "Ảnh sản phẩm";
+            worksheet.Cells["A1:K1"].Style.Font.Bold = true;
 
             var index = 2;
             decimal mdw = worksheet.Workbook.MaxFontWidth;
@@ -272,81 +284,155 @@ namespace SEP_JMS.Service.Services
             foreach (var group in jobGroups)
             {
                 var prices = await priceRepository.GetAll((price) => price.PriceGroupId == group.First().Item2.PriceGroupId);
-                foreach (var jobInfo in group)
+                if (model.CorrelationType == CorrelationJobType.Project)
                 {
-                    var jobType = jobTypes.FirstOrDefault(type => type.TypeId == jobInfo.Item1.JobType);
-                    worksheet.Cells[$"A{index}"].Value = index - 1;
-                    worksheet.Cells[$"B{index}"].Value = jobInfo.Item1.Title;
-                    worksheet.Cells[$"C{index}"].Value = jobInfo.Item2.CompanyName;
-                    worksheet.Cells[$"D{index}"].Value = jobInfo.Item1.CorrelationType == CorrelationJobType.Job ? ApiConstants.JobName : ApiConstants.ProjectName;
-                    worksheet.Cells[$"E{index}"].Value = jobType?.TypeName ?? ApiConstants.UnkownJobType;
-                    worksheet.Cells[$"F{index}"].Value = jobInfo.Item1.Quantity;
-
-                    var price = prices.FirstOrDefault(p => p.JobTypeId == jobInfo.Item1.JobType);
-                    var unitPrice = price == null ? 0 : price.UnitPrice;
-                    worksheet.Cells[$"G{index}"].Value = unitPrice.ToString("N0");
-
-                    var totalPrice = (long)unitPrice * jobInfo.Item1.Quantity;
-                    sum += totalPrice;
-                    worksheet.Cells[$"H{index}"].Value = totalPrice.ToString("N0");
-
-                    var folder = JsonConvert.DeserializeObject<FolderItem>(jobInfo.Item1.FinalPreview ?? string.Empty);
-                    var file = folder?.Files?.FirstOrDefault();
-                    if (file != null)
+                    foreach (var i in group)
                     {
-                        var imgFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ApiConstants.PreviewUploadFolder, jobInfo.Item1.JobId.ToString());
-                        var imgfilePath = FileUtility.GetFilePath(imgFolderPath, file);
-                        if (!string.IsNullOrEmpty(imgfilePath))
+                        var jobInfos = await jobRepository.GetAllJobsSubJobForExport(i.Item1.JobId);
+                        foreach (var jobInfo in jobInfos)
                         {
-                            var fileData = File.Open(imgfilePath, FileMode.Open);
-                            try
+                            var jobType = jobTypes.FirstOrDefault(type => type.TypeId == jobInfo.Item1.JobType);
+                            worksheet.Cells[$"A{index}"].Value = index - 1;
+                            worksheet.Cells[$"B{index}"].Value = i.Item1.Title;
+                            worksheet.Cells[$"C{index}"].Value = jobInfo.Item1.Title;
+                            worksheet.Cells[$"D{index}"].Value = jobInfo.Item2.CompanyName;
+                            worksheet.Cells[$"E{index}"].Value = ApiConstants.JobName;
+
+                            if (jobInfo.Item1.FinalJobType != null) worksheet.Cells[$"F{index}"].Value = jobInfo.Item1.FinalJobType;
+                            else worksheet.Cells[$"F{index}"].Value = jobType?.TypeName ?? ApiConstants.UnkownJobType;
+
+                            worksheet.Cells[$"G{index}"].Value = jobInfo.Item1.Quantity;
+
+                            var price = prices.FirstOrDefault(p => p.JobTypeId == jobInfo.Item1.JobType);
+                            var unitPrice = price == null ? 0 : price.UnitPrice;
+                            if (jobInfo.Item1.FinalUnitPrice.HasValue) unitPrice = jobInfo.Item1.FinalUnitPrice.Value;
+
+                            worksheet.Cells[$"H{index}"].Value = unitPrice.ToString("N0");
+
+                            var totalPrice = (long)unitPrice * jobInfo.Item1.Quantity;
+                            sum += totalPrice;
+                            worksheet.Cells[$"I{index}"].Value = totalPrice.ToString("N0");
+                            worksheet.Cells[$"J{index}"].Value = jobInfo.Item1.PaymentSuccess ? "Đã thanh toán" : "Chưa thanh toán";
+
+                            var folder = JsonConvert.DeserializeObject<FolderItem>(jobInfo.Item1.FinalPreview ?? string.Empty);
+                            var file = folder?.Files?.FirstOrDefault();
+                            if (file != null)
                             {
-                                int pixelY = (int)(worksheet.Row(index).Height / 0.75);
-                                int pixelX = (int)decimal.Truncate((256 * (decimal)worksheet.Column(9).Width + decimal.Truncate(128 / mdw)) / 256 * mdw);
-                                var picture = worksheet.Drawings.AddPicture(file.FileName, fileData);
-                                if (picture.Size.Width > pixelX || picture.Size.Height > pixelY)
+                                var imgFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ApiConstants.PreviewUploadFolder, jobInfo.Item1.JobId.ToString());
+                                var imgfilePath = FileUtility.GetFilePath(imgFolderPath, file);
+                                if (!string.IsNullOrEmpty(imgfilePath))
                                 {
-                                    var percentX = (double)pixelX / picture.Size.Width;
-                                    var percentY = (double)pixelY / picture.Size.Height;
-                                    if (percentX < percentY) picture.SetSize((int)Math.Floor(picture.Size.Width * percentX), (int)Math.Floor(picture.Size.Height * percentX));
-                                    else picture.SetSize((int)Math.Floor(picture.Size.Width * percentY), (int)Math.Floor(picture.Size.Height * percentY));
+                                    var fileData = File.Open(imgfilePath, FileMode.Open);
+                                    try
+                                    {
+                                        int pixelY = (int)(worksheet.Row(index).Height / 0.75);
+                                        int pixelX = (int)decimal.Truncate((256 * (decimal)worksheet.Column(9).Width + decimal.Truncate(128 / mdw)) / 256 * mdw);
+                                        var picture = worksheet.Drawings.AddPicture(file.FileName, fileData);
+                                        if (picture.Size.Width > pixelX || picture.Size.Height > pixelY)
+                                        {
+                                            var percentX = (double)pixelX / picture.Size.Width;
+                                            var percentY = (double)pixelY / picture.Size.Height;
+                                            if (percentX < percentY) picture.SetSize((int)Math.Floor(picture.Size.Width * percentX), (int)Math.Floor(picture.Size.Height * percentX));
+                                            else picture.SetSize((int)Math.Floor(picture.Size.Width * percentY), (int)Math.Floor(picture.Size.Height * percentY));
+                                        }
+                                        picture.SetPosition(index - 1, 0, imgIndex, 0);
+                                    }
+                                    finally
+                                    {
+                                        fileData.Dispose();
+                                    }
                                 }
-                                picture.SetPosition(index - 1, 0, 8, 0);
                             }
-                            finally
-                            {
-                                fileData.Dispose();
-                            }
+                            index++;
                         }
                     }
-                    index++;
+                }
+                else
+                {
+                    foreach (var jobInfo in group)
+                    {
+                        var jobType = jobTypes.FirstOrDefault(type => type.TypeId == jobInfo.Item1.JobType);
+                        worksheet.Cells[$"A{index}"].Value = index - 1;
+                        worksheet.Cells[$"B{index}"].Value = "";
+                        worksheet.Cells[$"C{index}"].Value = jobInfo.Item1.Title;
+                        worksheet.Cells[$"D{index}"].Value = jobInfo.Item2.CompanyName;
+                        worksheet.Cells[$"E{index}"].Value = ApiConstants.JobName;
+
+                        if (jobInfo.Item1.FinalJobType != null) worksheet.Cells[$"F{index}"].Value = jobInfo.Item1.FinalJobType;
+                        else worksheet.Cells[$"F{index}"].Value = jobType?.TypeName ?? ApiConstants.UnkownJobType;
+
+                        worksheet.Cells[$"G{index}"].Value = jobInfo.Item1.Quantity;
+
+                        var price = prices.FirstOrDefault(p => p.JobTypeId == jobInfo.Item1.JobType);
+                        var unitPrice = price == null ? 0 : price.UnitPrice;
+                        if (jobInfo.Item1.FinalUnitPrice.HasValue) unitPrice = jobInfo.Item1.FinalUnitPrice.Value;
+
+                        worksheet.Cells[$"H{index}"].Value = unitPrice.ToString("N0");
+
+                        var totalPrice = (long)unitPrice * jobInfo.Item1.Quantity;
+                        sum += totalPrice;
+                        worksheet.Cells[$"I{index}"].Value = totalPrice.ToString("N0");
+                        worksheet.Cells[$"J{index}"].Value = jobInfo.Item1.PaymentSuccess ? "Đã thanh toán" : "Chưa thanh toán";
+
+                        var folder = JsonConvert.DeserializeObject<FolderItem>(jobInfo.Item1.FinalPreview ?? string.Empty);
+                        var file = folder?.Files?.FirstOrDefault();
+                        if (file != null)
+                        {
+                            var imgFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ApiConstants.PreviewUploadFolder, jobInfo.Item1.JobId.ToString());
+                            var imgfilePath = FileUtility.GetFilePath(imgFolderPath, file);
+                            if (!string.IsNullOrEmpty(imgfilePath))
+                            {
+                                var fileData = File.Open(imgfilePath, FileMode.Open);
+                                try
+                                {
+                                    int pixelY = (int)(worksheet.Row(index).Height / 0.75);
+                                    int pixelX = (int)decimal.Truncate((256 * (decimal)worksheet.Column(9).Width + decimal.Truncate(128 / mdw)) / 256 * mdw);
+                                    var picture = worksheet.Drawings.AddPicture(file.FileName, fileData);
+                                    if (picture.Size.Width > pixelX || picture.Size.Height > pixelY)
+                                    {
+                                        var percentX = (double)pixelX / picture.Size.Width;
+                                        var percentY = (double)pixelY / picture.Size.Height;
+                                        if (percentX < percentY) picture.SetSize((int)Math.Floor(picture.Size.Width * percentX), (int)Math.Floor(picture.Size.Height * percentX));
+                                        else picture.SetSize((int)Math.Floor(picture.Size.Width * percentY), (int)Math.Floor(picture.Size.Height * percentY));
+                                    }
+                                    picture.SetPosition(index - 1, 0, imgIndex, 0);
+                                }
+                                finally
+                                {
+                                    fileData.Dispose();
+                                }
+                            }
+                        }
+                        index++;
+                    }
                 }
             }
 
-            worksheet.Cells[$"A{index}:G{index}"].Merge = true;
+            worksheet.Cells[$"A{index}:H{index}"].Merge = true;
             worksheet.Cells[$"A{index}"].Value = "TỔNG GIÁ TRỊ HỢP ĐỒNG TRƯỚC THUẾ GTGT";
             worksheet.Cells[$"A{index}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             worksheet.Cells[$"A{index}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-            worksheet.Cells[$"H{index}"].Value = sum.ToString("N0");
+            worksheet.Cells[$"I{index}"].Value = sum.ToString("N0");
             worksheet.Row(index).Height = 30;
             index++;
 
-            worksheet.Cells[$"A{index}:G{index}"].Merge = true;
+            worksheet.Cells[$"A{index}:H{index}"].Merge = true;
             worksheet.Cells[$"A{index}"].Value = "VAT (10%)";
             worksheet.Cells[$"A{index}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             worksheet.Cells[$"A{index}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-            worksheet.Cells[$"H{index}"].Value = (sum / 10).ToString("N0");
+            worksheet.Cells[$"I{index}"].Value = (sum / 10).ToString("N0");
             worksheet.Row(index).Height = 30;
             index++;
 
-            worksheet.Cells[$"A{index}:G{index}"].Merge = true;
+            worksheet.Cells[$"A{index}:H{index}"].Merge = true;
             worksheet.Cells[$"A{index}"].Value = "TỔNG GIÁ TRỊ HỢP ĐỒNG SAU THUẾ GTGT";
             worksheet.Cells[$"A{index}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             worksheet.Cells[$"A{index}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             worksheet.Cells[$"A{index}"].Style.Font.Bold = true;
-            worksheet.Cells[$"H{index}"].Value = (sum + sum / 10).ToString("N0");
+            worksheet.Cells[$"I{index}"].Value = (sum + sum / 10).ToString("N0");
             worksheet.Row(index).Height = 30;
             index++;
+
             package.Save();
             return filePath;
         }
@@ -374,6 +460,7 @@ namespace SEP_JMS.Service.Services
             }
             return response;
         }
+
         public async Task<ProjectDetailStatistics> GetProjectDetailStatistics(Guid id)
         {
             return await jobRepository.GetProjectDetailStatistics(id);
@@ -387,6 +474,23 @@ namespace SEP_JMS.Service.Services
         public async Task<int> GetTotalProject()
         {
             return await jobRepository.Count(c => c.CorrelationType == CorrelationJobType.Project);
+        }
+
+        public async Task<bool> UpdatePaymentSuccess(Guid jobId)
+        {
+            var job = await GetBasicJob(jobId);
+            if (job == null || job.JobStatus != JobStatus.Completed) return false;
+            if (job.CorrelationType == CorrelationJobType.Project)
+            {
+                var subJobs = await jobRepository.GetAll(job => job.ParentId == job.JobId);
+                if (subJobs.Any(sub => sub.JobStatus != JobStatus.Completed)) return false;
+                foreach (var subJob in subJobs)
+                {
+                    var success = await jobRepository.UpdatePaymentSuccess(subJob.JobId);
+                    if (!success) return false;
+                }
+            }
+            return await jobRepository.UpdatePaymentSuccess(jobId);
         }
     }
 }

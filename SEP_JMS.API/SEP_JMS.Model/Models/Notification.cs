@@ -29,16 +29,17 @@ namespace SEP_JMS.Model.Models
         public Guid Receiver { get; set; }
 
         public long? ReadAt { get; set; }
+
         public long? ArchivedAt { get; set; }
 
         public long CreatedTime { get; set; }
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("TriggerBy")]
-        public virtual User? UserTrigger { get; set; } = null!;
+        public virtual User UserTrigger { get; set; } = null!;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("Receiver")]
-        public virtual User? UserReceiver { get; set; } = null!;
+        public virtual User UserReceiver { get; set; } = null!;
     }
 }

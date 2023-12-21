@@ -237,10 +237,6 @@ namespace SEP_JMS.API.Controllers
                 logger.Error($"{logPrefix} Got exception when importing template. Error: {ex}");
                 return BadRequest(ex.Message);
             }
-            finally
-            {
-                
-            }
         }
     }
 }

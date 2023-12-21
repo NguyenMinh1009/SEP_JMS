@@ -94,7 +94,7 @@ namespace SEP_JMS.Service.Services
         public async Task<bool> UpdateInternalJobStatus(Guid internalJobId, InternalJobStatus internalJobStatus)
         {
             var job = await jobRepository.GetBasicJob(internalJobId);
-            if (job == null) return false;
+            if (job == null || job.PaymentSuccess) return false;
             if(job.CorrelationType == CorrelationJobType.Project && internalJobStatus == InternalJobStatus.Completed)
             {
                 var projectDetail = await jobRepository.GetProjectDetailStatistics(internalJobId);

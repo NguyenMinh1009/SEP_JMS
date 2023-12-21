@@ -19,9 +19,9 @@ namespace SEP_JMS.Model.Models
         public string? Description { get; set; } = null;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
-        public virtual JobType? JobType { get; set; } = null!;
+        public virtual JobType JobType { get; set; } = null!;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
-        public virtual PriceGroup? PriceGroup { get; set; } = null!;
+        public virtual PriceGroup PriceGroup { get; set; } = null!;
     }
 }

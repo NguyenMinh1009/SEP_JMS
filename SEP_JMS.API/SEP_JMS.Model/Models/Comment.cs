@@ -29,14 +29,14 @@ namespace SEP_JMS.Model.Models
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("CorrelationJobId")]
-        public virtual Job? Job { get; set; }
+        public virtual Job Job { get; set; } = null!;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("UserId")]
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; } = null!;
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("ReplyCommentId")]
-        public virtual Comment? ReplyComment { get; set; }
+        public virtual Comment ReplyComment { get; set; } = null!;
     }
 }

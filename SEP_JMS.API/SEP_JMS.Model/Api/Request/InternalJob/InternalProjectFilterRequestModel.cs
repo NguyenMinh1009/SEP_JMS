@@ -26,5 +26,7 @@ namespace SEP_JMS.Model.Api.Request.InternalJob
         public Guid? JobType { get; set; }
 
         public Guid? CompanyId { get; set; }
+
+        public bool? PaymentSuccess { get; set; } = null;
     }
 }

@@ -69,7 +69,7 @@ namespace SEP_JMS.Service.Services
                 jobDisplay.Account = mapper.Map<EmployeeResponse>(jobInfo.Item4);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(jobInfo.Item5);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(jobInfo.Item6);
-                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                if (ApiContext.Current.Role == RoleType.Customer && jobDisplay.JobStatus != JobStatus.CustomerReview && jobDisplay.JobStatus != JobStatus.Completed)
                 {
                     jobDisplay.FinalProducts = null;
                     jobDisplay.PreviewProducts = null;
@@ -96,7 +96,7 @@ namespace SEP_JMS.Service.Services
                 jobDisplay.Designer = mapper.Map<EmployeeResponse>(jobInfo.Item5);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(jobInfo.Item6);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(jobInfo.Item7);
-                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                if (ApiContext.Current.Role == RoleType.Customer && jobDisplay.JobStatus != JobStatus.CustomerReview && jobDisplay.JobStatus != JobStatus.Completed)
                 {
                     jobDisplay.FinalProducts = null;
                     jobDisplay.PreviewProducts = null;

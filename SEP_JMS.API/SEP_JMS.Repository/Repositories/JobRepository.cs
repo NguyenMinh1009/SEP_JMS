@@ -55,6 +55,12 @@ namespace SEP_JMS.Repository.Repositories
                         where job.CorrelationType == CorrelationJobType.Project
                         select new { job, createdUser, customer, account, company, jobType };
 
+            if (model.PaymentSuccess.HasValue)
+            {
+                query = from data in query
+                        where data.job.PaymentSuccess == model.PaymentSuccess.Value
+                        select data;
+            }
             if (!string.IsNullOrEmpty(model.SearchText))
             {
                 query = from data in query
@@ -185,7 +191,12 @@ namespace SEP_JMS.Repository.Repositories
 
                         where job.CorrelationType == CorrelationJobType.Project
                         select new { job, createdUser, customer, account, company, jobType };
-
+            if (model.PaymentSuccess.HasValue)
+            {
+                query = from data in query
+                        where data.job.PaymentSuccess == model.PaymentSuccess.Value
+                        select data;
+            }
             if (!string.IsNullOrEmpty(model.SearchText))
             {
                 query = from data in query
@@ -394,6 +405,12 @@ namespace SEP_JMS.Repository.Repositories
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
                         select new { job, createdUser, customer, account, designer, company, jobType };
             query = query.Where(d => d.job.CorrelationType == CorrelationJobType.Job);
+            if (model.PaymentSuccess.HasValue)
+            {
+                query = from data in query
+                        where data.job.PaymentSuccess == model.PaymentSuccess.Value
+                        select data;
+            }
             if (model.ParentId != null)
             {
                 query = query.Where(d => d.job.ParentId == model.ParentId.Value);
@@ -413,7 +430,7 @@ namespace SEP_JMS.Repository.Repositories
             if (model.JobStatus != null)
             {
                 query = from data in query
-                        where data.job.JobStatus == JobStatus.Completed
+                        where data.job.JobStatus == model.JobStatus
                         select data;
             }
             // viec dang làm thì đang không truyền JobStatus
@@ -539,6 +556,12 @@ namespace SEP_JMS.Repository.Repositories
 
                         where job.AccountId == userId || job.DesignerId == userId || job.CustomerId == userId || role == RoleType.Admin
                         select new { job, createdUser, customer, account, designer, company, jobType };
+            if (model.PaymentSuccess.HasValue)
+            {
+                query = from data in query
+                        where data.job.PaymentSuccess == model.PaymentSuccess.Value
+                        select data;
+            }
             if (model.ParentId != null)
             {
                 query = query.Where(d => d.job.ParentId == model.ParentId.Value);

@@ -9,7 +9,7 @@ import { checkOverflow } from "../utils/checkOverFlow";
 import { FileResponse } from "../interface/fileResponse";
 import { CircularProgress } from "@mui/material";
 import { PostType } from "../enums/postType";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import APIClientInstance from "../api/AxiosInstance";
 import { TaskString } from "../enums/taskEnums";
 interface ITaskDetailsDescriptionProps {
@@ -35,6 +35,7 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
   const [overflowActive, setOverflowActive] = useState<boolean>(false);
   const [isDetailExpanded, setDetailExpanded] = useState<boolean>(false);
   const overflowingText = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
   const driveFiles = jobDetail?.finalProducts?.files ?? [];
   const previewFiles = jobDetail?.previewProducts?.files ?? [];
@@ -56,6 +57,11 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
     imgFiles
   ]);
 
+  const gotoProject = () => {
+    const ahref = location.pathname.split("/").slice(1);
+    navigate("/" + ahref.slice(0, ahref.length - 1).join("/"));
+  }
+
   const renderJobParentTitle = () => {
     if (titleProject !== TaskString.EMPTY)
       return (
@@ -63,7 +69,7 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
           <label htmlFor="" className="text-primary min-w-[75px]">
             {TaskString.TEN_DU_AN}
           </label>
-          <p className="w-full rounded-md leading-5">{titleProject}</p>
+          <p className="w-full rounded-md leading-5 cursor-pointer font-semibold text-blue-500" onClick={gotoProject}>{titleProject}</p>
         </div>
       );
   };

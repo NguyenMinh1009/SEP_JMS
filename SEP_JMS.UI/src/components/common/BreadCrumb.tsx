@@ -1,19 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
 import useTitle from "../../hooks/store/useCurrentTitle";
 import { PathString } from "../../enums/MapRouteToBreadCrumb";
 import { Role } from "../../enums/Role";
+import APIClientInstance from "../../api/AxiosInstance";
 
 const BreadCrumb = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPerson = useCurrentPerson();
   const breadCrumbTitle = useTitle();
-  const { taskId, priceGroupId, userId, companyId } = useParams();
+  const { subTaskId, taskId, priceGroupId, userId, companyId } = useParams();
   const idUnClickableParamList = [userId, companyId];
   const idClickableParamList = [taskId, priceGroupId];
   const routeList = location.pathname.split("/").slice(1);
+
 
   const breadCrumb = [
     {
@@ -138,6 +140,39 @@ const BreadCrumb = () => {
     }
   ];
 
+  const [subCrumb, setSubCrumb] = useState<any[]>([]);
+  const updateSubCrumb = (path: string, value: string) => {
+    //if (subCrumb.find(({key}) => key === path)) return;
+    //console.log(subCrumb.length);
+    setSubCrumb(current => [...current, {
+      key: path.trim(),
+      value: value,
+      prefix: "task",
+      clickable: true
+    }]);
+  }
+  useEffect(()=>{
+    if (subTaskId) {
+      setSubCrumb([]);
+      APIClientInstance.get(`/job/${subTaskId.trim()}`)
+      .then((res) => {
+        updateSubCrumb(subTaskId, res.data?.title + " (#)");
+      })
+      .catch(err => {
+        
+      });
+
+      APIClientInstance.get(`/job/${taskId?.trim()}`)
+      .then((res) => {
+        updateSubCrumb(taskId??"", res.data?.title);
+      })
+      .catch(err => {
+        
+      });
+    }
+
+  }, [subTaskId])
+
   const shouldRenderTitle = (path: string) => {
     return [...idUnClickableParamList, ...idClickableParamList].includes(path);
   };
@@ -162,7 +197,11 @@ const BreadCrumb = () => {
     const crumbItem = breadCrumb.find(({ key }) => key === path);
     const preFix: string = " > ";
     let text = shouldRenderTitle(path) ? breadCrumbTitle.content : crumbItem?.value;
-    if (!text) text = "...";
+    if (!text) {
+      const crumbItemSub = subCrumb.find(({ key }) => key.trim() == path.trim());
+      text = crumbItemSub?.value;
+    }
+    if (!text) text = "[Không xác định]";
     return preFix + text;
   };
 
@@ -171,11 +210,11 @@ const BreadCrumb = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex max-w-[550px] items-center">
+    <div className="flex max-w-[700px] items-center">
       <span className="text-secondary mr-1 whitespace-nowrap">{getPrefixForBreadCrumb()}</span>
       {routeList.map((path, index) => {
         const isClickable =
-          breadCrumb.find(item => item.key === path)?.clickable ||
+          breadCrumb.find(item => item.key === path)?.clickable || subCrumb.find(item => item.key === path)?.clickable ||
           (!idUnClickableParamList.includes(path) && idClickableParamList.includes(path));
         return (
           <span

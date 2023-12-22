@@ -150,7 +150,8 @@ export const commonRegex = {
   email: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
   phone: /^(0|\+84)\d{9,10}$/,
   password: /^(?=.*\d)(?=.*[!@#$%^&*()_+]).{8,}$/,
-  username: /^[a-zA-Z0-9_-]{3,20}$/
+  username: /^[a-zA-Z0-9_-]{3,20}$/,
+  guid: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 };
 
 export const APIUrlHost = "http://localhost:5206";

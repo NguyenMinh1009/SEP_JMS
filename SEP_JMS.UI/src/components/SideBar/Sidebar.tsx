@@ -92,7 +92,7 @@ const SideBar = () => {
                     text: "Việc dự án",
                     to: `${PathString.NOI_BO}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
+                    prefix: `${PathString.NOI_BO}/${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
@@ -100,7 +100,7 @@ const SideBar = () => {
                     text: "Việc hàng ngày",
                     to: `${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
+                    prefix: `${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]
@@ -115,18 +115,18 @@ const SideBar = () => {
               items: [
                 {
                   parent: {
-                    text: "Việc dự án",
+                    text: "Việc dự án ",
                     to: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
+                    prefix: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
                   parent: {
-                    text: "Việc hàng ngày",
+                    text: "Việc hàng ngày ",
                     to: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
+                    prefix: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]
@@ -141,18 +141,18 @@ const SideBar = () => {
               items: [
                 {
                   parent: {
-                    text: "Việc dự án",
+                    text: "Việc dự án  ",
                     to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
+                    prefix: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
                   parent: {
-                    text: "Việc hàng ngày",
+                    text: "Việc hàng ngày  ",
                     to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
+                    prefix: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]
@@ -172,7 +172,7 @@ const SideBar = () => {
                     text: "Việc dự án",
                     to: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
+                    prefix: `${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
@@ -180,7 +180,7 @@ const SideBar = () => {
                     text: "Việc hàng ngày",
                     to: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
+                    prefix: `${PathString.CONG_KHAI}/${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]
@@ -195,18 +195,18 @@ const SideBar = () => {
               items: [
                 {
                   parent: {
-                    text: "Việc dự án",
+                    text: "Việc dự án ",
                     to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_DU_AN}`
+                    prefix: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}`
                   }
                 },
                 {
                   parent: {
-                    text: "Việc hàng ngày",
+                    text: "Việc hàng ngày ",
                     to: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`,
                     Icon: <AiOutlineArrowRight size={18} className="opacity-90" />,
-                    prefix: `${PathString.VIEC_HANG_NGAY}`
+                    prefix: `${PathString.VIEC_DA_XONG}/${PathString.VIEC_HANG_NGAY}`
                   }
                 }
               ]

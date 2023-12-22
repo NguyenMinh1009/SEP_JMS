@@ -370,6 +370,9 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to delete job {jobId}.");
+                var job = await jobService.GetBasicJob(jobId);
+                if (job == null) return NotFound();
+                if (job.PaymentSuccess) return Forbid();
                 await jobService.Delete(jobId);
                 return NoContent();
             }

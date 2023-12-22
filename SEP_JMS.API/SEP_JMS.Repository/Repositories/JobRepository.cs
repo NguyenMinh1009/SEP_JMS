@@ -1118,8 +1118,8 @@ namespace SEP_JMS.Repository.Repositories
                         group new { job, price, company } by company.CompanyId into groupData
 
                         select Tuple.Create(groupData.First().company,
-                        groupData.Sum(info => info.job.FinalUnitPrice.HasValue ? (long)info.job.FinalUnitPrice.Value * info.job.Quantity : (long)info.price.UnitPrice * info.job.Quantity),
-                        groupData.Count());
+                        groupData.Sum(info => info.job.CorrelationType == CorrelationJobType.Project ? 0 : info.job.FinalUnitPrice.HasValue ? (long)info.job.FinalUnitPrice.Value * info.job.Quantity : (long)info.price.UnitPrice * info.job.Quantity),
+                        groupData.Count(info => info.job.ParentId == null));
             return await query.ToListAsync();
         }
 
@@ -1154,8 +1154,8 @@ namespace SEP_JMS.Repository.Repositories
                         group new { job, price, company } by company.CompanyId into groupData
 
                         select Tuple.Create(groupData.First().company,
-                        groupData.Sum(info => info.job.FinalUnitPrice.HasValue ? (long)info.job.FinalUnitPrice.Value * info.job.Quantity : (long)0),
-                        groupData.Count());
+                        groupData.Sum(info => info.job.CorrelationType == CorrelationJobType.Project ? 0 : info.job.FinalUnitPrice.HasValue ? (long)info.job.FinalUnitPrice.Value * info.job.Quantity : (long)0),
+                        groupData.Count(info => info.job.ParentId == null));
             return await query.ToListAsync();
         }
 

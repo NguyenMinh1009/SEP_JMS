@@ -3,7 +3,7 @@ import BasicTaskInfo from "./common/BasicTaskInfo";
 import { FiUser, FiUsers } from "react-icons/fi";
 import { BiSupport } from "react-icons/bi";
 import { AiOutlineClockCircle, AiOutlineEdit } from "react-icons/ai";
-import { MdOutlineTypeSpecimen, MdSignalWifiStatusbarNull } from "react-icons/md";
+import { MdOutlineTypeSpecimen, MdPaid, MdSignalWifiStatusbarNull } from "react-icons/md";
 import { HiOutlineCircleStack } from "react-icons/hi2";
 import { getPriorityIcon, getTextColorFromPriority } from "../utils/Priority";
 import { priorityOptions } from "../enums/priority";
@@ -34,6 +34,8 @@ import { Error } from "../enums/validateInput";
 import { TaskString } from "../enums/taskEnums";
 import { RoleString } from "../enums/roleEnums";
 import { ToastString } from "../enums/toastEnums";
+import CustomDialog from "./common/CustomDialog";
+import { PathString } from "../enums/MapRouteToBreadCrumb";
 
 interface IBasicDetailsSectionProps {
   taskDetail: any;
@@ -41,6 +43,7 @@ interface IBasicDetailsSectionProps {
   visibleType: VisibleType;
   handleClickEdit: () => void;
   setOpenDialog: (open: boolean) => void;
+  handleRefresh?: () => void;
 }
 
 const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
@@ -48,10 +51,13 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
   correlationJobType,
   visibleType,
   handleClickEdit,
+  handleRefresh,
   setOpenDialog
 }) => {
   const initStatus =
     visibleType === VisibleType.Public ? jobDetail?.jobStatus : jobDetail?.internalJobStatus;
+  const [isPaid, setPaid] = useState<boolean>(jobDetail?.paymentSuccess);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [selectedStatus, setSelectedStatus] = useState<InternalJobStatusType>(initStatus);
   const [taskDetail, setTaskDetail] = useState<any>();
 
@@ -59,10 +65,15 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
   const snakeBar = useSnakeBar();
   const sideBar = useSideBarPanel();
   const currentPerson = useCurrentPerson();
+  const isDonePage = location.pathname.split("/").slice(1)[0] === PathString.VIEC_DA_XONG;
 
   useEffect(() => {
     setTaskDetail(jobDetail);
   }, [jobDetail]);
+
+  const handleClose = () => {
+    setOpenConfirmDialog(false);
+  };
 
   const handleChangeInternalStatus = async (status: InternalJobStatusType) => {
     if (correlationJobType === CorrelationJobType.Project) {
@@ -74,21 +85,39 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
     }
     subTaskId === undefined
       ? await AlwayxInstance.put(`internal/job/${taskId}/status`, {
-          internalJobStatus: status
+        internalJobStatus: status
+      })
+        .then(() => {
+          setSelectedStatus(status);
+          snakeBar.setSnakeBar(ToastString.CAP_NHAT_TRANG_THAI_THANH_CONG, "success", true);
         })
-          .then(() => {
-            setSelectedStatus(status);
-            snakeBar.setSnakeBar(ToastString.CAP_NHAT_TRANG_THAI_THANH_CONG, "success", true);
-          })
-          .catch(err => console.error(err))
+        .catch(err => console.error(err))
       : await AlwayxInstance.put(`internal/job/${subTaskId}/status`, {
-          internalJobStatus: status
+        internalJobStatus: status
+      })
+        .then(() => {
+          setSelectedStatus(status);
+          snakeBar.setSnakeBar(ToastString.CAP_NHAT_TRANG_THAI_THANH_CONG, "success", true);
         })
-          .then(() => {
-            setSelectedStatus(status);
-            snakeBar.setSnakeBar(ToastString.CAP_NHAT_TRANG_THAI_THANH_CONG, "success", true);
-          })
-          .catch(err => console.error(err));
+        .catch(err => console.error(err));
+  };
+
+  const handleChangePaidStatus = async () => {
+    subTaskId === undefined
+      ? await AlwayxInstance.post(`job/${taskId}/paymentsuccess`)
+        .then(() => {
+          setPaid(true);
+          snakeBar.setSnakeBar("Cập nhật trạng thái thanh toán cho dự án thành công!", "success", true);
+          handleRefresh&&handleRefresh();
+        })
+        .catch(err => snakeBar.setSnakeBar("Cập nhật trạng thái thanh toán cho dự án thất bại!", "error", true))
+      : await AlwayxInstance.post(`job/${subTaskId}/paymentsuccess`)
+        .then(() => {
+          setPaid(true);
+          snakeBar.setSnakeBar("Cập nhật trạng thái thanh toán cho công việc thành công!", "success", true);
+          handleRefresh&&handleRefresh();
+        })
+        .catch(err => snakeBar.setSnakeBar("Cập nhật trạng thái thanh toán cho công việc thất bại!", "error", true));
   };
 
   const renderCorrelationJobType = () => {
@@ -189,12 +218,12 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
             >
               <Select
                 disabled={
-                  ((selectedStatus === InternalJobStatusType.Completed ||
+                  isPaid || (((selectedStatus === InternalJobStatusType.Completed ||
                     initStatus === JobStatusType.Completed) &&
                     currentPerson.roleType !== Role.ADMIN) ||
                   ((selectedStatus === InternalJobStatusType.Pending ||
                     initStatus === JobStatusType.Pending) &&
-                    currentPerson.roleType === Role.DESIGNER)
+                    currentPerson.roleType === Role.DESIGNER))
                   // currentPerson.roleType === Role.DESIGNER
                 }
                 fullWidth
@@ -236,15 +265,43 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
           detail={taskDetail?.jobType?.typeName || TaskString.TRONG}
         />
         {renderCorrelationJobType()}
+
+        {/* update paid button */}
+
+        <BasicTaskInfo
+          Icon={<MdPaid size={15} color="#555" />}
+          title={"Thanh toán"}
+          detail={isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
+          customText={isPaid ? "text-blue-800 font-semibold" : "text-yellow-800 font-semibold"}
+        />
+
+        {currentPerson.roleType == Role.ADMIN && initStatus === JobStatusType.Completed && isDonePage && !isPaid && (
+          <>
+
+            <CustomButton
+              onClick={()=>setOpenConfirmDialog(true)}
+              className={"text-green-500"}
+            >
+              <div className="flex items-center gap-2 px-2">
+                <p className="mt-[2px] text-sm  normal-case leading-6 text-black">
+                  Cập nhật đã thanh toán
+                </p>
+              </div>
+            </CustomButton>
+          </>
+
+
+        )}
+
       </div>
 
       <div className="flex flex-1 items-center justify-center">
         <div className="relative mt-5 flex min-h-[100px] items-center gap-4">
           <CustomButton
             disabled={
-              (initStatus === JobStatusType.Completed && currentPerson.roleType !== Role.ADMIN) ||
+              isPaid || ((initStatus === JobStatusType.Completed && currentPerson.roleType !== Role.ADMIN) ||
               (correlationJobType === CorrelationJobType.Project &&
-                currentPerson.roleType === Role.DESIGNER)
+                currentPerson.roleType === Role.DESIGNER))
             }
             primary
             onClick={handleClickEdit}
@@ -260,6 +317,17 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
           </CustomButton>
         </div>
       </div>
+
+      <CustomDialog
+        openDialog={openConfirmDialog}
+        handleClose={handleClose}
+        title="Cập nhật trạng thái thanh toán"
+        description={`Khi bạn xác nhận đã thanh toán thành công, bạn không thể chỉnh sửa lại với bất kì lí do gì. Bạn có muốn tiếp tục không?`}
+        primaryBtnText="Quay trở lại"
+        secondaryBtnText="Tiếp tục"
+        primaryBtnCallback={handleClose}
+        secondaryBtnCallback={handleChangePaidStatus}
+      />
     </>
   );
 };

@@ -76,18 +76,21 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOn
                     visibleType={visibleType}
                     subTaskId={task.jobId}
                     finishedOnly
+                    isPaid={task.paymentSuccess}
                     removeSubTask={removeSubTask}
                   />
                 ) : task.jobStatus === JobStatusType.Completed ? (
                   <DropdownAction
                     visibleType={visibleType}
                     subTaskId={task.jobId}
+                    isPaid={task.paymentSuccess}
                     removeSubTask={removeSubTask}
                   />
                 ) : (
                   <DropdownAction
                     visibleType={visibleType}
                     subTaskId={task.jobId}
+                    isPaid={task.paymentSuccess}
                     removeSubTask={removeSubTask}
                   />
                 )}

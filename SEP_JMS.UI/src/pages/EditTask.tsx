@@ -42,6 +42,7 @@ import { InternalJobStatusType } from "../enums/internalJobStatusType";
 import { checkInputEditJob, checkStatusCompletedProjectEdit } from "../utils/checkInputJob";
 import { Error } from "../enums/validateInput";
 import { ToastString } from "../enums/toastEnums";
+import CustomDialog from "../components/common/CustomDialog";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -128,6 +129,8 @@ const EditTask: React.FC<IEditTaskProp> = ({
   const titleBreadCrumb = useTitle();
 
   const { taskId, subTaskId } = useParams();
+
+  const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
 
   Quill.register(
     {
@@ -621,6 +624,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
     setSelectedAccount(res.data.account);
     setSelectedStatus(res.data.jobStatus);
     setSelectedInternalStatus(res.data.internalJobStatus);
+    setOpenConfirmDialog(res.data.paymentSuccess);
     setLoading(false);
 
     if (requirementList && requirementList.length > 0) {
@@ -849,10 +853,26 @@ const EditTask: React.FC<IEditTaskProp> = ({
     }
   }, [currentPerson.roleType]);
 
+  const handleClose = () => {
+    navigate(location.pathname.replace("/chinh-sua", ""));
+    setOpenConfirmDialog(false);
+  };
+
   return isLoading ? (
     <CircularProgress size={20} />
   ) : (
     <>
+      <CustomDialog
+        openDialog={openConfirmDialog}
+        handleClose={handleClose}
+        title="Không thể chỉnh sửa"
+        description={`Khi bạn xác nhận đã thanh toán thành công, bạn không thể chỉnh sửa lại với bất kì lí do gì.`}
+        primaryBtnText="Quay trở lại"
+        secondaryBtnText="Xem chi tiết công việc"
+        primaryBtnCallback={handleClose}
+        secondaryBtnCallback={handleClose}
+      />
+
       {isCorrelationJobType === CorrelationJobType.Job ? (
         <p className="text-primary mb-6 text-lg">{TaskString.CHINH_SUA_CONG_VIEC_HANG_NGAY}</p>
       ) : (

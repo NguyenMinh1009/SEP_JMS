@@ -16,12 +16,14 @@ interface IDropdownAction {
   visibleType: VisibleType;
   finishedOnly?: boolean;
   subTaskId: any;
+  isPaid?: boolean;
   removeSubTask?: (id: any) => void;
 }
 
 const DropdownAction: React.FC<IDropdownAction> = ({
   visibleType,
   finishedOnly,
+  isPaid,
   subTaskId,
   removeSubTask
 }) => {
@@ -91,6 +93,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
   };
 
   const renderUpdateButton = () => {
+    if (isPaid) return;
     if (finishedOnly) {
       if (currentPerson.roleType === Role.ADMIN)
         return (

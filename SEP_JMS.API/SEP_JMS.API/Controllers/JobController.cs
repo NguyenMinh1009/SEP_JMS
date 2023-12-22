@@ -438,7 +438,7 @@ namespace SEP_JMS.API.Controllers
         }
 
         [Authorize(Roles = PolicyConstants.Admin)]
-        [HttpPost("{id}/paymentsuccess")]
+        [HttpPost("{jobId}/paymentsuccess")]
         public async Task<IActionResult> UpdateJobPaymentSuccess([FromRoute] Guid jobId)
         {
             try

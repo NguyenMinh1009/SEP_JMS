@@ -482,7 +482,7 @@ namespace SEP_JMS.Service.Services
             if (job == null || job.JobStatus != JobStatus.Completed) return false;
             if (job.CorrelationType == CorrelationJobType.Project)
             {
-                var subJobs = await jobRepository.GetAll(job => job.ParentId == job.JobId);
+                var subJobs = await jobRepository.GetAll(j => j.ParentId == job.JobId);
                 if (subJobs.Any(sub => sub.JobStatus != JobStatus.Completed)) return false;
                 foreach (var subJob in subJobs)
                 {

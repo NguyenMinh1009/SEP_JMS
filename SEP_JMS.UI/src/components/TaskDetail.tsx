@@ -180,7 +180,12 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
 
   {
     useEffect(() => {
-      isCorrelationJobType === CorrelationJobType.Project
+      getInfo();
+    }, [taskId]);
+  }
+
+  const getInfo = () => {
+    isCorrelationJobType === CorrelationJobType.Project
         ? getTaskDetails(
             setLoading,
             setImagesLoading,
@@ -207,7 +212,6 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
           )
             .then()
             .catch(err => err);
-    }, [taskId]);
   }
 
   useEffect(() => {
@@ -396,6 +400,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                     : CorrelationJobType.Project
                 }
                 handleClickEdit={handleEdit}
+                handleRefresh={()=>{getInfo();}}
               />
             </div>
           </>

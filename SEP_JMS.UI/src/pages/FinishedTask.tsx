@@ -15,6 +15,7 @@ import useFilterInfo from "../hooks/store/useFilterInfo";
 import AlwayxInstance from "../api/AxiosInstance";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import { TaskString } from "../enums/taskEnums";
+import JobInputSearch from "../components/common/JobInputSearch";
 
 interface IFinishedTasks {
   isInternal?: boolean;
@@ -84,7 +85,10 @@ const FinishedTasks: React.FC<IFinishedTasks> = ({ isInternal }) => {
           </div>
         </div>
       </div>
-      <p className="text-primary mb-6 text-base">{TaskString.CONG_VIEC_DA_HOAN_THANH}</p>
+      <div className="flex justify-between">
+        <p className="text-primary mb-6 text-base">{TaskString.CONG_VIEC_DA_HOAN_THANH}</p>
+        <JobInputSearch isCorrelationJobType={CorrelationJobType.Job} />
+      </div>
       <div className="grid grid-cols-20 items-start gap-2">
         <div className="col-span-full overflow-hidden p-1 pb-20 ">
           <TaskPreview

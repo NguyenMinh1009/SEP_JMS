@@ -514,9 +514,9 @@ const EditTask: React.FC<IEditTaskProp> = ({
       }
     }
     setButtonLoading(true);
-    await editBasicInfoPromise(),
-      await editStatusForDesignerPromise(),
-      await editInternalStatusPromise();
+    await editBasicInfoPromise();
+    await editStatusForDesignerPromise();
+    await editInternalStatusPromise();
     await Promise.all([
       editRequirementsPromise(),
       editFinalFilePromise(),

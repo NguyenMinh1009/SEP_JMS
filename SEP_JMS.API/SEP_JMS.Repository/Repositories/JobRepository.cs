@@ -1123,6 +1123,42 @@ namespace SEP_JMS.Repository.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<List<Tuple<Company, long, int>>> GetJobStatisticsPaymentSuccess(StatisticsJobRequest model)
+        {
+            var jobQuery = Context.Jobs.Where(job => job.PaymentSuccess).AsQueryable();
+            if (model.From != null)
+            {
+                jobQuery = from data in jobQuery
+                           where data.CreatedTime >= model.From.Value
+                           select data;
+            }
+            if (model.To != null)
+            {
+                jobQuery = from data in jobQuery
+                           where data.CreatedTime <= model.To.Value
+                           select data;
+            }
+
+            var query = from job in jobQuery
+
+                        join customer in Context.Users
+                        on job.CustomerId equals customer.UserId
+
+                        join company in Context.Companies
+                        on customer.CompanyId equals company.CompanyId
+
+                        join price in Context.Prices
+                        on company.PriceGroupId equals price.PriceGroupId
+                        where price.JobTypeId == job.JobType
+
+                        group new { job, price, company } by company.CompanyId into groupData
+
+                        select Tuple.Create(groupData.First().company,
+                        groupData.Sum(info => info.job.FinalUnitPrice.HasValue ? (long)info.job.FinalUnitPrice.Value * info.job.Quantity : (long)0),
+                        groupData.Count());
+            return await query.ToListAsync();
+        }
+
         public async Task<bool> UpdatePaymentSuccess(Guid jobId)
         {
             var job = await Context.Jobs
@@ -1137,6 +1173,7 @@ namespace SEP_JMS.Repository.Repositories
             job.FinalJobType = job.TypeOfJob.TypeName;
             job.FinalUnitPrice = price.UnitPrice;
             job.PaymentSuccess = true;
+            job.LastUpdated = DateTime.UtcNow.Ticks;
             var count = await Context.SaveChangesAsync();
             return count > 0;
         }

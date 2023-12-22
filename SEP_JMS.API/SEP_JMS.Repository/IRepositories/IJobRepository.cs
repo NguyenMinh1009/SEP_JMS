@@ -54,5 +54,7 @@ namespace SEP_JMS.Repository.IRepositories
         public Task<bool> UpdatePaymentSuccess(Guid jobId);
 
         public Task<List<Tuple<Job, Company>>> GetAllJobsSubJobForExport(Guid projectId);
+
+        public Task<List<Tuple<Company, long, int>>> GetJobStatisticsPaymentSuccess(StatisticsJobRequest model);
     }
 }

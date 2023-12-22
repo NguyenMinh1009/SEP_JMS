@@ -11,5 +11,9 @@
         public int TotalFinishedJobs { get; set; } = 0;
 
         public long TotalProfit { get; set; } = 0;
+
+        public int TotalPaidJobs { get; set; } = 0;
+
+        public long TotalPaid {  get; set; } = 0;
     }
 }

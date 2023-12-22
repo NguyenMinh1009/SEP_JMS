@@ -441,6 +441,7 @@ namespace SEP_JMS.Service.Services
         {
             var totalJobs = await jobRepository.GetJobStatistics(model, null);
             var totalFinishedJobs = await jobRepository.GetJobStatistics(model, JobStatus.Completed);
+            var totalPaymentSuccessJobs = await jobRepository.GetJobStatisticsPaymentSuccess(model);
             var response = new List<JobStatisticsResponse>();
             foreach (var job in totalJobs)
             {
@@ -455,6 +456,12 @@ namespace SEP_JMS.Service.Services
                 {
                     statistics.TotalFinishedJobs = finishedJob.Item3;
                     statistics.TotalProfit = finishedJob.Item2;
+                }
+                var paidJob = totalPaymentSuccessJobs.FirstOrDefault(a => a.Item1.CompanyId == job.Item1.CompanyId);
+                if (paidJob != null)
+                {
+                    statistics.TotalPaidJobs = paidJob.Item3;
+                    statistics.TotalPaid = paidJob.Item2;
                 }
                 response.Add(statistics);
             }

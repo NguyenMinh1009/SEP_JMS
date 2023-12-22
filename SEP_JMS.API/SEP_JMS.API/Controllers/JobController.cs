@@ -91,9 +91,10 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to create a new job for customer {model.CustomerId} account {model.AccountId}");
-                if (ApiContext.Current.UserId != model.CustomerId && ApiContext.Current.Role == RoleType.Customer)
-                    return StatusCode((int)HttpStatusCode.Forbidden);
+                if (ApiContext.Current.UserId != model.CustomerId && ApiContext.Current.Role == RoleType.Customer) return StatusCode((int)HttpStatusCode.Forbidden);
                 if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project) model.DesignerId = null;
+                if (model.JobStatus == JobStatus.Completed) return Forbid();
+
                 var jobId = await jobService.CreateJob(model);
                 if (jobId == null) return StatusCode((int)HttpStatusCode.InternalServerError);
 
@@ -125,7 +126,7 @@ namespace SEP_JMS.API.Controllers
                 jobDisplay.Designer = mapper.Map<EmployeeResponse>(job.Item5);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(job.Item6);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(job.Item7);
-                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                if (ApiContext.Current.Role == RoleType.Customer && jobDisplay.JobStatus != JobStatus.CustomerReview && jobDisplay.JobStatus != JobStatus.Completed)
                 {
                     jobDisplay.FinalProducts = null;
                     jobDisplay.PreviewProducts = null;
@@ -156,7 +157,7 @@ namespace SEP_JMS.API.Controllers
                 jobDisplay.Designer = mapper.Map<EmployeeResponse>(job.Item5);
                 jobDisplay.Company = mapper.Map<CompanyResponse>(job.Item6);
                 jobDisplay.JobType = mapper.Map<JobTypeResponse>(job.Item7);
-                if (ApiContext.Current.Role == RoleType.Customer && (jobDisplay.JobStatus != JobStatus.CustomerReview || jobDisplay.JobStatus != JobStatus.Completed))
+                if (ApiContext.Current.Role == RoleType.Customer && jobDisplay.JobStatus != JobStatus.CustomerReview && jobDisplay.JobStatus != JobStatus.Completed)
                 {
                     jobDisplay.FinalProducts = null;
                     jobDisplay.PreviewProducts = null;
@@ -208,6 +209,12 @@ namespace SEP_JMS.API.Controllers
                 if (job == null) return NotFound();
                 if (job.JobStatus == JobStatus.Completed && ApiContext.Current.Role != RoleType.Admin) return Forbid();
                 if (job.PaymentSuccess) return Forbid();
+                if (model.JobStatus == JobStatus.Completed)
+                {
+                    if (string.IsNullOrEmpty(job.FinalPreview)) return Forbid("Missing preview");
+                    var finalPreview = JsonConvert.DeserializeObject<FolderItem>(job.FinalPreview);
+                    if (finalPreview?.Files.Any() != true) return Forbid("Missing preview");
+                }
 
                 if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project)
                 {
@@ -287,7 +294,6 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to update preview files for job {jobId}.");
                 model.Files = model.Files.Where(file => file.ContentType.StartsWith("image/")).ToList();
-                if (!model.Files.Any()) return BadRequest();
 
                 var job = await jobService.GetBasicJob(jobId);
                 if (job == null) return NotFound();

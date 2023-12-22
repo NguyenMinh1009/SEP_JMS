@@ -25,6 +25,7 @@ import { IComments } from "../../../interface/comment";
 import SubTasksSection from "./SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
 import { TaskString } from "../../../enums/taskEnums";
+import APIClientInstance from "../../../api/AxiosInstance";
 
 interface ISubTaskDetail {}
 
@@ -47,6 +48,8 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
   const [to, setTo] = useState<number | null>(null);
   const { ref: observerRef, inView: isObserverVisible } = useInView();
   const commentSectionTopRef = useRef<HTMLDivElement | null>(null);
+  const [titleProject, setTitleProject] = useState<string>("");
+
   // custom hooks
   const snakeBar = useSnakeBar();
   const currentPerson = useCurrentPerson();
@@ -160,6 +163,11 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
       });
   };
 
+  const getTitleProject = async () => {
+    var res = await APIClientInstance.get(`job/project/${taskId}`);
+    setTitleProject(res.data.title);
+  };
+
   {
     useEffect(() => {
       getTaskDetails(
@@ -175,6 +183,7 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
       )
         .then()
         .catch(err => err);
+      getTitleProject();
     }, [taskId]);
   }
 
@@ -240,9 +249,12 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
             >
               <TaskDetailsDescription
                 isImagesLoading={isImagesLoading}
+                // finalFiles={finalFiles}
+                // setFinalFiles={setFinalFiles}
                 taskDetail={jobDetail}
                 docFiles={docFiles}
                 imgFiles={imgFiles}
+                jobParentTitle={subTaskId !== undefined ? titleProject : TaskString.EMPTY}
               />
 
               {/* Comment section */}

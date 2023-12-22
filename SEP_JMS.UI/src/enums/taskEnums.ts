@@ -10,6 +10,12 @@ export enum TaskString {
   CHI_TIET_DU_AN = "Chi tiết dự án",
   THEM_CONG_VIEC = "Thêm công việc",
 
+  DANH_SACH_CONG_VIEC = "Danh sách công việc",
+  DANH_SACH_DU_AN = "Danh sách dự án",
+
+  TIM_KIEM_CONG_VIEC = "Tìm kiếm công việc...",
+  TIM_KIEM_DU_AN = "Tìm kiếm dự án...",
+
   TEN_DU_AN = "Tên dự án:",
   TEN_CONG_VIEC = "Tên công việc:",
   MO_TA_CONG_VIEC = "Mô tả công việc:",

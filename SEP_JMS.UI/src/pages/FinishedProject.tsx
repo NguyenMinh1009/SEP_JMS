@@ -17,6 +17,7 @@ import { CircularProgress } from "@mui/material";
 import { CiExport } from "react-icons/ci";
 import { TaskString } from "../enums/taskEnums";
 import useFilterInfo from "../hooks/store/useFilterInfo";
+import JobInputSearch from "../components/common/JobInputSearch";
 
 interface IFinishedProjects {
   isInternal?: boolean;
@@ -90,7 +91,10 @@ const FinishedProjects: React.FC<IFinishedProjects> = ({ isInternal }) => {
             </div>
           </div>
         </div>
-        <p className="text-primary mb-6 text-base">{TaskString.DU_AN_DA_HOAN_THANH}</p>
+        <div className="flex justify-between">
+          <p className="text-primary mb-6 text-base">{TaskString.DU_AN_DA_HOAN_THANH}</p>
+          <JobInputSearch isCorrelationJobType={CorrelationJobType.Project} />
+        </div>
         <div className="grid grid-cols-20 items-start gap-2">
           <div className="col-span-full overflow-hidden p-1 pb-20 ">
             <TaskPreview

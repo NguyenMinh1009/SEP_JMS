@@ -15,6 +15,7 @@ import { recursiveStructuredClone } from "../utils/recursiveStructuredClone";
 import useFilterInfo from "../hooks/store/useFilterInfo";
 import { useIsFirstRender } from "../hooks/useIsFirstRender";
 import { JobStatusType } from "../enums/jobStatusType";
+import useSearchJobTitle from "../hooks/store/useSearchJobTitle";
 
 interface ITaskPreview {
   sidebar?: boolean;
@@ -33,13 +34,14 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
 
   const isFirstRender = useIsFirstRender();
   const filterInfoController = useFilterInfo();
+  const searchJobTitleController = useSearchJobTitle();
 
   const getJobs = async () => {
     setLoading(true);
     await AlwayxInstance.post("job/all", {
       pageIndex: page,
       pageSize: pageSize,
-      searchText: "",
+      searchText: searchJobTitleController.content,
       ...filterInfoController.content,
       jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
     }).then(res => {
@@ -54,7 +56,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
     await AlwayxInstance.post("job/allprojects", {
       pageIndex: page,
       pageSize: pageSize,
-      searchText: "",
+      searchText: searchJobTitleController.content,
       ...filterInfoController.content,
       jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
     }).then(res => {
@@ -92,7 +94,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
         isCorrelationJobType === CorrelationJobType.Project ? getProjects() : getJobs();
       }
     }
-  }, [filterInfoController.content, isCorrelationJobType]);
+  }, [filterInfoController.content, isCorrelationJobType, searchJobTitleController.content]);
 
   return !isLoading ? (
     <div>

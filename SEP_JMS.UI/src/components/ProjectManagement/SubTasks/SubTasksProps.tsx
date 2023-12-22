@@ -6,6 +6,8 @@ import { VisibleType } from "../../../enums/visibleType";
 import { recursiveStructuredClone } from "../../../utils/recursiveStructuredClone";
 import DropdownAction from "./DropdownAction";
 import TaskPropertiesLabel from "./TaskPropertiesLabel";
+import { PathString } from "../../../enums/MapRouteToBreadCrumb";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface SubTasksProps {
   tasks: any[];
@@ -16,6 +18,8 @@ interface SubTasksProps {
 
 const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOnly }) => {
   const [jobs, setJobs] = useState<any[]>(tasks);
+  const { taskId } = useParams();
+  const navigate = useNavigate();
 
   const removeSubTask = useCallback(
     (taskId: any) => {
@@ -36,6 +40,18 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOn
     setJobs(tasks);
   }, [tasks]);
 
+  const getLinkForViewJob = (subTaskId: any): string => {
+    if (finishedOnly)
+      return `/${PathString.VIEC_DA_XONG}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
+    if (visibleType === VisibleType.Public)
+      return `/${PathString.CONG_KHAI}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
+    return `/${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/${taskId}/${subTaskId}`;
+  };
+
+  const handleViewClick = (subTaskId: any) => {
+    navigate(getLinkForViewJob(subTaskId));
+  };
+
   return (
     <div>
       {jobs.map((task, index) => (
@@ -46,7 +62,10 @@ const SubTasksProps: React.FC<SubTasksProps> = ({ tasks, visibleType, finishedOn
                 <div className="flex w-full cursor-pointer items-center gap-2">
                   <div className="mr-3 h-[6px] w-[6px] flex-shrink-0 rounded-full bg-blue-500"></div>
                   {/* <div className="text-custom-text-200 flex-shrink-0 text-xs">{index + 1}</div> */}
-                  <div className="text-custom-text-100 tabindex-0 line-clamp-1 pr-2 text-xs">
+                  <div
+                    className="text-custom-text-100 tabindex-0 line-clamp-1 pr-2 text-xs"
+                    onClick={() => handleViewClick(task.jobId)}
+                  >
                     {task.title}
                   </div>
                 </div>

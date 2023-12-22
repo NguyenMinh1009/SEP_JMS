@@ -119,6 +119,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadFinalProgress, setUploadFinalProgress] = useState<number>(0);
+  const [isChangePreviewFileAPI, setIsChangePreviewFileAPI] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -514,26 +515,22 @@ const EditTask: React.FC<IEditTaskProp> = ({
       }
     }
     setButtonLoading(true);
-    await editBasicInfoPromise();
-    await editStatusForDesignerPromise();
-    await editInternalStatusPromise();
-    await Promise.all([
-      editRequirementsPromise(),
-      editFinalFilePromise(),
-      editInternalStatusPromise(),
-      editPreviewFilePromise()
-    ])
-      .then(() => {
-        isCorrelationJobType === CorrelationJobType.Job
-          ? snakeBar.setSnakeBar("Cập nhật công việc thành công!", "success", true)
-          : snakeBar.setSnakeBar("Cập nhật dự án thành công!", "success", true);
-        handleAfterEditTaskSuccess();
-      })
-      .catch(err => {
-        console.error(err);
-        snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-      })
-      .finally(() => setButtonLoading(false));
+    await editBasicInfoPromise(),
+      await editStatusForDesignerPromise(),
+      await editInternalStatusPromise(),
+      (previewFiles.length > 0 || isChangePreviewFileAPI) && editPreviewFilePromise(),
+      await Promise.all([editRequirementsPromise(), editFinalFilePromise()])
+        .then(() => {
+          isCorrelationJobType === CorrelationJobType.Job
+            ? snakeBar.setSnakeBar("Cập nhật công việc thành công!", "success", true)
+            : snakeBar.setSnakeBar("Cập nhật dự án thành công!", "success", true);
+          handleAfterEditTaskSuccess();
+        })
+        .catch(err => {
+          console.error(err);
+          snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+        })
+        .finally(() => setButtonLoading(false));
   };
 
   const handleAfterEditTaskSuccess = () => {
@@ -688,6 +685,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
     const deleteFileIndex = clone.findIndex(file => file.fileName === name);
     if (deleteFileIndex > -1) clone.splice(deleteFileIndex, 1);
     setPreviewFilesFromAPI(clone);
+    setIsChangePreviewFileAPI(true);
   };
 
   const renderButtonProgressText = (): string => {

@@ -119,7 +119,6 @@ const EditTask: React.FC<IEditTaskProp> = ({
   const [openDetailsEditPanel, setOpenDetailsEditPanel] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadFinalProgress, setUploadFinalProgress] = useState<number>(0);
-  const [isChangePreviewFileAPI, setIsChangePreviewFileAPI] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -518,8 +517,11 @@ const EditTask: React.FC<IEditTaskProp> = ({
     await editBasicInfoPromise(),
       await editStatusForDesignerPromise(),
       await editInternalStatusPromise(),
-      (previewFiles.length > 0 || isChangePreviewFileAPI) && editPreviewFilePromise(),
-      await Promise.all([editRequirementsPromise(), editFinalFilePromise()])
+      await Promise.all([
+        editPreviewFilePromise(),
+        editRequirementsPromise(),
+        editFinalFilePromise()
+      ])
         .then(() => {
           isCorrelationJobType === CorrelationJobType.Job
             ? snakeBar.setSnakeBar("Cập nhật công việc thành công!", "success", true)
@@ -685,7 +687,6 @@ const EditTask: React.FC<IEditTaskProp> = ({
     const deleteFileIndex = clone.findIndex(file => file.fileName === name);
     if (deleteFileIndex > -1) clone.splice(deleteFileIndex, 1);
     setPreviewFilesFromAPI(clone);
-    setIsChangePreviewFileAPI(true);
   };
 
   const renderButtonProgressText = (): string => {

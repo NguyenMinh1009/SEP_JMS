@@ -186,33 +186,33 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
 
   const getInfo = () => {
     isCorrelationJobType === CorrelationJobType.Project
-        ? getTaskDetails(
-            setLoading,
-            setImagesLoading,
-            setJobDetail,
-            breadCrumbTitle,
-            setDocFiles,
-            setImgFiles,
-            setOpenDialog,
-            `job/project/${taskId}`,
-            `file/job/${taskId}`
-          )
-            .then()
-            .catch(err => err)
-        : getTaskDetails(
-            setLoading,
-            setImagesLoading,
-            setJobDetail,
-            breadCrumbTitle,
-            setDocFiles,
-            setImgFiles,
-            setOpenDialog,
-            `job/${taskId}`,
-            `file/job/${taskId}`
-          )
-            .then()
-            .catch(err => err);
-  }
+      ? getTaskDetails(
+          setLoading,
+          setImagesLoading,
+          setJobDetail,
+          breadCrumbTitle,
+          setDocFiles,
+          setImgFiles,
+          setOpenDialog,
+          `job/project/${taskId}`,
+          `file/job/${taskId}`
+        )
+          .then()
+          .catch(err => err)
+      : getTaskDetails(
+          setLoading,
+          setImagesLoading,
+          setJobDetail,
+          breadCrumbTitle,
+          setDocFiles,
+          setImgFiles,
+          setOpenDialog,
+          `job/${taskId}`,
+          `file/job/${taskId}`
+        )
+          .then()
+          .catch(err => err);
+  };
 
   useEffect(() => {
     if (isObserverVisible && hasOlderComment) {
@@ -367,7 +367,7 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                     setComments={setComments}
                     comments={comments?.items}
                     handleHideComment={handleHideComment}
-                    finishedOnly={finishOnly ? true : false}
+                    finishedOnly={finishOnly}
                   />
                   <div className="mt-5 flex h-16 items-center justify-center gap-2">
                     {isCommentLoading && (
@@ -400,7 +400,9 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                     : CorrelationJobType.Project
                 }
                 handleClickEdit={handleEdit}
-                handleRefresh={()=>{getInfo();}}
+                handleRefresh={() => {
+                  getInfo();
+                }}
               />
             </div>
           </>

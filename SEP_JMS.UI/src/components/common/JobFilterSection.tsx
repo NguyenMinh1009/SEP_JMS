@@ -2,7 +2,14 @@ import { DateTimePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { dateToTicks, getDefaultDeadline, getDefaultFilterStart } from "../../utils/Datetime";
-import { Autocomplete, CircularProgress, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  CircularProgress,
+  Divider,
+  MenuItem,
+  Select,
+  TextField
+} from "@mui/material";
 import { JobType, jobOptions } from "../../enums/jobType";
 import {
   internalStatusFilterOptions,
@@ -181,30 +188,30 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
     checkInputDateFilter()
       ? isInternal
         ? filterInfoController.setContent?.({
-          from: from ? dateToTicks(from.toDate()) : 0,
-          to: to ? dateToTicks(to.toDate()) : null,
-          internalJobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
-          jobType: selectedJobType?.typeId ?? undefined,
-          accountId: selectedAccount?.userId ?? undefined,
-          designerId: selectedDesigner?.userId ?? undefined,
-          companyId: selectedCompany?.companyId ?? undefined,
-          correlationType:
-            selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
-          customerId: selectedCustomer?.userId ?? undefined
-        })
+            from: from ? dateToTicks(from.toDate()) : 0,
+            to: to ? dateToTicks(to.toDate()) : null,
+            internalJobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
+            jobType: selectedJobType?.typeId ?? undefined,
+            accountId: selectedAccount?.userId ?? undefined,
+            designerId: selectedDesigner?.userId ?? undefined,
+            companyId: selectedCompany?.companyId ?? undefined,
+            correlationType:
+              selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
+            customerId: selectedCustomer?.userId ?? undefined
+          })
         : filterInfoController.setContent?.({
-          from: from ? dateToTicks(from.toDate()) : 0,
-          to: to ? dateToTicks(to.toDate()) : null,
-          jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
-          jobType: selectedJobType?.typeId ?? undefined,
-          accountId: selectedAccount?.userId ?? undefined,
-          designerId: selectedDesigner?.userId ?? undefined,
-          companyId: selectedCompany?.companyId ?? undefined,
-          correlationType:
-            selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
-          customerId: selectedCustomer?.userId ?? undefined,
-          paymentSuccess: selectedPaymentSuccess?.key ?? null
-        })
+            from: from ? dateToTicks(from.toDate()) : 0,
+            to: to ? dateToTicks(to.toDate()) : null,
+            jobStatus: selectedStatus === allKey.key ? undefined : selectedStatus,
+            jobType: selectedJobType?.typeId ?? undefined,
+            accountId: selectedAccount?.userId ?? undefined,
+            designerId: selectedDesigner?.userId ?? undefined,
+            companyId: selectedCompany?.companyId ?? undefined,
+            correlationType:
+              selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
+            customerId: selectedCustomer?.userId ?? undefined,
+            paymentSuccess: selectedPaymentSuccess?.key ?? null
+          })
       : snakeBar.setSnakeBar("Tìm kiếm không hợp lệ!", "warning", true);
   };
 
@@ -216,6 +223,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       setSelectedStatus(allKey.key),
       setSelectedAccount(null),
       setSelectedPaymentSuccess(null);
+
+    filterInfoController.clear();
   };
 
   const getCurrentInfo = async () => {
@@ -357,8 +366,10 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
 
   return (
     <div>
-      <div key={location.pathname} className={`grid ${!report ? "grid-cols-6" : "grid-cols-5"} items-end gap-3`}>
-
+      <div
+        key={location.pathname}
+        className={`grid ${!report ? "grid-cols-6" : "grid-cols-5"} items-end gap-3`}
+      >
         <div className="flex flex-col items-start gap-3">
           <label htmlFor="" className="text-primary col-span-2 mr-4">
             {TaskString.TU_NGAY}
@@ -469,8 +480,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 {(finishedOnly
                   ? [allKey, ...statusOptions]
                   : isInternal
-                    ? [allKey, ...internalStatusFilterOptions]
-                    : [allKey, ...statusFilterOptions]
+                  ? [allKey, ...internalStatusFilterOptions]
+                  : [allKey, ...statusFilterOptions]
                 ).map(({ key, text }) => (
                   <MenuItem key={key} value={key}>
                     {text}
@@ -535,7 +546,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 value={
                   currentPerson.roleType === Role.ACCOUNT
                     ? // || currentPerson.roleType === Role.DESIGNER
-                    currentInfo?.fullname || "..."
+                      currentInfo?.fullname || "..."
                     : selectedAccount
                 }
                 onChange={(_, newValue) => {
@@ -544,7 +555,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 getOptionLabel={
                   currentPerson.roleType === Role.ACCOUNT
                     ? // || currentPerson.roleType === Role.DESIGNER
-                    undefined
+                      undefined
                     : option => option.fullname
                 }
                 size="small"
@@ -585,9 +596,6 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
         >
           {TaskString.AP_DUNG}
         </CustomButton>
-
-
-
       </div>
     </div>
   );

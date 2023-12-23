@@ -280,6 +280,7 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
                 setComments={setComments}
                 comments={comments?.items}
                 handleHideComment={handleHideComment}
+                finishedOnly={finishOnly}
               />
               <div className="mt-5 flex h-16 items-center justify-center gap-2">
                 {isCommentLoading && (

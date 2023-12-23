@@ -266,7 +266,7 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
       designerId: selectedDesigner?.userId ?? "",
       quantity: correlationJobType === CorrelationJobType.Job ? quantity : 1,
       jobType: selectedJobType?.typeId,
-      jobStatus: finishedOnly ? JobStatusType.Completed : selectedStatus,
+      jobStatus: JobStatusType.NotDo,
       deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
       priority: selectedPriority,
       correlationType: correlationJobType,

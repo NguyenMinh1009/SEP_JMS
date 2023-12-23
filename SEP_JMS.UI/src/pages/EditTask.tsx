@@ -777,7 +777,15 @@ const EditTask: React.FC<IEditTaskProp> = ({
             value={selectedStatus}
             onChange={e => setSelectedStatus(Number(e.target.value))}
           >
-            {statusOptions.map(({ key, text }) => (
+            {(currentPerson.roleType !== Role.CUSTOMER
+              ? statusOptions
+              : statusOptions.filter(
+                  option =>
+                    option.key === JobStatusType.NotDo ||
+                    option.key === JobStatusType.Completed ||
+                    option.key === taskDetail?.jobStatus
+                )
+            ).map(({ key, text }) => (
               <MenuItem
                 key={key}
                 disabled={

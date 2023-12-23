@@ -291,7 +291,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
       designerId: selectedDesigner?.userId ?? "",
       quantity: correlationJobType === CorrelationJobType.Job ? quantity : 1,
       jobType: selectedJobType?.typeId,
-      jobStatus: selectedStatus,
+      jobStatus: JobStatusType.NotDo,
       deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
       priority: selectedPriority,
       correlationType: correlationJobType
@@ -756,7 +756,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 }}
               />
             </div>
-            <div className="flex flex-col items-start gap-3">
+            {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 {TaskString.TRANG_THAI}
                 <RequireText />
@@ -779,7 +779,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                   </MenuItem>
                 ))}
               </Select>
-            </div>
+            </div> */}
             {/* <div className="flex flex-col items-start gap-3">
               <label htmlFor="" className="text-primary col-span-2 mr-4">
                 Loại công việc

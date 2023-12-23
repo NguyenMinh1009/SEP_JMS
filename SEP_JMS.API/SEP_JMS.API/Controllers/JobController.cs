@@ -204,7 +204,6 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to update the job {jobId}.");
                 if (model.CorrelationType == CorrelationJobType.Project && model.ParentId != null) throw new ArgumentException("project can't have parent id");
-                if (model.JobStatus != JobStatus.Pending && model.JobStatus != JobStatus.NotDo && ApiContext.Current.Role == RoleType.Customer) return Forbid();
                 
                 // for make notify
                 var job = await jobService.GetBasicJob(jobId);
@@ -217,16 +216,19 @@ namespace SEP_JMS.API.Controllers
                     var finalPreview = JsonConvert.DeserializeObject<FolderItem>(job.FinalPreview);
                     if (finalPreview?.Files.Any() != true) return Forbid("Missing preview");
                 }
-
-                if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project)
+                if (job.JobStatus != model.JobStatus)
                 {
-                    model.DesignerId = null;
-                    model.AccountId = null;
+                    if (model.JobStatus != JobStatus.Pending && model.JobStatus != JobStatus.NotDo && ApiContext.Current.Role == RoleType.Customer) return Forbid();
                 }
                 if (model.JobStatus == JobStatus.Completed && model.CorrelationType == CorrelationJobType.Project)
                 {
                     var projectDetail = await jobService.GetProjectDetailStatistics(jobId);
                     if (projectDetail.SuccessJob != projectDetail.TotalJob) return BadRequest();
+                }
+                if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project)
+                {
+                    model.DesignerId = null;
+                    model.AccountId = null;
                 }
                 var success = await jobService.UpdateJob(jobId, model);
                 if (job.JobStatus == JobStatus.Completed && model.JobStatus != JobStatus.Completed && job.ParentId.HasValue)
@@ -261,6 +263,7 @@ namespace SEP_JMS.API.Controllers
                 var job = await jobService.GetBasicJob(jobId);
                 if (job == null) return NotFound();
                 if (job.JobStatus == JobStatus.Completed && ApiContext.Current.Role != RoleType.Admin) return Forbid();
+                if (job.JobStatus == JobStatus.Pending && ApiContext.Current.Role == RoleType.Designer) return Forbid();
                 if (job.PaymentSuccess) return Forbid();
 
                 var keepingFiles = JsonConvert.DeserializeObject<List<FileItem>>(model.OldFiles) ?? new();
@@ -300,6 +303,7 @@ namespace SEP_JMS.API.Controllers
                 var job = await jobService.GetBasicJob(jobId);
                 if (job == null) return NotFound();
                 if (job.JobStatus == JobStatus.Completed && ApiContext.Current.Role != RoleType.Admin) return Forbid();
+                if (job.JobStatus == JobStatus.Pending && ApiContext.Current.Role == RoleType.Designer) return Forbid();
                 if (job.PaymentSuccess) return Forbid();
 
                 var keepingFiles = JsonConvert.DeserializeObject<List<FileItem>>(model.OldFiles) ?? new();

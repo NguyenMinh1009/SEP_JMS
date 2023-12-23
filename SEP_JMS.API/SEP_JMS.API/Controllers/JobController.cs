@@ -91,6 +91,7 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to create a new job for customer {model.CustomerId} account {model.AccountId}");
+                model.JobStatus = JobStatus.NotDo;
                 if (ApiContext.Current.UserId != model.CustomerId && ApiContext.Current.Role == RoleType.Customer) return StatusCode((int)HttpStatusCode.Forbidden);
                 if (ApiContext.Current.Role == RoleType.Customer || model.CorrelationType == CorrelationJobType.Project) model.DesignerId = null;
                 if (model.JobStatus == JobStatus.Completed) return Forbid();
@@ -203,7 +204,8 @@ namespace SEP_JMS.API.Controllers
             {
                 logger.Info($"{logPrefix} Start to update the job {jobId}.");
                 if (model.CorrelationType == CorrelationJobType.Project && model.ParentId != null) throw new ArgumentException("project can't have parent id");
-
+                if (model.JobStatus != JobStatus.Pending && model.JobStatus != JobStatus.NotDo && ApiContext.Current.Role == RoleType.Customer) return Forbid();
+                
                 // for make notify
                 var job = await jobService.GetBasicJob(jobId);
                 if (job == null) return NotFound();
@@ -368,6 +370,9 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to delete job {jobId}.");
+                var job = await jobService.GetBasicJob(jobId);
+                if (job == null) return NotFound();
+                if (job.PaymentSuccess) return Forbid();
                 await jobService.Delete(jobId);
                 return NoContent();
             }

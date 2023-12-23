@@ -478,7 +478,7 @@ const SideBar = () => {
                               } text-primary font-semibold transition-all [&>span]:text-[13px] [&>span]:font-[500]`}
                               primary={contentItem.parent.text}
                             />
-                            {nestedOpenArr[_index] ? <ExpandLess /> : <ExpandMore />}
+                            { sidebar.isExpand && (nestedOpenArr[_index] ? <ExpandLess /> : <ExpandMore />)}
                           </ListItemButton>
                           {getSelectedBorderStyle(contentItem.parent.text)}
                           {!sidebar.isExpand && (

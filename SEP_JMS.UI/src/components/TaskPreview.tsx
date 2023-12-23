@@ -42,8 +42,21 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
+      ...filterInfoController.content
+    }).then(res => {
+      setLoading(false);
+      setJobs(res.data.items);
+      setPageCount(Math.ceil(res.data.count / pageSize));
+    });
+  };
+  const getCompletedJobs = async () => {
+    setLoading(true);
+    await AlwayxInstance.post("job/all", {
+      pageIndex: page,
+      pageSize: pageSize,
+      searchText: searchJobTitleController.content,
       ...filterInfoController.content,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
+      jobStatus: JobStatusType.Completed
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -57,8 +70,21 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
+      ...filterInfoController.content
+    }).then(res => {
+      setLoading(false);
+      setJobs(res.data.items);
+      setPageCount(Math.ceil(res.data.count / pageSize));
+    });
+  };
+  const getCompletedProjects = async () => {
+    setLoading(true);
+    await AlwayxInstance.post("job/allprojects", {
+      pageIndex: page,
+      pageSize: pageSize,
+      searchText: searchJobTitleController.content,
       ...filterInfoController.content,
-      jobStatus: finishedOnly ? JobStatusType.Completed : filterInfoController.content.jobStatus
+      jobStatus: JobStatusType.Completed
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -81,9 +107,9 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
 
   useEffect(() => {
     if (isCorrelationJobType === CorrelationJobType.Job) {
-      getJobs();
+      finishedOnly ? getCompletedJobs() : getJobs();
     } else {
-      getProjects();
+      finishedOnly ? getCompletedProjects() : getProjects();
     }
   }, [page]);
 
@@ -91,7 +117,11 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
     if (!isFirstRender) {
       if (page !== 1) setPage(1);
       else {
-        isCorrelationJobType === CorrelationJobType.Project ? getProjects() : getJobs();
+        if (isCorrelationJobType === CorrelationJobType.Project) {
+          finishedOnly ? getCompletedProjects() : getProjects();
+        } else {
+          finishedOnly ? getCompletedJobs() : getJobs();
+        }
       }
     }
   }, [filterInfoController.content, isCorrelationJobType, searchJobTitleController.content]);

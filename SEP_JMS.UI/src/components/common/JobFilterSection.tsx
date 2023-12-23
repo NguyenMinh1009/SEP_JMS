@@ -2,7 +2,14 @@ import { DateTimePicker, viVN } from "@mui/x-date-pickers";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { dateToTicks, getDefaultDeadline, getDefaultFilterStart } from "../../utils/Datetime";
-import { Autocomplete, CircularProgress, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  CircularProgress,
+  Divider,
+  MenuItem,
+  Select,
+  TextField
+} from "@mui/material";
 import { JobType, jobOptions } from "../../enums/jobType";
 import {
   internalStatusFilterOptions,
@@ -216,6 +223,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       setSelectedStatus(allKey.key),
       setSelectedAccount(null),
       setSelectedPaymentSuccess(null);
+
+    filterInfoController.clear();
   };
 
   const getCurrentInfo = async () => {
@@ -426,7 +435,6 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                 </label>
                 <Autocomplete
                   id="types"
-                  value={selectedJobType}
                   onChange={(_, newValue) => {
                     setSelectedJobType(newValue);
                   }}
@@ -534,8 +542,7 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
                   id="designers"
                   value={
                     currentPerson.roleType === Role.ACCOUNT
-                      ? // || currentPerson.roleType === Role.DESIGNER
-                        currentInfo?.fullname || "..."
+                      ? currentInfo?.fullname || "..."
                       : selectedAccount
                   }
                   onChange={(_, newValue) => {

@@ -12,6 +12,7 @@ import JobFilterSection from "../components/common/JobFilterSection";
 import { CorrelationJobType } from "../enums/correlationJobType";
 import JobInputSearch from "../components/common/JobInputSearch";
 import { TaskString } from "../enums/taskEnums";
+import { Divider } from "@mui/material";
 
 interface IJobs {
   isInternal?: boolean;
@@ -22,7 +23,7 @@ const Jobs: React.FC<IJobs> = ({ isInternal, isCorrelationJobType }) => {
   const currentPerson = useCurrentPerson();
   return (
     <div className="h-full overflow-auto scrollbar-hide">
-      <div className="mb-10">
+      <div className="mb-3">
         <div className="flex items-end justify-between gap-3">
           <JobFilterSection isInternal={isInternal} isCorrelationJobType={isCorrelationJobType} />
           {currentPerson.roleType !== Role.DESIGNER && (
@@ -64,6 +65,7 @@ const Jobs: React.FC<IJobs> = ({ isInternal, isCorrelationJobType }) => {
           )}
         </div>
       </div>
+      <Divider className="mb-3" />
       <div className="flex justify-between">
         {isCorrelationJobType === CorrelationJobType.Job ? (
           <p className="text-primary mb-6 text-base">{TaskString.DANH_SACH_CONG_VIEC}</p>

@@ -17,7 +17,7 @@ const JobInputSearch: React.FC<IJobInputSearch> = ({ isCorrelationJobType }: IJo
   };
 
   return (
-    <div className="relative mr-2 w-1/3">
+    <div className="relative w-1/3">
       <input
         type="text"
         id="search"
@@ -26,8 +26,9 @@ const JobInputSearch: React.FC<IJobInputSearch> = ({ isCorrelationJobType }: IJo
             ? TaskString.TIM_KIEM_CONG_VIEC
             : TaskString.TIM_KIEM_DU_AN
         }
+        value={searchJobTitleController.content}
         onChange={handleInputChange}
-        className="w-full rounded-lg border py-2 pl-2 pr-10 outline-none focus:border-blue-300 focus:ring"
+        className="w-full rounded-lg border py-2 pl-2 pr-10 outline-none hover:border-gray-800 focus:border-blue-800"
       />
       <span className="pointer-events-none absolute bottom-5 right-2 flex items-center pl-3">
         <FaSearch className="h-5 w-5 text-gray-400" />

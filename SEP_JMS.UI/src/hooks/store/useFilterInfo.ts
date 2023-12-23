@@ -3,6 +3,7 @@ import { JobStatusType } from "../../enums/jobStatusType";
 import { InternalJobStatusType } from "../../enums/internalJobStatusType";
 import { CorrelationJobType } from "../../enums/correlationJobType";
 import { JobType } from "../../enums/jobType";
+import { PaymentSuccess } from "../../enums/paymentSuccess";
 
 export interface IFilterInfo {
   content: {
@@ -15,6 +16,7 @@ export interface IFilterInfo {
     correlationType?: CorrelationJobType;
     companyId?: string;
     jobType?: JobType;
+    paymentSuccess?: typeof PaymentSuccess;
   };
   setContent?: (value: any) => void;
   clear?: () => void;

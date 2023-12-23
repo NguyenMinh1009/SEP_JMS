@@ -22,6 +22,7 @@ import { useLocation } from "react-router-dom";
 import APIClientInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { TaskString } from "../../enums/taskEnums";
+import { PaymentSuccessOptions } from "../../enums/paymentSuccess";
 
 interface JobFilterSectionProps {
   isInternal?: boolean;
@@ -51,11 +52,13 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
     CorrelationJobType | typeof allKey.key
   >(allKey.key);
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
+  const [selectedPaymentSuccess, setSelectedPaymentSuccess] = useState<any | null>(null);
   const [companies, setCompanies] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [designers, setDesigners] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [jobtypes, setJobtypes] = useState<any[]>([]);
+  // const [paymentSuccess, setPaymentSuccess] = useState<any[]>(PaymentSuccessOptions);
   const [currentInfo, setCurrentInfo] = useState<any>(null);
 
   const currentPerson = useCurrentPerson();
@@ -199,7 +202,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
             companyId: selectedCompany?.companyId ?? undefined,
             correlationType:
               selectedCorrelationJobType === allKey.key ? undefined : selectedCorrelationJobType,
-            customerId: selectedCustomer?.userId ?? undefined
+            customerId: selectedCustomer?.userId ?? undefined,
+            paymentSuccess: selectedPaymentSuccess?.key ?? null
           })
       : snakeBar.setSnakeBar("Tìm kiếm không hợp lệ!", "warning", true);
   };
@@ -210,7 +214,8 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       setSelectedJobType(null),
       setSelectedDesigner(null),
       setSelectedStatus(allKey.key),
-      setSelectedAccount(null);
+      setSelectedAccount(null),
+      setSelectedPaymentSuccess(null);
   };
 
   const getCurrentInfo = async () => {
@@ -313,232 +318,275 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
       );
   };
 
+  const renderPaymentSuccessFilter = () => {
+    if (finishedOnly && currentPerson.roleType === Role.ADMIN) {
+      return (
+        <div className="flex flex-col items-start gap-3">
+          <label htmlFor="" className="text-primary col-span-2 mr-4">
+            {TaskString.TRANG_THAI_THANH_TOAN}
+          </label>
+          <Autocomplete
+            noOptionsText="Không có lựa chọn"
+            id="paymentSuccess"
+            value={selectedPaymentSuccess}
+            onChange={(_, newValue) => {
+              setSelectedPaymentSuccess(newValue);
+            }}
+            getOptionLabel={option => option.text}
+            size="small"
+            options={PaymentSuccessOptions}
+            fullWidth
+            // disabled
+            renderInput={params => (
+              <TextField
+                {...params}
+                sx={{
+                  "& .MuiInputBase-sizeSmall": {
+                    height: "40px !important"
+                  },
+                  "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                }}
+                placeholder="--Tất cả--"
+              />
+            )}
+          />
+        </div>
+      );
+    }
+  };
+
   return (
     <div>
-      <div key={location.pathname} className="grid grid-cols-5 items-end gap-3">
-        <div className="flex flex-col items-start gap-3">
-          <label htmlFor="" className="text-primary col-span-2 mr-4">
-            {TaskString.TU_NGAY}
-          </label>
-          <DateTimePicker
-            slotProps={{
-              actionBar: {
-                actions: ["clear"]
-              }
-            }}
-            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-            className="h-[40px] w-full"
-            sx={{
-              "& .MuiInputBase-root": {
-                height: "40px"
-              },
-              "& .MuiSvgIcon-root": {
-                fontSize: "1rem"
-              }
-            }}
-            format="DD-MM-YYYY - h:mm"
-            closeOnSelect={false}
-            ampm={false}
-            value={from}
-            onChange={value => {
-              setFrom(value);
-            }}
-          />
-        </div>
-        <div className="flex flex-col items-start gap-3">
-          <label htmlFor="" className="text-primary col-span-2 mr-4">
-            {TaskString.DEN_NGAY}
-          </label>
-          <DateTimePicker
-            slotProps={{
-              actionBar: {
-                actions: ["clear"]
-              }
-            }}
-            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
-            className="h-[40px] w-full"
-            sx={{
-              "& .MuiInputBase-root": {
-                height: "40px"
-              },
-              "& .MuiSvgIcon-root": {
-                fontSize: "1rem"
-              }
-            }}
-            format="DD-MM-YYYY - h:mm"
-            closeOnSelect={false}
-            ampm={false}
-            value={to}
-            onChange={value => {
-              setTo(value);
-            }}
-          />
-        </div>
+      <div key={location.pathname} className="flex items-end gap-3">
+        <div className="grid grid-cols-5 gap-3">
+          <div className="flex flex-col items-start gap-3">
+            <label htmlFor="" className="text-primary col-span-2 mr-4">
+              {TaskString.TU_NGAY}
+            </label>
+            <DateTimePicker
+              slotProps={{
+                actionBar: {
+                  actions: ["clear"]
+                }
+              }}
+              localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+              className="h-[40px] w-full"
+              sx={{
+                "& .MuiInputBase-root": {
+                  height: "40px"
+                },
+                "& .MuiSvgIcon-root": {
+                  fontSize: "1rem"
+                }
+              }}
+              format="DD-MM-YYYY - h:mm"
+              closeOnSelect={false}
+              ampm={false}
+              value={from}
+              onChange={value => {
+                setFrom(value);
+              }}
+            />
+          </div>
+          <div className="flex flex-col items-start gap-3">
+            <label htmlFor="" className="text-primary col-span-2 mr-4">
+              {TaskString.DEN_NGAY}
+            </label>
+            <DateTimePicker
+              slotProps={{
+                actionBar: {
+                  actions: ["clear"]
+                }
+              }}
+              localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+              className="h-[40px] w-full"
+              sx={{
+                "& .MuiInputBase-root": {
+                  height: "40px"
+                },
+                "& .MuiSvgIcon-root": {
+                  fontSize: "1rem"
+                }
+              }}
+              format="DD-MM-YYYY - h:mm"
+              closeOnSelect={false}
+              ampm={false}
+              value={to}
+              onChange={value => {
+                setTo(value);
+              }}
+            />
+          </div>
 
-        {!report && (
-          <>
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                {TaskString.LOAI_THIET_KE}
-              </label>
-              <Autocomplete
-                id="types"
-                value={selectedJobType}
-                onChange={(_, newValue) => {
-                  setSelectedJobType(newValue);
-                }}
-                getOptionLabel={option => option.typeName}
-                size="small"
-                options={jobtypes}
-                fullWidth
-                // disabled
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    sx={{
-                      "& .MuiInputBase-sizeSmall": {
-                        height: "40px !important"
-                      },
-                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                    }}
-                    placeholder="-- Chọn loại TK --"
-                  />
-                )}
-              />
-            </div>
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                {TaskString.TRANG_THAI}
-              </label>
-              <Select
-                disabled={finishedOnly}
-                fullWidth
-                size="small"
-                id="demo-simple-select"
-                value={selectedStatus}
-                onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
-                sx={{
-                  "& .MuiInputBase-inputSizeSmall": {
-                    fontSize: "13px !important"
+          {!report && (
+            <>
+              <div className="flex flex-col items-start gap-3">
+                <label htmlFor="" className="text-primary col-span-2 mr-4">
+                  {TaskString.LOAI_THIET_KE}
+                </label>
+                <Autocomplete
+                  id="types"
+                  value={selectedJobType}
+                  onChange={(_, newValue) => {
+                    setSelectedJobType(newValue);
+                  }}
+                  getOptionLabel={option => option.typeName}
+                  size="small"
+                  options={jobtypes}
+                  fullWidth
+                  // disabled
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      sx={{
+                        "& .MuiInputBase-sizeSmall": {
+                          height: "40px !important"
+                        },
+                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                      }}
+                      placeholder="-- Chọn loại TK --"
+                    />
+                  )}
+                />
+              </div>
+              <div className="flex flex-col items-start gap-3">
+                <label htmlFor="" className="text-primary col-span-2 mr-4">
+                  {TaskString.TRANG_THAI}
+                </label>
+                <Select
+                  disabled={finishedOnly}
+                  fullWidth
+                  size="small"
+                  id="demo-simple-select"
+                  value={selectedStatus}
+                  onChange={e => setSelectedStatus(e.target.value as JobStatusType)}
+                  sx={{
+                    "& .MuiInputBase-inputSizeSmall": {
+                      fontSize: "13px !important"
+                    }
+                  }}
+                >
+                  {(finishedOnly
+                    ? [allKey, ...statusOptions]
+                    : isInternal
+                    ? [allKey, ...internalStatusFilterOptions]
+                    : [allKey, ...statusFilterOptions]
+                  ).map(({ key, text }) => (
+                    <MenuItem key={key} value={key}>
+                      {text}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex flex-col items-start gap-3">
+                <label htmlFor="" className="text-primary col-span-2 mr-4">
+                  {TaskString.KHACH_HANG}
+                </label>
+                <Autocomplete
+                  noOptionsText="Không có lựa chọn"
+                  id="companies"
+                  value={
+                    currentPerson.roleType === Role.CUSTOMER
+                      ? currentInfo?.company?.companyName || "..."
+                      : selectedCompany
                   }
-                }}
-              >
-                {(finishedOnly
-                  ? [allKey, ...statusOptions]
-                  : isInternal
-                  ? [allKey, ...internalStatusFilterOptions]
-                  : [allKey, ...statusFilterOptions]
-                ).map(({ key, text }) => (
-                  <MenuItem key={key} value={key}>
-                    {text}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                {TaskString.KHACH_HANG}
-              </label>
-              <Autocomplete
-                noOptionsText="Không có lựa chọn"
-                id="companies"
-                value={
-                  currentPerson.roleType === Role.CUSTOMER
-                    ? currentInfo?.company?.companyName || "..."
-                    : selectedCompany
-                }
-                onChange={(_, newValue) => {
-                  setSelectedCompany(newValue);
-                }}
-                getOptionLabel={
-                  currentPerson.roleType === Role.CUSTOMER
-                    ? undefined
-                    : option => option.companyName
-                }
-                size="small"
-                options={companies}
-                fullWidth
-                disabled={currentPerson.roleType === Role.CUSTOMER}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    sx={{
-                      "& .MuiInputBase-sizeSmall": {
-                        height: "40px !important"
-                      },
-                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                    }}
-                    placeholder={
-                      currentPerson.roleType === Role.CUSTOMER ? "" : "-- Chọn khách hàng --"
-                    }
-                  />
-                )}
-              />
-            </div>
-            {renderCustomerFilter()}
-            {renderDesignerFilter()}
+                  onChange={(_, newValue) => {
+                    setSelectedCompany(newValue);
+                  }}
+                  getOptionLabel={
+                    currentPerson.roleType === Role.CUSTOMER
+                      ? undefined
+                      : option => option.companyName
+                  }
+                  size="small"
+                  options={companies}
+                  fullWidth
+                  disabled={currentPerson.roleType === Role.CUSTOMER}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      sx={{
+                        "& .MuiInputBase-sizeSmall": {
+                          height: "40px !important"
+                        },
+                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                      }}
+                      placeholder={
+                        currentPerson.roleType === Role.CUSTOMER ? "" : "-- Chọn khách hàng --"
+                      }
+                    />
+                  )}
+                />
+              </div>
+              {renderCustomerFilter()}
+              {renderDesignerFilter()}
 
-            <div className="flex flex-col items-start gap-3">
-              <label htmlFor="" className="text-primary col-span-2 mr-4">
-                {TaskString.ACCOUNT_MANAGER}
-              </label>
-              <Autocomplete
-                disabled={
-                  currentPerson.roleType === Role.ACCOUNT ||
-                  currentPerson.roleType === Role.DESIGNER
-                }
-                noOptionsText="Không có lựa chọn"
-                id="designers"
-                value={
-                  currentPerson.roleType === Role.ACCOUNT
-                    ? // || currentPerson.roleType === Role.DESIGNER
-                      currentInfo?.fullname || "..."
-                    : selectedAccount
-                }
-                onChange={(_, newValue) => {
-                  setSelectedAccount(newValue);
-                }}
-                getOptionLabel={
-                  currentPerson.roleType === Role.ACCOUNT
-                    ? // || currentPerson.roleType === Role.DESIGNER
-                      undefined
-                    : option => option.fullname
-                }
-                size="small"
-                options={accounts}
-                fullWidth
-                // disabled
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    sx={{
-                      "& .MuiInputBase-sizeSmall": {
-                        height: "40px !important"
-                      },
-                      "& .MuiAutocomplete-input": { fontSize: "13px !important" }
-                    }}
-                    placeholder={
-                      currentPerson.roleType === Role.ACCOUNT ? "" : "-- Chọn Account Manager --"
-                    }
-                  />
-                )}
-              />
-            </div>
-          </>
-        )}
-        <button
-          className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75 3xl:w-auto"
-          onClick={clearAll}
-        >
-          {TaskString.XOA_TAT_CA}
-        </button>
-        <CustomButton
-          primary
-          className=" h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
-          onClick={handleApply}
-        >
-          {TaskString.AP_DUNG}
-        </CustomButton>
+              <div className="flex flex-col items-start gap-3">
+                <label htmlFor="" className="text-primary col-span-2 mr-4">
+                  {TaskString.ACCOUNT_MANAGER}
+                </label>
+                <Autocomplete
+                  disabled={
+                    currentPerson.roleType === Role.ACCOUNT ||
+                    currentPerson.roleType === Role.DESIGNER
+                  }
+                  noOptionsText="Không có lựa chọn"
+                  id="designers"
+                  value={
+                    currentPerson.roleType === Role.ACCOUNT
+                      ? // || currentPerson.roleType === Role.DESIGNER
+                        currentInfo?.fullname || "..."
+                      : selectedAccount
+                  }
+                  onChange={(_, newValue) => {
+                    setSelectedAccount(newValue);
+                  }}
+                  getOptionLabel={
+                    currentPerson.roleType === Role.ACCOUNT
+                      ? // || currentPerson.roleType === Role.DESIGNER
+                        undefined
+                      : option => option.fullname
+                  }
+                  size="small"
+                  options={accounts}
+                  fullWidth
+                  // disabled
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      sx={{
+                        "& .MuiInputBase-sizeSmall": {
+                          height: "40px !important"
+                        },
+                        "& .MuiAutocomplete-input": { fontSize: "13px !important" }
+                      }}
+                      placeholder={
+                        currentPerson.roleType === Role.ACCOUNT ? "" : "-- Chọn Account Manager --"
+                      }
+                    />
+                  )}
+                />
+              </div>
+
+              {renderPaymentSuccessFilter()}
+            </>
+          )}
+        </div>
+        <div className="h-full w-52 justify-items-end">
+          <button
+            className="flex h-10 w-full cursor-pointer justify-center gap-2 rounded-md bg-amber-600 p-3 text-white hover:opacity-75"
+            onClick={clearAll}
+          >
+            {TaskString.XOA_TAT_CA}
+          </button>
+          <CustomButton
+            primary
+            className="mt-11 h-10 w-full items-start gap-3 text-xs font-normal normal-case text-white"
+            onClick={handleApply}
+          >
+            {TaskString.AP_DUNG}
+          </CustomButton>
+        </div>
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ import AlwayxInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { correlationJobOptions } from "../../constants";
 import { TaskString } from "../../enums/taskEnums";
+import { PaymentSuccess, PaymentSuccessOptions } from "../../enums/paymentSuccess";
 type IRowProps = {
   row: any;
   index: number;
@@ -141,6 +142,35 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
     //   return <></>;
     // }
   };
+
+  const renderJobType = () => {
+    if (finishOnly) {
+      if (row.paymentSuccess === PaymentSuccess.PAID && row.finalJobType !== null) {
+        return (
+          <>
+            <TableCell
+              padding="none"
+              className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+              align="center"
+            >
+              {row.finalJobType ?? TaskString.TRONG}
+            </TableCell>
+          </>
+        );
+      }
+    }
+    return (
+      <>
+        <TableCell
+          padding="none"
+          className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          align="center"
+        >
+          {row.jobType?.typeName ?? TaskString.TRONG}
+        </TableCell>
+      </>
+    );
+  };
   return (
     <>
       <CustomDialog
@@ -211,13 +241,8 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           </TableCell>
         )}
 
-        <TableCell
-          padding="none"
-          className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
-          align="center"
-        >
-          {row.jobType?.typeName ?? TaskString.TRONG}
-        </TableCell>
+        {renderJobType()}
+
         {renderPriceCellBasedOnJobType()}
         <TableCell
           padding="none"
@@ -242,6 +267,21 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
             {priorityOptions.find(option => option.key === row.priority)?.text}
           </div>
         </TableCell>
+        {finishOnly && (
+          <TableCell
+            padding="none"
+            className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+            align="center"
+          >
+            <div
+              className={`font-[400] ${
+                row.paymentSuccess ? "font-semibold text-blue-800" : "font-semibold text-yellow-800"
+              }`}
+            >
+              {PaymentSuccessOptions.find(payment => payment.key === row.paymentSuccess)?.text}
+            </div>
+          </TableCell>
+        )}
         {!finishOnly ? (
           <TableCell
             padding="none"

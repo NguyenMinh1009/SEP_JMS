@@ -64,6 +64,7 @@ export enum TaskString {
   UU_TIEN = "Ưu tiên",
   TRANG_THAI = "Trạng thái",
   SO_LUONG = "Số lượng",
+  TRANG_THAI_THANH_TOAN = "Trạng thái thanh toán",
 
   NOI_BO = "Nội bộ",
   CONG_KHAI = "Công khai",

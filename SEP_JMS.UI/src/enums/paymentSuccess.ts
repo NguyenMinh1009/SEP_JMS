@@ -10,6 +10,6 @@ export const PaymentSuccessOptions = [
   },
   {
     key: PaymentSuccess.PAID,
-    text: "Đa thanh toán"
+    text: "Đã thanh toán"
   }
 ];

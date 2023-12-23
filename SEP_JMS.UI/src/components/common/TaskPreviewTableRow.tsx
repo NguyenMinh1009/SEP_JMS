@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { convertVND } from "../../utils/VNDConvert";
 import { getTextColorFromPriority } from "../../utils/Priority";
 import { PathString } from "../../enums/MapRouteToBreadCrumb";
-import { IoCreateOutline } from "react-icons/io5";
+import { IoCreateOutline, IoCreateSharp } from "react-icons/io5";
 import { HiOutlineEye } from "react-icons/hi";
 import { BiTrashAlt } from "react-icons/bi";
 import { Role } from "../../enums/Role";
@@ -25,6 +25,7 @@ import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { correlationJobOptions } from "../../constants";
 import { TaskString } from "../../enums/taskEnums";
 import { PaymentSuccess, PaymentSuccessOptions } from "../../enums/paymentSuccess";
+import { TbTrash, TbTrashFilled, TbTrashOff } from "react-icons/tb";
 type IRowProps = {
   row: any;
   index: number;
@@ -320,7 +321,8 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
               </span>
               {!isDisableWhenComplete() && (
                 <>
-                  <span
+                  <button
+                    disabled={row.paymentSuccess}
                     onClick={() => {
                       navigate(getLinkForEditJob(taskId));
                     }}
@@ -330,18 +332,21 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
                         correlationJobType === CorrelationJobType.Job)
                         ? ""
                         : "border-r-[1px]"
-                    } border-[#999] px-1 pr-2 hover:scale-105`}
+                    } border-[#999] px-1 pr-2 hover:scale-105 ${row.paymentSuccess ? "text-pink-800" : ""}`}
                   >
-                    <IoCreateOutline size={18} />
-                  </span>
+                    {row.paymentSuccess ? (<IoCreateSharp size={18}/>) : (<IoCreateOutline size={18} />)}
+                    
+                  </button>
                   {currentPerson.roleType !== Role.CUSTOMER &&
                     currentPerson.roleType !== Role.DESIGNER && (
-                      <span
+                      <button
+                        disabled={row.paymentSuccess}
                         onClick={handleClickDeleteTask}
-                        className="group relative cursor-pointer border-[#999] px-1 hover:scale-105"
+                        className={`group relative cursor-pointer border-[#999] px-1 hover:scale-105 ${row.paymentSuccess ? "text-pink-800" : ""}`}
                       >
-                        <BiTrashAlt size={18} color="#666" />
-                      </span>
+                        {row.paymentSuccess ? (<TbTrashFilled size={18}/>) : (<TbTrash size={18} />)}
+                        
+                      </button>
                     )}
                 </>
               )}

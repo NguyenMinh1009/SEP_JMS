@@ -297,6 +297,8 @@ namespace SEP_JMS.Service.Services
                         notify.Data += $"Trạng thái: {ToVietnamese(Enum.GetName(typeof(JobStatus), oldJob.JobStatus))} --> {ToVietnamese(Enum.GetName(typeof(JobStatus), job.JobStatus))}" + newLineChar;
                     }
 
+                    if (string.IsNullOrEmpty(notify.Data.Trim())) notify.Data = "Files: Cập nhật tệp đính kèm";
+
                     notify.TriggerBy = ApiContext.Current.UserId;
                     notify.Receiver = user.UserId;
                     notify.CreatedTime = DateTime.UtcNow.Ticks;

@@ -117,6 +117,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
   };
 
   const renderDeleteButton = () => {
+    if (isPaid) return;
     if (currentPerson.roleType === Role.ADMIN) {
       return (
         <button

@@ -262,7 +262,7 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
         <BasicTaskInfo
           Icon={<MdOutlineTypeSpecimen size={15} color="#555" />}
           title={TaskString.LOAI_THIET_KE + TaskString.HAI_CHAM}
-          detail={taskDetail?.jobType?.typeName || TaskString.TRONG}
+          detail={taskDetail?.finalJobType || taskDetail?.jobType?.typeName || TaskString.TRONG}
         />
         {renderCorrelationJobType()}
 

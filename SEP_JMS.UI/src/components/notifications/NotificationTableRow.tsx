@@ -210,7 +210,7 @@ const NotificationTableRow: React.FC<IRowProps> = ({
     (notiDetails += `<b>Người gửi:</b> ${row.message.substr(0, row.message.indexOf(")") + 1)}<br>`);
   notiDetails += `<b>Thời gian:</b> ${formatDateTime(ticksToDate(row.createdTime))}<br>`;
   notiDetails += `<br>`;
-  notiDetails += `<b><span class="bg-stone-200 inline-block w-full rounded-sm text-center">Nội dung</span></b><br>`;
+  notiDetails += `<b><span class="bg-stone-200 inline-block w-full rounded-sm text-center">Nội dung</span></b><br><br>`;
   notiDetails += row.data.replace(/\[COMMENT_TYPE\=(Internal|Public)\]/, "");
 
   const isUnRead = tempUnRead && !row.readAt;

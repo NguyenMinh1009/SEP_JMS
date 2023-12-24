@@ -27,6 +27,7 @@ import { RiAddCircleLine } from "react-icons/ri";
 import { JobStatusType } from "../enums/jobStatusType";
 import { TaskString } from "../enums/taskEnums";
 import { CommentString } from "../enums/commentEnum";
+import { useIsFirstRender } from "../hooks/useIsFirstRender";
 
 interface ITaskDetail {
   finishOnly?: boolean;
@@ -59,6 +60,8 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
   const breadCrumbTitle = useTitle();
   const navigate = useNavigate();
   const { taskId, subTaskId } = useParams();
+
+  const isFirstRender = useIsFirstRender();
 
   const getComments = () => {
     setCommentLoading(true);
@@ -220,6 +223,10 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
     }
   }, [isObserverVisible]);
 
+  useEffect(() => {
+    if (isFirstRender) getComments();
+  }, [jobDetail]);
+
   const handleCreateTask = () => {
     finishOnly
       ? navigate(
@@ -379,7 +386,6 @@ const TasksDetail: React.FC<ITaskDetail> = ({ finishOnly, isCorrelationJobType }
                   </div>
                 </div>
               )}
-
               <div ref={observerRef} className="h-2 w-2 pb-5"></div>
             </div>
             <div

@@ -4,4 +4,6 @@ export interface ReportItem {
   expectedProfit: number
   totalFinishedJobs: number;
   totalProfit: number;
+  totalPaid: number;
+  totalPaidJobs: number;
 }

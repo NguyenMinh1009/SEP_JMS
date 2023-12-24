@@ -30,6 +30,7 @@ import APIClientInstance from "../../api/AxiosInstance";
 import useSnakeBar from "../../hooks/store/useSnakeBar";
 import { TaskString } from "../../enums/taskEnums";
 import { PaymentSuccessOptions } from "../../enums/paymentSuccess";
+import { useIsFirstRender } from "../../hooks/useIsFirstRender";
 
 interface JobFilterSectionProps {
   isInternal?: boolean;
@@ -74,9 +75,12 @@ const JobFilterSection: React.FC<JobFilterSectionProps> = ({
   const snakeBar = useSnakeBar();
 
   const [isLoading, setLoading] = useState<boolean>(false);
-
+  const isFirstRender = useIsFirstRender()
   // reset state when prop change
-  // useEffect(() => handleApply(), [report]);
+  useEffect(() => {
+    clearAll();
+  }, []);
+  
   useEffect(() => {
     if (!report || !quickSelect) return;
     let now = new Date();

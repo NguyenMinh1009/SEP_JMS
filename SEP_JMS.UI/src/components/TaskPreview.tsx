@@ -36,13 +36,21 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
   const filterInfoController = useFilterInfo();
   const searchJobTitleController = useSearchJobTitle();
 
+  const getFilterContent = () => {
+    if (!isFirstRender) return filterInfoController.content;
+    return {
+      from: 0,
+      to: null
+    }
+  }
+
   const getJobs = async () => {
     setLoading(true);
     await AlwayxInstance.post("job/all", {
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
-      ...filterInfoController.content
+      ...getFilterContent()
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -55,7 +63,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
-      ...filterInfoController.content,
+      ...getFilterContent(),
       jobStatus: JobStatusType.Completed
     }).then(res => {
       setLoading(false);
@@ -70,7 +78,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
-      ...filterInfoController.content
+      ...getFilterContent()
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -83,7 +91,7 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
-      ...filterInfoController.content,
+      ...getFilterContent(),
       jobStatus: JobStatusType.Completed
     }).then(res => {
       setLoading(false);
@@ -106,11 +114,11 @@ const TaskPreview = ({ finishedOnly, setPageInfo, isCorrelationJobType }: ITaskP
   };
 
   useEffect(() => {
-    if (isCorrelationJobType === CorrelationJobType.Job) {
-      finishedOnly ? getCompletedJobs() : getJobs();
-    } else {
-      finishedOnly ? getCompletedProjects() : getProjects();
-    }
+      if (isCorrelationJobType === CorrelationJobType.Job) {
+        finishedOnly ? getCompletedJobs() : getJobs();
+      } else {
+        finishedOnly ? getCompletedProjects() : getProjects();
+      }
   }, [page]);
 
   useEffect(() => {

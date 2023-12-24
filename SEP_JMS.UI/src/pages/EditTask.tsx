@@ -496,6 +496,12 @@ const EditTask: React.FC<IEditTaskProp> = ({
       snakeBar.setSnakeBar(ToastString.TONG_TAI_LIEU_VUOT_QUA_100MB, "warning", true);
       return;
     }
+
+    const totalPreview = previewFiles.reduce((total, file) => total + file.size, 0);
+    if (totalPreview / (1024 * 1024) > 5) {
+      snakeBar.setSnakeBar("File preview vượt quá dung lượng cho phép là 5MB!", "warning", true);
+      return;
+    }
     //check validate input edit job
     var errors = checkInputEditJob(quantity, deadline, taskDetail.createdTime);
     errors.forEach(error => {

@@ -52,6 +52,7 @@ import PriceListAccount from "./pages/PriceListAccount";
 
 import moment from "moment";
 import "moment/dist/locale/vi";
+import InternalJobs from "./pages/InternalJobs";
 
 const theme = createTheme(
   {
@@ -171,7 +172,7 @@ const PathRules: RouteRule[] = [
   {
     path: `${PathString.NOI_BO}/${PathString.VIEC_HANG_NGAY}/*`,
     roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
-    element: <Jobs isInternal isCorrelationJobType={CorrelationJobType.Job} />,
+    element: <InternalJobs isInternal isCorrelationJobType={CorrelationJobType.Job} />,
     sub_routes: [
       {
         //add
@@ -195,7 +196,7 @@ const PathRules: RouteRule[] = [
   {
     path: `${PathString.NOI_BO}/${PathString.VIEC_DU_AN}/*`,
     roles: [Role.ADMIN, Role.ACCOUNT, Role.DESIGNER],
-    element: <Jobs isInternal isCorrelationJobType={CorrelationJobType.Project} />,
+    element: <InternalJobs isInternal isCorrelationJobType={CorrelationJobType.Project} />,
     sub_routes: [
       {
         //add

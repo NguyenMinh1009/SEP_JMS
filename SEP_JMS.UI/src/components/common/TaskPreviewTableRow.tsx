@@ -86,7 +86,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
   const isDisableWhenComplete = (): boolean => {
     if (currentPerson.roleType !== Role.ADMIN && taskStatus === JobStatusType.Completed)
       return true;
-    if (row.finalJobType !== null) return true;
+    // if (row.finalJobType !== null) return true;
     if (
       currentPerson.roleType === Role.DESIGNER &&
       correlationJobType === CorrelationJobType.Project

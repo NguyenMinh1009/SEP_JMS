@@ -57,6 +57,20 @@ const ReportPreviewRow: React.FC<IRowProps> = ({ row, index }) => {
       >
         {row.totalProfit?.toLocaleString('vi-VN')}
       </TableCell>
+      <TableCell
+        padding="none"
+        className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+        align="center"
+      >
+        {row.totalPaidJobs?.toLocaleString('vi-VN')}
+      </TableCell>
+      <TableCell
+        padding="none"
+        className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+        align="center"
+      >
+        {row.totalPaid?.toLocaleString('vi-VN')}
+      </TableCell>
     </TableRow>
   );
 };

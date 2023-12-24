@@ -31,6 +31,16 @@ const ReportHeadCell: readonly ReportPageHeadCell[] = [
     id: "totalProfit",
     disablePadding: false,
     label: "DT tạm tính"
+  },
+  {
+    id: "totalPaidJobs",
+    disablePadding: false,
+    label: "Việc đã thanh toán"
+  },
+  {
+    id: "totalPaid",
+    disablePadding: false,
+    label: "Doanh thu"
   }
 ];
 

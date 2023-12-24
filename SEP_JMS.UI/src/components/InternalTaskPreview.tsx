@@ -37,13 +37,21 @@ const InternalTaskPreview = ({ sidebar, setPageInfo, isCorrelationJobType }: ITa
 
   const searchJobTitleController = useSearchJobTitle();
 
+  const getFilterContent = () => {
+    if (!isFirstRender) return filterInfoController.content;
+    return {
+      from: 0,
+      to: null
+    }
+  }
+
   const getJobs = async () => {
     setLoading(true);
     await AlwayxInstance.post("internal/job/all", {
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
-      ...filterInfoController.content
+      ...getFilterContent()
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);
@@ -57,7 +65,7 @@ const InternalTaskPreview = ({ sidebar, setPageInfo, isCorrelationJobType }: ITa
       pageIndex: page,
       pageSize: pageSize,
       searchText: searchJobTitleController.content,
-      ...filterInfoController.content
+      ...getFilterContent()
     }).then(res => {
       setLoading(false);
       setJobs(res.data.items);

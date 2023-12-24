@@ -14,6 +14,7 @@ import useFilterInfo from "../../hooks/store/useFilterInfo";
 import ReportHead from "./ReportHead";
 import { ReportItem } from "../../interface/report";
 import ReportPreviewRow from "./ReportPreviewRow";
+import { useIsFirstRender } from "../../hooks/useIsFirstRender";
 
 interface IReportPreview {}
 
@@ -24,11 +25,20 @@ const ReportPreview: React.FC<IReportPreview> = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const filterInfoController = useFilterInfo();
+  const isFirstRender = useIsFirstRender()
+
+  const getFilterContent = () => {
+    if (!isFirstRender) return filterInfoController.content;
+    return {
+      from: 0,
+      to: null
+    }
+  }
 
   const getReportInfo = () => {
     setLoading(true);
     APIClientInstance.post("job/statistics", {
-      ...filterInfoController.content
+      ...getFilterContent()
     })
       .then(res => {
         setReportItems(res.data);
@@ -53,6 +63,14 @@ const ReportPreview: React.FC<IReportPreview> = () => {
 
   const totalProfitCount = reportItems
     .map(item => item.totalProfit)
+    .reduce((a, b) => (a ?? 0) + (b ?? 0), 0);
+
+  const totalPaidJobsCount = reportItems
+    .map(item => item.totalPaidJobs)
+    .reduce((a, b) => (a ?? 0) + (b ?? 0), 0);
+
+    const totalPaidCount = reportItems
+    .map(item => item.totalPaid)
     .reduce((a, b) => (a ?? 0) + (b ?? 0), 0);
 
   useEffect(() => {
@@ -90,6 +108,12 @@ const ReportPreview: React.FC<IReportPreview> = () => {
                     </TableCell>
                     <TableCell className="text-center font-extrabold">
                       {totalProfitCount?.toLocaleString("vi-VN")}
+                    </TableCell>
+                    <TableCell className="text-center font-extrabold">
+                      {totalPaidJobsCount?.toLocaleString("vi-VN")}
+                    </TableCell>
+                    <TableCell className="text-center font-extrabold">
+                      {totalPaidCount?.toLocaleString("vi-VN")}
                     </TableCell>
                   </TableRow>
                   

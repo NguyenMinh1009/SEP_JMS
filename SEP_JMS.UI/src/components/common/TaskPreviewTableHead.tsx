@@ -303,12 +303,7 @@ const EnhancedTableHead: React.FC<EnhancedTableProps> = ({ correlationJobType, f
         }}
       >
         {headerCells.map(headCell => (
-          <TableCell
-            key={headCell.id}
-            align="center"
-            padding="none"
-            className="px-1 py-3 align-top"
-          >
+          <TableCell key={headCell.id} align="center" padding="none" className="px-1 py-3">
             {headCell.label}
           </TableCell>
         ))}

@@ -123,7 +123,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
       return (
         <TableCell
           padding="none"
-          className="min-w-[50px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="min-w-[50px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           {row.quantity}
@@ -135,7 +135,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
     //     return (
     //       <TableCell
     //         padding="none"
-    //         className="min-w-[60px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+    //         className="min-w-[60px] border-r-[1px] p-2 text-[13px] font-[400]"
     //         align="center"
     //       >
     //         {convertVND(row.price)}
@@ -153,7 +153,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
           <>
             <TableCell
               padding="none"
-              className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+              className="min-w-[96px] border-r-[1px] p-2 text-[13px] font-[400]"
               align="center"
             >
               {row.finalJobType ?? TaskString.TRONG}
@@ -166,7 +166,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
       <>
         <TableCell
           padding="none"
-          className="min-w-[96px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="min-w-[96px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           {row.jobType?.typeName ?? TaskString.TRONG}
@@ -189,7 +189,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
       <TableRow hover role="checkbox" tabIndex={-1} key={row.name}>
         <TableCell
           padding="none"
-          className="min-w-[50px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="min-w-[50px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
           component="th"
           id={labelId}
@@ -200,7 +200,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         {/* {correlationJobType === CorrelationJobType.Job && (
           <TableCell
             padding="none"
-            className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+            className="min-w-[80px] border-r-[1px] p-2 text-[13px] font-[400]"
             align="center"
           >
             {correlationJobOptions.find(item => item.key === row.correlationType)?.text}
@@ -208,28 +208,28 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         )} */}
         <TableCell
           padding="none"
-          className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="min-w-[80px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           {row.company?.companyName ?? TaskString.TRONG}
         </TableCell>
         <TableCell
           padding="none"
-          className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           {row.customer.fullname}
         </TableCell>
         <TableCell
           padding="none"
-          className="max-w-[300px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="max-w-[300px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           <p className="line-clamp-2 text-[13px] leading-5">{row.title}</p>
         </TableCell>
         <TableCell
           padding="none"
-          className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           {row.account.fullname}
@@ -237,7 +237,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         {correlationJobType === CorrelationJobType.Job && (
           <TableCell
             padding="none"
-            className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
+            className="border-r-[1px] p-2 text-[13px] font-[400]"
             align="center"
           >
             {row.designer?.fullname ?? TaskString.TRONG}
@@ -249,21 +249,21 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         {renderPriceCellBasedOnJobType()}
         <TableCell
           padding="none"
-          className="min-w-[100px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="min-w-[100px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           {moment(ticksToDate(row.createdTime)).format("DD-MM-YYYY - h:mm")}
         </TableCell>
         <TableCell
           padding="none"
-          className="min-w-[100px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="min-w-[100px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           {moment(ticksToDate(row.deadline)).format("DD-MM-YYYY - h:mm")}
         </TableCell>
         <TableCell
           padding="none"
-          className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+          className="min-w-[80px] border-r-[1px] p-2 text-[13px] font-[400]"
           align="center"
         >
           <div className={`font-[400] ${getTextColorFromPriority(row.priority)}`}>
@@ -273,7 +273,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         {finishOnly && (
           <TableCell
             padding="none"
-            className="min-w-[80px] border-r-[1px] p-2 align-top text-[13px] font-[400]"
+            className="min-w-[80px] border-r-[1px] p-2 text-[13px] font-[400]"
             align="center"
           >
             <div
@@ -304,7 +304,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
 
         <TableCell
           padding="none"
-          className="h-full min-w-[100px] justify-center p-2 align-top text-[13px] font-[400] first-letter:items-center"
+          className="h-full min-w-[100px] justify-center p-2 text-[13px] font-[400] first-letter:items-center"
           align="center"
         >
           <div className="flex h-full w-full items-center justify-center">

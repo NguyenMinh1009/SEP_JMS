@@ -965,7 +965,10 @@ const EditTask: React.FC<IEditTaskProp> = ({
                       <span className="text-[13px] text-[#444]">
                         {TaskString.TAI_LIEU_DINH_KEM}
                       </span>
-                      <i>{TaskString.TAI_LIEU_DINH_KEM_100MB}</i>
+                      <i>
+                        {TaskString.WHILE_SPACE}
+                        {TaskString.TAI_LIEU_DINH_KEM_100MB}
+                      </i>
                     </p>
                     <div className="mb-4 flex w-full items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -1009,8 +1012,11 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 <>
                   {/* Final */}
                   <p className="mb-3 text-sm font-semibold text-orange-500">
-                    <span className="text-[13px] text-[#444]">{TaskString.TAI_LIEU_KET_THUC}</span>
-                    <i>{TaskString.TAI_LIEU_DINH_KEM_100MB}</i>
+                    <span className="text-[13px] text-[#444]">{TaskString.SAN_PHAM}</span>
+                    <i>
+                      {TaskString.WHILE_SPACE}
+                      {TaskString.SAN_PHAM_100MB}
+                    </i>
                   </p>
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -1042,9 +1048,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                       )}
                   </div>
                   {finalFilesFromAPI && finalFilesFromAPI.length > 0 && (
-                    <p className="text-secondary mb-2 text-[13px]">
-                      {TaskString.TAI_LIEU_KET_THUC_CU}
-                    </p>
+                    <p className="text-secondary mb-2 text-[13px]">{TaskString.SAN_PHAM_CU}</p>
                   )}
                   <FileSection
                     visibleType={VisibleType.Public}
@@ -1055,9 +1059,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                     handleDelete={handleDeleteFinalFileAPI}
                   />
                   {finalFiles && finalFiles.length > 0 && (
-                    <p className="text-secondary mb-2 text-[13px]">
-                      {TaskString.TAI_LIEU_KET_THUC_MOI}
-                    </p>
+                    <p className="text-secondary mb-2 text-[13px]">{TaskString.SAN_PHAM_MOI}</p>
                   )}
                   <FileSection
                     visibleType={VisibleType.Public}
@@ -1068,7 +1070,10 @@ const EditTask: React.FC<IEditTaskProp> = ({
                   {/* Preview */}
                   <p className="mb-3 mt-16 text-sm font-semibold text-orange-500">
                     <span className="text-[13px] text-[#444]">{TaskString.ANH_BAO_CAO}</span>
-                    <i>{TaskString.DE_CHINH_TRANG_THAI_DA_XONG}</i>
+                    <i>
+                      {TaskString.WHILE_SPACE}
+                      {TaskString.DE_CHINH_TRANG_THAI_DA_XONG}
+                    </i>
                   </p>
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-2">

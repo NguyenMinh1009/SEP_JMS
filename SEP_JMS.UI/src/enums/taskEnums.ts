@@ -1,5 +1,6 @@
 export enum TaskString {
   EMPTY = "",
+  WHILE_SPACE = " ",
   CON_TRONG = "Còn trống",
   TRONG = "Trống",
   HAI_CHAM = ": ",
@@ -20,7 +21,7 @@ export enum TaskString {
   TEN_CONG_VIEC = "Tên công việc:",
   MO_TA_CONG_VIEC = "Mô tả công việc:",
   MO_TA_DU_AN = "Mô tả dự án:",
-  TAI_LIEU_DINH_KEM = "Tài liệu đính kèm ",
+  TAI_LIEU_DINH_KEM = "Tài liệu đính kèm",
   CLICK_DE_TAI_VE = "Click để tải về",
   ANH_DINH_KEM = "Ảnh đính kèm",
   ANH_BAO_CAO = "Ảnh báo cáo",
@@ -28,9 +29,9 @@ export enum TaskString {
   ANH_BAO_CAO_MOI = "Ảnh báo cáo mới",
   THEM_TAI_LIEU = "Thêm tài liệu",
 
-  TAI_LIEU_KET_THUC = "Tài liệu kết thúc",
-  TAI_LIEU_KET_THUC_CU = "Tài liệu kết thúc cũ",
-  TAI_LIEU_KET_THUC_MOI = "Tài liệu kết thúc mới",
+  SAN_PHAM = "Sản phẩm",
+  SAN_PHAM_CU = "Sản phẩm cũ",
+  SAN_PHAM_MOI = "Sản phẩm mới",
 
   HIEN_THI_CHI_TIET = "Hiển thị chi tiết",
   THU_GON = "Thu gọn",
@@ -41,10 +42,14 @@ export enum TaskString {
   HUY_CHINH_SUA = "Hủy chỉnh sửa",
   LUU_CHINH_SUA = "Lưu chỉnh sửa",
   HUY_CONG_VIEC = "Hủy công việc",
+  HUY_DU_AN = "Hủy dự án",
   TAO_CONG_VIEC = "Tạo công việc",
+  TAO_DU_AN = "Tạo dự án",
+  TAO_VIEC_MOI_CUA_DU_AN = "Tạo việc mới của dự án",
 
   TOI_DA_150_KI_TU = "(Tối đa 150 kí tự)",
   TAI_LIEU_DINH_KEM_100MB = "(Tài liệu đính kèm dung lượng tổng 100MB, lớn hơn vui lòng gửi link drive ở phần mô tả)",
+  SAN_PHAM_100MB = "(Sản phẩm dung lượng tổng 100MB, lớn hơn vui lòng gửi link drive ở phần mô tả)",
   DE_CHINH_TRANG_THAI_DA_XONG = "(Để chỉnh trạng thái đã xong, cần tải lên một file ảnh preview tối đa 5MB!)",
 
   CONG_VIEC_DA_HOAN_THANH = "Công việc đã hoàn thành",

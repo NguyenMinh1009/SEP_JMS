@@ -16,6 +16,7 @@ import { dateToTicks } from "../utils/Datetime";
 import useCurrentSelectedRole from "../hooks/store/useCurrentSelectedRole";
 import { CreateRole } from "../enums/createRole";
 import ASwitchButton from "../components/common/ASwitchButton";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
 
 const CreateEmployee = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -41,7 +42,8 @@ const CreateEmployee = () => {
   const navigate = useNavigate();
   const snakeBar = useSnakeBar();
   const { selectedRole } = useCurrentSelectedRole();
-
+  const { setRole: setTempRole } = useTempSelectedRole();
+  
   const handleNotifyEmailCheckBox = (
     _event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
@@ -117,6 +119,7 @@ const CreateEmployee = () => {
   };
 
   const handleCancelJob = () => {
+    role&&setTempRole(role);
     navigate(location.pathname.replace(`/${PathString.CREATE_EMPLOYEE}`, ""));
   };
 

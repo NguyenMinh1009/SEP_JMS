@@ -27,6 +27,8 @@ import { UsersPreviewData } from "../interface/usersPreviewData";
 import useTitle from "../hooks/store/useCurrentTitle";
 import { AccountStatusType } from "../enums/accountStatusType";
 import ASwitchButton from "../components/common/ASwitchButton";
+import { CreateRole } from "../enums/createRole";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
 
 const EditCustomer = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -55,6 +57,7 @@ const EditCustomer = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const userTitle = useTitle();
+  const { setRole: setTempRole } = useTempSelectedRole();
 
   useEffect(() => {
     void getCustomerInfo();
@@ -152,6 +155,7 @@ const EditCustomer = () => {
   };
 
   const handleCancelJob = () => {
+    setTempRole(CreateRole.CUSTOMER);
     navigate(`/${PathString.USERS}`);
   };
 

@@ -60,9 +60,9 @@ const TaskPreview: React.FC<IUserPreview> = ({ role, searchValue }) => {
         <>
           <Box
             sx={{ width: "100%" }}
-            className="task-preview-container max-h-[calc(100vh-360px)] overflow-y-auto rounded-sm shadow-md "
+            className="task-preview-container max-h-[calc(100vh-360px)] overflow-y-auto	rounded-sm shadow-md "
           >
-            <TableContainer>
+            <TableContainer className="overflow-x-visible">
               <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
                 <UsersTableHead role={role} />
                 <TableBody>

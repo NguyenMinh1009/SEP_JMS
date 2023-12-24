@@ -24,6 +24,7 @@ import { UsersPreviewData } from "../interface/usersPreviewData";
 import useTitle from "../hooks/store/useCurrentTitle";
 import { AccountStatusType } from "../enums/accountStatusType";
 import ASwitchButton from "../components/common/ASwitchButton";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
 
 const EditEmployee = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -54,6 +55,7 @@ const EditEmployee = () => {
   const snakeBar = useSnakeBar();
   const { userId } = useParams();
   const userTitle = useTitle();
+  const { setRole: setTempRole } = useTempSelectedRole();
 
   useEffect(() => {
     if (focusPassword && !commonRegex.password.test(password)) setOpenPassTooltip(true);
@@ -154,6 +156,7 @@ const EditEmployee = () => {
   };
 
   const handleCancelJob = () => {
+    role&&setTempRole(role);
     navigate(`/${PathString.USERS}`);
   };
 

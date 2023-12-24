@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import UsersPreview from "../components/users/UsersPreview";
 import { MenuItem, Select, TextField } from "@mui/material";
 import { createRoleOptions } from "../constants";
@@ -10,12 +10,13 @@ import { CreateRole } from "../enums/createRole";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import useCurrentSelectedRole from "../hooks/store/useCurrentSelectedRole";
 import CompanyPreview from "../components/company/CompanyPreview";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
 
 interface IUsersManageProps {}
 const UsersPage: React.FC<IUsersManageProps> = () => {
   const navigate = useNavigate();
   const { selectedRole: selectedCreateRole, setRole } = useCurrentSelectedRole();
-  const [selectedRole, setSelectedRole] = useState<CreateRole>(CreateRole.CUSTOMER);
+  const { selectedRole, setRole: setTempRole } = useTempSelectedRole();
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
   const [value, setValue] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
@@ -109,7 +110,7 @@ const UsersPage: React.FC<IUsersManageProps> = () => {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={selectedRole}
-              onChange={e => setSelectedRole(e.target.value as CreateRole)}
+              onChange={e => setTempRole(e.target.value as CreateRole)}
               sx={{
                 maxWidth: "180px",
                 "& .MuiInputBase-inputSizeSmall": {

@@ -11,6 +11,8 @@ import { PathString } from "../enums/MapRouteToBreadCrumb";
 import { CompanyResponseType } from "../interface/company";
 import { PriceGroup } from "../interface/price";
 import useTitle from "../hooks/store/useCurrentTitle";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
+import { CreateRole } from "../enums/createRole";
 
 const EditCompany = () => {
   const [companyName, setCompanyName] = useState<string>("");
@@ -25,6 +27,7 @@ const EditCompany = () => {
   const navigate = useNavigate();
   const companyTitle = useTitle();
   const { companyId } = useParams();
+  const { setRole: setTempRole } = useTempSelectedRole();
 
   useEffect(() => {
     void getGroupIdPrice();
@@ -67,6 +70,7 @@ const EditCompany = () => {
   };
 
   const handleCancelJob = () => {
+    setTempRole(CreateRole.COMPANY);
     navigate(`/${PathString.USERS}`);
   };
 

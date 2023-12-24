@@ -88,6 +88,7 @@ const DropdownAction: React.FC<IDropdownAction> = ({
       removeSubTask?.(subTaskId);
       snakeBar.setSnakeBar("Xoá công việc thành công!", "success", true);
     } catch (error) {
+      snakeBar.setSnakeBar("Xoá công việc thất bại!", "error", true);
       console.error(error);
     }
   };

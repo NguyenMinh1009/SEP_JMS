@@ -524,25 +524,29 @@ const EditTask: React.FC<IEditTaskProp> = ({
       }
     }
     setButtonLoading(true);
-    await editBasicInfoPromise(),
-      await editStatusForDesignerPromise(),
-      await editInternalStatusPromise(),
+    try {
+      await editBasicInfoPromise();
+      await editStatusForDesignerPromise();
+      await editInternalStatusPromise();
       await Promise.all([
         editPreviewFilePromise(),
         editRequirementsPromise(),
         editFinalFilePromise()
-      ])
-        .then(() => {
-          isCorrelationJobType === CorrelationJobType.Job
-            ? snakeBar.setSnakeBar("Cập nhật công việc thành công!", "success", true)
-            : snakeBar.setSnakeBar("Cập nhật dự án thành công!", "success", true);
-          handleAfterEditTaskSuccess();
-        })
-        .catch(err => {
-          console.error(err);
-          snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
-        })
-        .finally(() => setButtonLoading(false));
+      ]);
+
+      const successMessage =
+        isCorrelationJobType === CorrelationJobType.Job
+          ? "Cập nhật công việc thành công!"
+          : "Cập nhật dự án thành công!";
+
+      snakeBar.setSnakeBar(successMessage, "success", true);
+      handleAfterEditTaskSuccess();
+    } catch (error) {
+      console.error(error);
+      snakeBar.setSnakeBar("Có lỗi xảy ra!", "error", true);
+    } finally {
+      setButtonLoading(false);
+    }
   };
 
   const handleAfterEditTaskSuccess = () => {

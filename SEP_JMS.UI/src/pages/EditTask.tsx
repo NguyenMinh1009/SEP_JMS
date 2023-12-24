@@ -502,6 +502,10 @@ const EditTask: React.FC<IEditTaskProp> = ({
       snakeBar.setSnakeBar("File preview vượt quá dung lượng cho phép là 5MB!", "warning", true);
       return;
     }
+    if (!previewFiles[0].type.startsWith("image/")) {
+      snakeBar.setSnakeBar("Ảnh báo cáo chỉ được cập nhật ảnh", "warning", true);
+      return;
+    }
     //check validate input edit job
     var errors = checkInputEditJob(quantity, deadline, taskDetail.createdTime);
     errors.forEach(error => {

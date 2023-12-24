@@ -207,7 +207,7 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
                 {driveFiles && driveFiles.length > 0 && (
                   <>
                     <p className="text-primary mb-6 mt-10 flex items-center gap-2">
-                      <span className="text-[13px]">{TaskString.TAI_LIEU_KET_THUC}</span>
+                      <span className="text-[13px]">{TaskString.SAN_PHAM}</span>
                       <span className="text-[13px] font-semibold text-orange-500">
                         <i>{TaskString.CLICK_DE_TAI_VE}</i>
                       </span>

@@ -4,6 +4,7 @@ import { VisibleType } from "../enums/visibleType";
 import CreateTask from "../components/common/CreateTask";
 import CreateSubTask from "../components/ProjectManagement/SubTasks/CreateSubTask";
 import { useParams } from "react-router-dom";
+import { TaskString } from "../enums/taskEnums";
 
 interface ICreatePageProps {
   isInternal?: boolean;
@@ -32,14 +33,18 @@ const Home: React.FC<ICreatePageProps> = ({
         <CreateSubTask
           visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
           correlationJobType={isCorrelationJobType}
-          label="Tạo việc mới của dự án"
+          label={TaskString.TAO_VIEC_MOI_CUA_DU_AN}
           parentId={taskId}
         />
       ) : (
         <CreateTask
           visibleType={isInternal ? VisibleType.Internal : VisibleType.Public}
           correlationJobType={isCorrelationJobType}
-          label="Tạo việc mới"
+          label={
+            isCorrelationJobType === CorrelationJobType.Project
+              ? TaskString.TAO_DU_AN
+              : TaskString.TAO_CONG_VIEC
+          }
         />
       )}
     </>

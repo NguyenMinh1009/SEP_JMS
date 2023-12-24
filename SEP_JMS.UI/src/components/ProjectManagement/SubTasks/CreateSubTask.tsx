@@ -419,7 +419,10 @@ const CreateSubTask: React.FC<ICreateTaskProp> = ({
             <div className="min-h-fit w-full rounded-b-md bg-white pt-5">
               <p className="mb-3 mt-6 text-sm font-semibold text-orange-500">
                 <span className="text-[13px] text-[#444]">{TaskString.TAI_LIEU_DINH_KEM}</span>
-                <i>{TaskString.TAI_LIEU_DINH_KEM_100MB}</i>
+                <i>
+                  {TaskString.WHILE_SPACE}
+                  {TaskString.TAI_LIEU_DINH_KEM_100MB}
+                </i>
               </p>
               <div className="mb-4 flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">

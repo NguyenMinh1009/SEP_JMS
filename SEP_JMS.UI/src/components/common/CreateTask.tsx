@@ -499,7 +499,10 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
             <div className="min-h-fit w-full rounded-b-md bg-white pt-5">
               <p className="mb-3 mt-6 text-sm font-semibold text-orange-500">
                 <span className="text-[13px] text-[#444]">{TaskString.TAI_LIEU_DINH_KEM}</span>
-                <i>{TaskString.TAI_LIEU_DINH_KEM_100MB}</i>
+                <i>
+                  {TaskString.WHILE_SPACE}
+                  {TaskString.TAI_LIEU_DINH_KEM_100MB}
+                </i>
               </p>
               <div className="mb-4 flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -819,7 +822,9 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 <div className="flex items-center gap-2 px-2 text-[#333]">
                   <AiOutlineCloseCircle size={20} />
                   <p className="text-secondary text-xs font-semibold normal-case leading-7">
-                    {TaskString.HUY_CONG_VIEC}
+                    {correlationJobType === CorrelationJobType.Job
+                      ? TaskString.HUY_CONG_VIEC
+                      : TaskString.HUY_DU_AN}
                   </p>
                 </div>
               </CustomButton>
@@ -827,7 +832,9 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                 <div className="flex items-center gap-2 px-2">
                   <IoAddCircleOutline color="white" size={20} />
                   <p className="text-secondary text-xs normal-case leading-7 text-white">
-                    {TaskString.TAO_CONG_VIEC}
+                    {correlationJobType === CorrelationJobType.Job
+                      ? TaskString.TAO_CONG_VIEC
+                      : TaskString.TAO_DU_AN}
                   </p>
                 </div>
               </CustomButton>

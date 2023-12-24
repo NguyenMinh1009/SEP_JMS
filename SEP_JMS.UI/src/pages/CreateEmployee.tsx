@@ -67,6 +67,8 @@ const CreateEmployee = () => {
     else setOpenRePassTooltip(false);
   }, [focusRePassword, rePassword, password]);
 
+  const isDisableSendMail = !commonRegex.email.test(email);
+
   const resetState = () => {
     setDob(null);
     setOnBoardTime(null);
@@ -179,6 +181,7 @@ const CreateEmployee = () => {
         <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <div className="flex items-center">
           <ASwitchButton
+            disabled={isDisableSendMail}
             checked={notifyEmail}
             onChange={handleNotifyEmailCheckBox}
             inputProps={{ "aria-label": "controlled" }}

@@ -165,6 +165,8 @@ const EditEmployee = () => {
     !fullname.trim() ||
     (passwordChecked && (!rePassword.trim() || !commonRegex.password.test(password.trim())));
 
+  const isDisableSendMail = !passwordChecked || !commonRegex.email.test(email);
+
   const validateInput = async (): Promise<boolean> => {
     if (password.trim() !== rePassword.trim()) {
       snakeBar.setSnakeBar("Nhập lại mật khẩu không khớp!", "warning", true);
@@ -215,7 +217,7 @@ const EditEmployee = () => {
         <div className="flex items-center">
           <ASwitchButton
             checked={notifyEmail}
-            disabled={!passwordChecked}
+            disabled={isDisableSendMail}
             onChange={handleNotifyEmailCheckBox}
             inputProps={{ "aria-label": "controlled" }}
           />

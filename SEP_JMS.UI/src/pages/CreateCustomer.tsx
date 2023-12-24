@@ -134,6 +134,8 @@ const CreateCustomer = () => {
     !fullname.trim() ||
     !selectedCompany;
 
+  const isDisableSendMail = !commonRegex.email.test(email);
+
   const validateInput = async (): Promise<boolean> => {
     if (password?.trim() !== rePassword?.trim()) {
       snakeBar.setSnakeBar("Nhập lại mật khẩu không khớp!", "warning", true);
@@ -189,6 +191,7 @@ const CreateCustomer = () => {
         <div className="flex items-center">
           <ASwitchButton
             checked={notifyEmail}
+            disabled={isDisableSendMail}
             onChange={handleNotifyEmailCheckBox}
             inputProps={{ "aria-label": "controlled" }}
           />

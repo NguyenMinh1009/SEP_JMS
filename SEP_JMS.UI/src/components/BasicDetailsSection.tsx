@@ -275,10 +275,11 @@ const BasicDetailsSection: React.FC<IBasicDetailsSectionProps> = ({
           customText={isPaid ? "text-blue-800 font-semibold" : "text-yellow-800 font-semibold"}
         />
 
-        {currentPerson.roleType == Role.ADMIN && initStatus === JobStatusType.Completed && isDonePage && !isPaid && (
+        {currentPerson.roleType == Role.ADMIN && initStatus === JobStatusType.Completed && isDonePage && (
           <>
 
             <CustomButton
+              disabled={isPaid}
               onClick={()=>setOpenConfirmDialog(true)}
               className={"text-green-500"}
             >

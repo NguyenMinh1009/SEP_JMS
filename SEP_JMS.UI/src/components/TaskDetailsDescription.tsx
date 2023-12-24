@@ -190,20 +190,22 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
                     />
                   </>
                 )}
-                {jobDetail?.requirements?.files && jobDetail?.requirements?.files.length > 0 && (
-                  <>
-                    <p className="text-primary mb-4 mt-12 flex items-center gap-2">
-                      <span>{TaskString.ANH_DINH_KEM}</span>
-                      <span className="text-[13px] font-semibold text-orange-500">
-                        <i>{TaskString.CLICK_DE_TAI_VE}</i>
-                      </span>
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <ImageSection imgFiles={imgFiles} />
-                      {isImagesLoading && <CircularProgress size={15} className="mt-3" />}
-                    </div>
-                  </>
-                )}
+                {jobDetail?.requirements?.files &&
+                  jobDetail?.requirements?.files.length > 0 &&
+                  imgFiles.length > 0 && (
+                    <>
+                      <p className="text-primary mb-4 mt-12 flex items-center gap-2">
+                        <span>{TaskString.ANH_DINH_KEM}</span>
+                        <span className="text-[13px] font-semibold text-orange-500">
+                          <i>{TaskString.CLICK_DE_TAI_VE}</i>
+                        </span>
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <ImageSection imgFiles={imgFiles} />
+                        {isImagesLoading && <CircularProgress size={15} className="mt-3" />}
+                      </div>
+                    </>
+                  )}
                 {driveFiles && driveFiles.length > 0 && (
                   <>
                     <p className="text-primary mb-6 mt-10 flex items-center gap-2">

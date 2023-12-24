@@ -26,6 +26,7 @@ import SubTasksSection from "./SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
 import { TaskString } from "../../../enums/taskEnums";
 import APIClientInstance from "../../../api/AxiosInstance";
+import { useIsFirstRender } from "../../../hooks/useIsFirstRender";
 
 interface ISubTaskDetail {}
 
@@ -56,6 +57,8 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
   const breadCrumbTitle = useTitle();
   const navigate = useNavigate();
   const { taskId, subTaskId } = useParams();
+
+  const isFirstRender = useIsFirstRender();
 
   const getComments = () => {
     setCommentLoading(true);
@@ -192,6 +195,10 @@ const InternalSubTasksDetail: React.FC<ISubTaskDetail> = () => {
       getComments();
     }
   }, [isObserverVisible]);
+
+  useEffect(() => {
+    if (isFirstRender) getComments();
+  }, [jobDetail]);
 
   return (
     <>

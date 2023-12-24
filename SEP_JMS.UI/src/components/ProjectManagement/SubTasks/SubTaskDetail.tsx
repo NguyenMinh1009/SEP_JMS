@@ -26,6 +26,7 @@ import SubTasksSection from "./SubTasksSection";
 import { RiAddCircleLine } from "react-icons/ri";
 import { TaskString } from "../../../enums/taskEnums";
 import APIClientInstance from "../../../api/AxiosInstance";
+import { useIsFirstRender } from "../../../hooks/useIsFirstRender";
 
 interface ISubTaskDetail {
   finishOnly?: boolean;
@@ -58,6 +59,8 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
   const breadCrumbTitle = useTitle();
   const navigate = useNavigate();
   const { taskId, subTaskId } = useParams();
+
+  const isFirstRender = useIsFirstRender();
 
   const getComments = () => {
     setCommentLoading(true);
@@ -191,6 +194,10 @@ const SubTaskDetail: React.FC<ISubTaskDetail> = ({ finishOnly }) => {
       getComments();
     }
   }, [isObserverVisible]);
+
+  useEffect(() => {
+    if (isFirstRender) getComments();
+  }, [jobDetail]);
 
   const handleCreateTask = () => {
     finishOnly

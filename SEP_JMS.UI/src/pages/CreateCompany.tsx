@@ -9,6 +9,8 @@ import useSnakeBar from "../hooks/store/useSnakeBar";
 import { useNavigate } from "react-router-dom";
 import { PathString } from "../enums/MapRouteToBreadCrumb";
 import ASwitchButton from "../components/common/ASwitchButton";
+import { CreateRole } from "../enums/createRole";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
 
 const CreateCompany = () => {
   const [companyName, setCompanyName] = useState<string>("");
@@ -25,6 +27,7 @@ const CreateCompany = () => {
   const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const snakeBar = useSnakeBar();
   const navigate = useNavigate();
+  const { setRole: setTempRole } = useTempSelectedRole();
 
   useEffect(() => {
     void getAccounts();
@@ -79,6 +82,7 @@ const CreateCompany = () => {
   };
 
   const handleCancelJob = () => {
+    setTempRole(CreateRole.COMPANY);
     navigate(location.pathname.replace(`/${PathString.CREATE_COMPANY}`, ""));
   };
 

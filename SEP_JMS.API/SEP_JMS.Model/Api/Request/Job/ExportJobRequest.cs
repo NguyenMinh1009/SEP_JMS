@@ -29,5 +29,7 @@ namespace SEP_JMS.Model.Api.Request.Job
 
         [EnumDataType(typeof(CorrelationJobType))]
         public CorrelationJobType CorrelationType { get; set; }
+
+        public bool? PaymentSuccess { get; set; } = null;
     }
 }

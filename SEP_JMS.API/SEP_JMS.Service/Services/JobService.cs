@@ -210,20 +210,12 @@ namespace SEP_JMS.Service.Services
                 var subJobs = await jobRepository.GetAll(a => a.ParentId == jobId);
                 foreach (var subJob in subJobs)
                 {
-                    var comments = await commentRepository.GetAll(c => c.CorrelationJobId == subJob.JobId);
-                    foreach (var comment in comments)
-                    {
-                        await commentRepository.Delete(comment);
-                    }
+                    await commentRepository.DeleteComments(subJob.JobId);
                     await jobRepository.Delete(subJob);
                     await notificationRepository.DeleteByEntityId($"{jobId}/{subJob.JobId}");
                 }
 
-                var mainJobComments = await commentRepository.GetAll(c => c.CorrelationJobId == jobId);
-                foreach (var mainJobComment in mainJobComments)
-                {
-                    await commentRepository.Delete(mainJobComment);
-                }
+                await commentRepository.DeleteComments(job.JobId);
                 await jobRepository.Delete(job);
                 if (job.ParentId != null) await notificationRepository.DeleteByEntityId($"{job.ParentId}/{jobId}");
                 await notificationRepository.DeleteByEntityId($"{jobId}");

@@ -82,6 +82,12 @@ namespace SEP_JMS.Repository.Repositories
             };
         }
 
+        public async Task DeleteComments(Guid jobId)
+        {
+            await Context.Comments.Where(c => c.CorrelationJobId == jobId).ExecuteUpdateAsync(a => a.SetProperty(c => c.ReplyCommentId, c => null));
+            await Context.Comments.Where(c => c.CorrelationJobId == jobId).ExecuteDeleteAsync();
+        }
+
         public async Task HideComment(Guid commentId, CommentStatus status)
         {
             var userId = ApiContext.Current.UserId;

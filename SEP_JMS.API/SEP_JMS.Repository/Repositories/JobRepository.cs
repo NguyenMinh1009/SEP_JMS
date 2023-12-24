@@ -850,7 +850,12 @@ namespace SEP_JMS.Repository.Repositories
 
                         where job.JobStatus == JobStatus.Completed && job.ParentId == null && job.CorrelationType == model.CorrelationType
                         select new { job, company };
-
+            if (model.PaymentSuccess.HasValue)
+            {
+                query = from data in query
+                        where data.job.PaymentSuccess == model.PaymentSuccess.Value
+                        select data;
+            }
             if (!string.IsNullOrEmpty(model.SearchText))
             {
                 query = from data in query

@@ -17,7 +17,7 @@ namespace SEP_JMS.Model.Models
 
         public Guid UserId { get; set; }
 
-        public Guid? ReplyCommentId { get; set; }
+        public Guid? ReplyCommentId { get; set; } = null;
 
         public string Content { get; set; } = null!;
 
@@ -37,6 +37,6 @@ namespace SEP_JMS.Model.Models
 
         [DeleteBehavior(DeleteBehavior.Restrict)]
         [ForeignKey("ReplyCommentId")]
-        public virtual Comment ReplyComment { get; set; } = null!;
+        public virtual Comment? ReplyComment { get; set; } = null!;
     }
 }

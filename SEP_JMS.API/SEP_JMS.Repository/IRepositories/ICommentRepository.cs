@@ -20,5 +20,7 @@ namespace SEP_JMS.Repository.IRepositories
         public Task HideComment(Guid commentId, CommentStatus status);
 
         public Task<Comment?> GetCommentByCorrelationJobId(Guid jobId, Guid commentId, VisibleType visible);
+
+        public Task DeleteComments(Guid commentId);
     }
 }

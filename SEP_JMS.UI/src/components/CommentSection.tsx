@@ -84,7 +84,7 @@ const CommentSection = ({
                 );
               }
             })
-        : ""}
+        : "Không có bình luận"}
       {renderAddComment()}
     </div>
   );

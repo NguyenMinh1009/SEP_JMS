@@ -352,41 +352,41 @@ const EditTask: React.FC<IEditTaskProp> = ({
       // } else {
       return subTaskId === undefined
         ? AlwayxInstance.put(`job/${taskId}`, {
-            title: title,
-            description: getSanitizeText(value),
-            designerId: selectedDesigner?.userId,
-            accountId: selectedAccount?.userId,
-            quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
-            jobType: selectedJobType.typeId,
-            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-            priority: selectedPriority,
-            jobStatus: isInternal
-              ? selectedInternalStatus === InternalJobStatusType.CustomerReview
-                ? JobStatusType.CustomerReview
-                : selectedInternalStatus
-              : selectedStatus,
-            correlationType:
-              isCorrelationJobType === CorrelationJobType.Job
-                ? CorrelationJobType.Job
-                : CorrelationJobType.Project
-          })
+          title: title,
+          description: getSanitizeText(value),
+          designerId: selectedDesigner?.userId,
+          accountId: selectedAccount?.userId,
+          quantity: isCorrelationJobType === CorrelationJobType.Job ? quantity : 1,
+          jobType: selectedJobType.typeId,
+          deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+          priority: selectedPriority,
+          jobStatus: isInternal
+            ? selectedInternalStatus === InternalJobStatusType.CustomerReview
+              ? JobStatusType.CustomerReview
+              : selectedInternalStatus
+            : selectedStatus,
+          correlationType:
+            isCorrelationJobType === CorrelationJobType.Job
+              ? CorrelationJobType.Job
+              : CorrelationJobType.Project
+        })
         : AlwayxInstance.put(`job/${subTaskId}`, {
-            parentId: taskId,
-            title: title,
-            description: getSanitizeText(value),
-            designerId: selectedDesigner?.userId,
-            accountId: selectedAccount?.userId,
-            quantity: quantity,
-            jobType: selectedJobType.typeId,
-            deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
-            priority: selectedPriority,
-            jobStatus: isInternal
-              ? selectedInternalStatus === InternalJobStatusType.CustomerReview
-                ? JobStatusType.CustomerReview
-                : selectedInternalStatus
-              : selectedStatus,
-            correlationType: CorrelationJobType.Job
-          });
+          parentId: taskId,
+          title: title,
+          description: getSanitizeText(value),
+          designerId: selectedDesigner?.userId,
+          accountId: selectedAccount?.userId,
+          quantity: quantity,
+          jobType: selectedJobType.typeId,
+          deadline: dateToTicks(deadline ? deadline.toDate() : new Date()),
+          priority: selectedPriority,
+          jobStatus: isInternal
+            ? selectedInternalStatus === InternalJobStatusType.CustomerReview
+              ? JobStatusType.CustomerReview
+              : selectedInternalStatus
+            : selectedStatus,
+          correlationType: CorrelationJobType.Job
+        });
       // }
     } else {
       return Promise.resolve(null);
@@ -642,9 +642,10 @@ const EditTask: React.FC<IEditTaskProp> = ({
 
     if (requirementList && requirementList.length > 0) {
       for (const requirement of requirementList) {
-        let response: any =
-          subTaskId === undefined
-            ? await AlwayxInstance.post(
+        if (mime.getType(requirement.fileName)?.includes("image")) {
+          let response: any =
+            subTaskId === undefined
+              ? await AlwayxInstance.post(
                 `file/job/${taskId}`,
                 {
                   fileName: requirement.fileName,
@@ -652,7 +653,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 },
                 { responseType: "blob" }
               )
-            : await AlwayxInstance.post(
+              : await AlwayxInstance.post(
                 `file/job/${subTaskId}`,
                 {
                   fileName: requirement.fileName,
@@ -660,10 +661,14 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 },
                 { responseType: "blob" }
               );
-        const newFile = new File([response.data], requirement.originalName, {
-          type: response.data.type
-        });
-        setInitRequirementFiles(prev => [...prev, newFile]);
+          const newFile = new File([response.data], requirement.originalName, {
+            type: response.data.type
+          });
+          setInitRequirementFiles(prev => [...prev, newFile]);
+        } else {
+          const newFile = new File([], requirement.originalName);
+          setInitRequirementFiles(prev => [...prev, newFile]);
+        }
       }
     }
   };
@@ -755,7 +760,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 value={key}
                 title={
                   key === InternalJobStatusType.Completed &&
-                  previewFiles?.length + previewFilesFromAPI?.length < 1
+                    previewFiles?.length + previewFilesFromAPI?.length < 1
                     ? "Cần có ảnh preview!"
                     : ""
                 }
@@ -794,11 +799,11 @@ const EditTask: React.FC<IEditTaskProp> = ({
             {(currentPerson.roleType !== Role.CUSTOMER
               ? statusOptions
               : statusOptions.filter(
-                  option =>
-                    option.key === JobStatusType.NotDo ||
-                    option.key === JobStatusType.Completed ||
-                    option.key === taskDetail?.jobStatus
-                )
+                option =>
+                  option.key === JobStatusType.NotDo ||
+                  option.key === JobStatusType.Completed ||
+                  option.key === taskDetail?.jobStatus
+              )
             ).map(({ key, text }) => (
               <MenuItem
                 key={key}
@@ -812,7 +817,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                 value={key}
                 title={
                   key === JobStatusType.Completed &&
-                  previewFiles?.length + previewFilesFromAPI?.length < 1
+                    previewFiles?.length + previewFilesFromAPI?.length < 1
                     ? "Cần có ảnh preview!"
                     : ""
                 }

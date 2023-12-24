@@ -128,7 +128,8 @@ const UsersPreviewRow: React.FC<IRowProps> = ({ row, index, pageSize, page, role
         >
           {row.username ?? "..."}
         </TableCell>
-        {role !== Role.CUSTOMER && (
+        {/* hidden address */}
+        {/* {role !== Role.CUSTOMER && (
           <TableCell
             padding="none"
             className="border-r-[1px] p-2 align-top text-[13px] font-[400]"
@@ -136,7 +137,7 @@ const UsersPreviewRow: React.FC<IRowProps> = ({ row, index, pageSize, page, role
           >
             {row.address ?? "..."}
           </TableCell>
-        )}
+        )} */}
         {role === Role.CUSTOMER && (
           <TableCell
             padding="none"

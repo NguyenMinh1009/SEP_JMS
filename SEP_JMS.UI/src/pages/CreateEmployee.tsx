@@ -16,6 +16,7 @@ import { dateToTicks } from "../utils/Datetime";
 import useCurrentSelectedRole from "../hooks/store/useCurrentSelectedRole";
 import { CreateRole } from "../enums/createRole";
 import ASwitchButton from "../components/common/ASwitchButton";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
 
 const CreateEmployee = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -41,7 +42,8 @@ const CreateEmployee = () => {
   const navigate = useNavigate();
   const snakeBar = useSnakeBar();
   const { selectedRole } = useCurrentSelectedRole();
-
+  const { setRole: setTempRole } = useTempSelectedRole();
+  
   const handleNotifyEmailCheckBox = (
     _event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
@@ -64,6 +66,8 @@ const CreateEmployee = () => {
     if (focusRePassword && password !== rePassword) setOpenRePassTooltip(true);
     else setOpenRePassTooltip(false);
   }, [focusRePassword, rePassword, password]);
+
+  const isDisableSendMail = !commonRegex.email.test(email);
 
   const resetState = () => {
     setDob(null);
@@ -117,6 +121,7 @@ const CreateEmployee = () => {
   };
 
   const handleCancelJob = () => {
+    role&&setTempRole(role);
     navigate(location.pathname.replace(`/${PathString.CREATE_EMPLOYEE}`, ""));
   };
 
@@ -176,6 +181,7 @@ const CreateEmployee = () => {
         <div className="h-5 w-[1px] bg-slate-600 opacity-50"></div>
         <div className="flex items-center">
           <ASwitchButton
+            disabled={isDisableSendMail}
             checked={notifyEmail}
             onChange={handleNotifyEmailCheckBox}
             inputProps={{ "aria-label": "controlled" }}

@@ -23,6 +23,8 @@ import { commonRegex, genderOptions } from "../constants";
 import { BasicCompanyType, CompanyResponseType } from "../interface/company";
 import { dateToTicks } from "../utils/Datetime";
 import ASwitchButton from "../components/common/ASwitchButton";
+import useTempSelectedRole from "../hooks/store/useCurrentTempRole";
+import { CreateRole } from "../enums/createRole";
 
 const CreateCustomer = () => {
   const [dob, setDob] = useState<moment.Moment | null>(null);
@@ -45,6 +47,7 @@ const CreateCustomer = () => {
   const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const snakeBar = useSnakeBar();
   const navigate = useNavigate();
+  const { setRole: setTempRole } = useTempSelectedRole();
 
   const handleNotifyEmailCheckBox = (
     _event: React.ChangeEvent<HTMLInputElement>,
@@ -120,6 +123,7 @@ const CreateCustomer = () => {
   };
 
   const handleCancelJob = () => {
+    setTempRole(CreateRole.CUSTOMER);
     navigate(location.pathname.replace(`/${PathString.CREATE_CUSTOMER}`, ""));
   };
 
@@ -129,6 +133,8 @@ const CreateCustomer = () => {
     !rePassword ||
     !fullname.trim() ||
     !selectedCompany;
+
+  const isDisableSendMail = !commonRegex.email.test(email);
 
   const validateInput = async (): Promise<boolean> => {
     if (password?.trim() !== rePassword?.trim()) {
@@ -185,6 +191,7 @@ const CreateCustomer = () => {
         <div className="flex items-center">
           <ASwitchButton
             checked={notifyEmail}
+            disabled={isDisableSendMail}
             onChange={handleNotifyEmailCheckBox}
             inputProps={{ "aria-label": "controlled" }}
           />

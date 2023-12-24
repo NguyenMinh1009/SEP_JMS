@@ -113,6 +113,7 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
         snakeBar.setSnakeBar("Xoá công việc thành công!", "success", true);
       })
       .catch(err => {
+        snakeBar.setSnakeBar("Xoá công việc thất bại!", "error", true);
         console.error(err);
       });
   };
@@ -332,20 +333,26 @@ const TaskPreviewTableRow: React.FC<IRowProps> = ({
                         correlationJobType === CorrelationJobType.Job)
                         ? ""
                         : "border-r-[1px]"
-                    } border-[#999] px-1 pr-2 hover:scale-105 ${row.paymentSuccess ? "text-pink-800" : ""}`}
+                    } border-[#999] px-1 pr-2 hover:scale-105 ${
+                      row.paymentSuccess ? "text-pink-800" : ""
+                    }`}
                   >
-                    {row.paymentSuccess ? (<IoCreateSharp size={18}/>) : (<IoCreateOutline size={18} />)}
-                    
+                    {row.paymentSuccess ? (
+                      <IoCreateSharp size={18} />
+                    ) : (
+                      <IoCreateOutline size={18} />
+                    )}
                   </button>
                   {currentPerson.roleType !== Role.CUSTOMER &&
                     currentPerson.roleType !== Role.DESIGNER && (
                       <button
                         disabled={row.paymentSuccess}
                         onClick={handleClickDeleteTask}
-                        className={`group relative cursor-pointer border-[#999] px-1 hover:scale-105 ${row.paymentSuccess ? "text-pink-800" : ""}`}
+                        className={`group relative cursor-pointer border-[#999] px-1 hover:scale-105 ${
+                          row.paymentSuccess ? "text-pink-800" : ""
+                        }`}
                       >
-                        {row.paymentSuccess ? (<TbTrashFilled size={18}/>) : (<TbTrash size={18} />)}
-                        
+                        {row.paymentSuccess ? <TbTrashFilled size={18} /> : <TbTrash size={18} />}
                       </button>
                     )}
                 </>

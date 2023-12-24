@@ -22,6 +22,7 @@ import { useClickOutside } from "../../utils/useClickOutside";
 import CustomDialog from "./CustomDialog";
 import { APIUrlHost } from "../../constants";
 import useCurrentPerson from "../../hooks/store/useCurrentPerson";
+import Images from "../../img";
 
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -240,7 +241,7 @@ const TextFieldJobComment: React.FC<IRichTextEditorProps> = ({
       <div className="reply-btn flex w-full max-w-full grow-0 items-center gap-4 overflow-hidden bg-white px-5 py-3">
         <div className="h-8 w-8 rounded-full bg-slate-500">
           <img
-            src={APIUrlHost + "/" + currentPerson.avatarUrl + "?t=0"}
+            src={currentPerson?.avatarUrl ? APIUrlHost + "/" + currentPerson.avatarUrl + "?t=0" : Images.avtPlaceHolder}
             className="h-full w-full rounded-full"
             alt=""
           />

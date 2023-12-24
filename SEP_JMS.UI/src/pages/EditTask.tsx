@@ -216,7 +216,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
 
   const getDocumentsFiles = React.useMemo(() => {
     return [...initRequirementToFiles, ...files].filter(
-      file => !mime.getType(file.name)?.includes("image") && allowFileTypes.includes(file.type)
+      file => !mime.getType(file.name)?.includes("image")
     );
   }, [files, initRequirementToFiles]);
 
@@ -502,7 +502,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
       snakeBar.setSnakeBar("File preview vượt quá dung lượng cho phép là 5MB!", "warning", true);
       return;
     }
-    if (!previewFiles[0].type.startsWith("image/")) {
+    if (!previewFiles[0]?.type.startsWith("image/") && totalPreview / (1024 * 1024) > 0) {
       snakeBar.setSnakeBar("Ảnh báo cáo chỉ được cập nhật ảnh", "warning", true);
       return;
     }

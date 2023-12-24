@@ -150,10 +150,8 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
     return Array.from(files).filter(file => file.type.includes("image"));
   }, [files]);
 
-  const getDocumentsFils = React.useMemo(() => {
-    return Array.from(files).filter(
-      file => !file.type.includes("image") && allowFileTypes.includes(file.type)
-    );
+  const getDocumentsFiles = React.useMemo(() => {
+    return Array.from(files).filter(file => !file.type.includes("image"));
   }, [files]);
 
   const getSanitizeText = (input: string) => {
@@ -520,7 +518,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                   </CustomButton>
                 )}
               </div>
-              {getDocumentsFils && getDocumentsFils.length > 0 && (
+              {getDocumentsFiles && getDocumentsFiles.length > 0 && (
                 <>
                   <p className="text-secondary mb-6 mt-10 text-sm">
                     {TaskString.TAI_LIEU_DINH_KEM}
@@ -528,7 +526,7 @@ const CreateTask: React.FC<ICreateTaskProp> = ({
                   <FileSection
                     handleDelete={handleDeleteFile}
                     visibleType={visibleType}
-                    fileList={getDocumentsFils}
+                    fileList={getDocumentsFiles}
                   />
                 </>
               )}

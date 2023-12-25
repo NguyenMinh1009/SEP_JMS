@@ -187,6 +187,8 @@ namespace SEP_JMS.API.Controllers
                 if (job.PaymentSuccess) return Forbid();
 
                 var success = await jobService.UpdateDesignerJob(jobId, model);
+
+                if (success) await notificationService.Trigger(jobId, job, null, NotiAction.UpdateJob);
                 return success ? Ok() : BadRequest();
             }
             catch (Exception ex)

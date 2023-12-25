@@ -13,6 +13,8 @@ namespace SEP_JMS.Tests.TestController
     public class InternalJobControllerTests
     {
         private readonly Mock<IInternalJobService> mInternalJobService = new();
+        private readonly Mock<IJobService> mJobService = new();
+        private readonly Mock<INotificationService> mNotificationService = new();
         private readonly Mock<IJMSLogger> mLogger = new();
 
         private InternalJobController internalJobController = null!;
@@ -20,7 +22,7 @@ namespace SEP_JMS.Tests.TestController
         [SetUp]
         public void Setup()
         {
-            internalJobController = new(mInternalJobService.Object, mLogger.Object);
+            internalJobController = new(mInternalJobService.Object, mJobService.Object, mNotificationService.Object, mLogger.Object);
             mLogger.Setup(a => a.Info(It.IsAny<string>())).Verifiable();
             mLogger.Setup(a => a.Warn(It.IsAny<string>())).Verifiable();
             mLogger.Setup(a => a.Error(It.IsAny<string>())).Verifiable();

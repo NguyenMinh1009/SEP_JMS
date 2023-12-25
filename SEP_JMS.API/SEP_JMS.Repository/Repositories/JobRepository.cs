@@ -722,11 +722,15 @@ namespace SEP_JMS.Repository.Repositories
             var currentJob = await query.FirstAsync();
             var now = DateTime.UtcNow.Ticks;
 
-            currentJob.JobStatus = model.JobStatus;
             currentJob.FinalLink = model.FinalLink;
             currentJob.LastUpdated = now;
 
-            currentJob.InternalJobStatus = model.JobStatus.ToInternalJobStatus();
+            if (model.JobStatus != currentJob.JobStatus)
+            {
+                currentJob.JobStatus = model.JobStatus;
+                currentJob.InternalJobStatus = model.JobStatus.ToInternalJobStatus();
+            }
+            
             currentJob.InternalLastUpdated = now;
 
             Context.Jobs.Update(currentJob);
@@ -751,14 +755,18 @@ namespace SEP_JMS.Repository.Repositories
             currentJob.JobType = model.JobType;
             currentJob.Deadline = model.Deadline;
             currentJob.Priority = model.Priority;
-            currentJob.JobStatus = model.JobStatus;
             currentJob.DesignerId = model.DesignerId ?? currentJob.DesignerId;
             currentJob.AccountId = model.AccountId ?? currentJob.AccountId;
 
             currentJob.LastUpdated = now;
             currentJob.CorrelationType = model.CorrelationType;
             currentJob.FinalLink = model.FinalLink;
-            currentJob.InternalJobStatus = model.JobStatus.ToInternalJobStatus();
+
+            if (currentJob.JobStatus != model.JobStatus)
+            {
+                currentJob.JobStatus = model.JobStatus;
+                currentJob.InternalJobStatus = model.JobStatus.ToInternalJobStatus();
+            }
             currentJob.InternalLastUpdated = now;
 
             Context.Jobs.Update(currentJob);
@@ -808,10 +816,13 @@ namespace SEP_JMS.Repository.Repositories
 
         public async Task UpdateInternalJobStatus(Guid jobId, InternalJobStatus internalJobStatus)
         {
-            var job = await Context.Jobs
-                .SingleAsync(job => job.JobId == jobId);
-            job.InternalJobStatus = internalJobStatus;
-            job.JobStatus = internalJobStatus.ToJobStatus();
+            var job = await Context.Jobs.SingleAsync(job => job.JobId == jobId);
+            if (job.InternalJobStatus != internalJobStatus)
+            {
+                job.InternalJobStatus = internalJobStatus;
+                job.JobStatus = internalJobStatus.ToJobStatus();
+            }
+            job.InternalLastUpdated = DateTime.UtcNow.Ticks;
             await Context.SaveChangesAsync();
         }
 

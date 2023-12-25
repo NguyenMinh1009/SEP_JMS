@@ -23,12 +23,18 @@ namespace SEP_JMS.API.Controllers
         private readonly string logPrefix = "[InternalJobController]";
 
         private readonly IInternalJobService internalJobService;
+        private readonly INotificationService notificationService;
+        private readonly IJobService jobService;
         private readonly IJMSLogger logger;
 
         public InternalJobController(IInternalJobService internalJobService,
+            IJobService jobService,
+            INotificationService notificationService,
             IJMSLogger logger)
         {
             this.internalJobService = internalJobService;
+            this.notificationService = notificationService;
+            this.jobService = jobService;
             this.logger = logger;
         }
 
@@ -89,7 +95,10 @@ namespace SEP_JMS.API.Controllers
             try
             {
                 logger.Info($"{logPrefix} Start to update internal job status {model.InternalJobStatus}.");
+                var job = await jobService.GetBasicJob(jobId);
+                if (job == null) return NotFound();
                 var success = await internalJobService.UpdateInternalJobStatus(jobId, model.InternalJobStatus);
+                if (success) await notificationService.Trigger(jobId, job, null, NotiAction.UpdateJob);
                 return success ? Ok() : BadRequest();
             }
             catch (Exception ex)

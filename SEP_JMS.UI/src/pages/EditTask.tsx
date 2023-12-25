@@ -803,6 +803,7 @@ const EditTask: React.FC<IEditTaskProp> = ({
                   option =>
                     option.key === JobStatusType.NotDo ||
                     option.key === JobStatusType.Completed ||
+                    option.key === JobStatusType.Pending ||
                     option.key === taskDetail?.jobStatus
                 )
             ).map(({ key, text }) => (

@@ -229,9 +229,9 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
                     <>
                       <p className="text-primary mb-4 mt-12 flex items-center gap-2">
                         <span>{TaskString.ANH_DINH_KEM}</span>
-                        <span className="text-[13px] font-semibold text-orange-500">
+                        {/* <span className="text-[13px] font-semibold text-orange-500">
                           <i>{TaskString.CLICK_DE_TAI_VE}</i>
-                        </span>
+                        </span> */}
                       </p>
                       <div className="flex items-center gap-3">
                         <ImageSection imgFiles={imgFiles} />

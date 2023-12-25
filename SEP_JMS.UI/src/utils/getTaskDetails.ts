@@ -28,7 +28,9 @@ export const getTaskDetails = async (
   ) {
     setOpenDialog(true);
   }
-  breadCrumbTitle.setContent(res.data?.title);
+  if (breadCrumbTitle !== null) {
+    breadCrumbTitle.setContent(res.data?.title);
+  }
   const requirementList: FileResponse[] = res.data?.requirements?.files;
 
   if (requirementList && requirementList.length > 0) {

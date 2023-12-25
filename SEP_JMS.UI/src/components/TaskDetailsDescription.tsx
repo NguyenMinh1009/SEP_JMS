@@ -84,12 +84,45 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
       );
   };
 
+  const renderFinalFiles = () => {
+    if (
+      currentPerson.roleType !== Role.CUSTOMER ||
+      (currentPerson.roleType === Role.CUSTOMER &&
+        (jobDetail?.jobStatus === JobStatusType.CustomerReview ||
+          jobDetail?.internalJobStatus === InternalJobStatusType.CustomerReview ||
+          jobDetail?.jobStatus === JobStatusType.Completed))
+    )
+      return (
+        <>
+          {driveFiles && driveFiles.length > 0 && (
+            <>
+              <p className="text-primary mb-6 mt-10 flex items-center gap-2">
+                <span className="text-[13px]">{TaskString.SAN_PHAM}</span>
+                <span className="text-[13px] font-semibold text-orange-500">
+                  <i>{TaskString.CLICK_DE_TAI_VE}</i>
+                </span>
+              </p>
+              <FileSection
+                postType={PostType.final}
+                visibleType={VisibleType.Public}
+                remoteFileList={driveFiles?.map((file: any) => ({
+                  name: file.fileName,
+                  originalName: file.originalName
+                }))}
+              />
+            </>
+          )}
+        </>
+      );
+  };
+
   const renderPreviewFiles = () => {
     if (
       currentPerson.roleType !== Role.CUSTOMER ||
       (currentPerson.roleType === Role.CUSTOMER &&
         (jobDetail?.jobStatus === JobStatusType.CustomerReview ||
-          jobDetail?.internalJobStatus === InternalJobStatusType.CustomerReview))
+          jobDetail?.internalJobStatus === InternalJobStatusType.CustomerReview ||
+          jobDetail?.jobStatus === JobStatusType.Completed))
     )
       return (
         <>
@@ -206,24 +239,7 @@ const TaskDetailsDescription: React.FC<ITaskDetailsDescriptionProps> = props => 
                       </div>
                     </>
                   )}
-                {driveFiles && driveFiles.length > 0 && (
-                  <>
-                    <p className="text-primary mb-6 mt-10 flex items-center gap-2">
-                      <span className="text-[13px]">{TaskString.SAN_PHAM}</span>
-                      <span className="text-[13px] font-semibold text-orange-500">
-                        <i>{TaskString.CLICK_DE_TAI_VE}</i>
-                      </span>
-                    </p>
-                    <FileSection
-                      postType={PostType.final}
-                      visibleType={VisibleType.Public}
-                      remoteFileList={driveFiles?.map((file: any) => ({
-                        name: file.fileName,
-                        originalName: file.originalName
-                      }))}
-                    />
-                  </>
-                )}
+                {renderFinalFiles()}
                 {renderPreviewFiles()}
               </div>
             </div>
